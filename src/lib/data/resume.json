@@ -1,0 +1,81 @@
+{
+  "header": {
+    "name": "Víctor Navarro Aránguiz",
+    "title": "Highly motivated Software Engineer",
+    "contact": [
+      "(+353) 83 863 1200",
+      "vnavarroaranguiz@gmail.com",
+      "Dublin, Ireland"
+    ]
+  },
+  "objective": "Highly motivated Software Engineer seeking an opportunity to utilize my broad technical experience in software development and system design. I am enthusiastic about contributing to innovative development efforts, focusing on building robust and scalable applications and solving practical challenges. I am also eager to continuously learn and grow within a dynamic technical environment.",
+  "experience": [
+    {
+      "title": "AI Engineer",
+      "company": "Judini Inc. (CodeGPT)",
+      "location": "Remote",
+      "period": "Dic 2023 - Present",
+      "responsibilities": [
+        "Designed and implemented knowledge-graph algorithm for codebase understanding",
+        "Deployed and managed production AI models on cloud providers",
+        "Designed on-premise Docker solution for platform deployment",
+        "Managed core AWS infrastructure via serverless compute",
+        "Maintained backend systems"
+      ]
+    },
+    {
+      "title": "Data Scientist",
+      "company": "Data Science Institute, Universidad del Desarrollo",
+      "location": "Santiago, Chile",
+      "period": "Apr 2020 - Nov 2023",
+      "responsibilities": [
+        "Implemented algorithms to analyze human behavior from mobile XDR data",
+        "Developed a recommendation system for Derco-Chile",
+        "Implemented Customer Lifetime Value models using Bayesian inference"
+      ]
+    }
+  ],
+  "teaching": [
+    {
+      "title": "Python for Data Science course for Master students",
+      "institution": "Universidad del Desarrollo",
+      "location": "Santiago, Chile",
+      "period": "Jun 2024 - Jul 2024",
+      "responsibilities": [
+        "Designed and taught introductory programming course for Master in Data Science students"
+      ]
+    }
+  ],
+  "education": [
+    {
+      "degree": "Master in Astronomy",
+      "institution": "University of Chile, Faculty of Physical and Mathematical Sciences",
+      "location": "Santiago, Chile",
+      "year": "2023"
+    }
+  ],
+  "publications": [
+    "E. Elejalde, L. Ferres, V. Navarro, L. Bravo and E. Zagheni. (2024). The social stratification of internal migration and daily mobility during the COVID-19 pandemic. Scientific Reports, 14(1):12140."
+  ],
+  "skills": {
+    "programmingLanguages": ["Javascript", "Python", "bash", "SQL", "C", "C#", "R"],
+    "webTechnologies": ["Next.js (React)", "Svelte"],
+    "dataScience": ["PyTorch", "Spark", "Google BigQuery"],
+    "cloudTechnologies": ["AWS", "Supabase", "Google Cloud", "Azure"],
+    "devOps": ["GitHub", "Docker"]
+  },
+  "additionalInfo": {
+    "languages": ["Spanish", "English"],
+    "interests": ["Cooking", "Hiking", "Fitness", "Anime", "Music"]
+  },
+  "references": [
+    {
+      "name": "Walter Max-Moerbeck",
+      "title": "Job Title, Department",
+      "organization": "Organization/Institution Name",
+      "email": "email@example.com",
+      "phone": "+X-XXX-XXX-XXXX",
+      "relationship": "[Thesis Advisor]"
+    }
+  ]
+}
