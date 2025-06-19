@@ -22,7 +22,6 @@ const marked = new Marked(
 	})
 )
 
-
 export const load: PageServerLoad = async ({ params }) => {
 	const { slug } = params
 	const filepath = path.resolve(process.cwd(), `posts/${slug}.md`)

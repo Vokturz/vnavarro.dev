@@ -1,10 +1,10 @@
 export type Post = {
-  title: string;
-  date: string;
-  summary: string;
-  slug: string;
-};
+	title: string
+	date: string
+	summary: string
+	slug: string
+}
 
 export type PostWithContent = Post & {
-  content: string;
-};
+	content: string
+}

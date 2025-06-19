@@ -4,7 +4,6 @@
 	import { ArrowLeft } from 'lucide-svelte'
 
 	export let data: { post: PostWithContent }
-	
 </script>
 
 <svelte:head>
