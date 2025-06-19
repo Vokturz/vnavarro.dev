@@ -13,3 +13,10 @@ function sum(a: number, b: number): number {
 	return a + b
 }
 ```
+
+Test
+
+```python
+def sum(a: int, b: int) -> int:
+	return a + b
+```
