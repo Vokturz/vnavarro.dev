@@ -45,36 +45,10 @@
 }
 
 .terminal .typewriter {
-	overflow: hidden;
-	border-right: 20px solid #00ff00;
-	white-space: nowrap;
-	margin: 0 auto;
-	letter-spacing: 0.5px;
-	animation:
-		clean-typing 3s steps(40, end),
-		clean-blink 1.2s step-end infinite;
-	font-weight: 400;
+	border-right: 25px solid var(--primary);
+	animation: blink-caret 1.5s step-end infinite;
 }
 
-@keyframes clean-typing {
-	0% {
-		width: 0;
-	}
-	100% {
-		width: 100%;
-	}
-}
-
-@keyframes clean-blink {
-	0%,
-	50% {
-		border-color: #00ff00;
-	}
-	51%,
-	100% {
-		border-color: transparent;
-	}
-}
 
 .terminal {
 	background: #000000;

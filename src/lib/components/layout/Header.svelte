@@ -1,14 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte'
-	import {
-		Github,
-		Linkedin,
-		MoonIcon,
-		SunDimIcon,
-		SunIcon,
-		Terminal,
-		TerminalSquare
-	} from 'lucide-svelte'
+	import { Github, Linkedin, MoonIcon, SunIcon } from 'lucide-svelte'
 	import { Button } from '$lib/components/ui/button'
 
 	let isDarkMode = $state(false)
@@ -56,17 +48,10 @@
 			<div class="flex items-center space-x-2">
 				<a href="/" class="gradient-text text-2xl font-bold">vnavarro.dev</a>
 				<div class="hidden md:block">
-					<div class="ml-10 flex items-baseline space-x-4">
-						<a
-							href="/#about"
-							class="text-foreground/80 hover:text-foreground rounded-md px-3 py-2 text-sm font-medium"
-							>About</a
-						>
-						<a
-							href="/blog"
-							class="text-foreground/80 hover:text-foreground rounded-md px-3 py-2 text-sm font-medium"
-							>Blog</a
-						>
+					<div class="ml-10 flex items-baseline space-x-8">
+						<a href="/#about" class="nav-link">About</a>
+						<a href="/blog" class="nav-link">Blog</a>
+						<a href="/resume" class="nav-link">Resume</a>
 					</div>
 				</div>
 			</div>

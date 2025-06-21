@@ -1,6 +1,7 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
 
+
 @custom-variant dark (&:is(.dark *));
 
 :root {
@@ -119,6 +120,12 @@
 	}
 }
 
+@layer components {
+  .nav-link {
+    	@apply text-foreground/80 hover:text-foreground text-base font-medium;
+	}
+}
+
 .gradient-text {
 	background: linear-gradient(90deg, #3b82f6, #8b5cf6, #ec4899);
 	-webkit-background-clip: text;
@@ -138,23 +145,8 @@
 }
 
 .typewriter {
-	overflow: hidden;
-	border-right: 3px solid var(--color-primary);
-	white-space: nowrap;
-	margin: 0 auto;
-	letter-spacing: 2px;
-	animation:
-		typing 3.5s steps(40, end),
-		blink-caret 0.75s step-end infinite;
-}
-
-@keyframes typing {
-	from {
-		width: 0;
-	}
-	to {
-		width: 100%;
-	}
+	border-right: 5px solid var(--primary);
+	animation: blink-caret 0.75s step-end infinite;
 }
 
 @keyframes blink-caret {
@@ -163,6 +155,6 @@
 		border-color: transparent;
 	}
 	50% {
-		border-color: var(--color-primary);
+		border-color: var(--primary);
 	}
 }

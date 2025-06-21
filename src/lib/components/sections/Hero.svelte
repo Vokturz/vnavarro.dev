@@ -4,9 +4,8 @@
 
 <header class="relative overflow-hidden">
 	<div class="mx-auto max-w-7xl px-4 py-24 text-center sm:px-6 sm:py-32 lg:px-8">
-		<h1 class="mb-6 text-4xl font-extrabold md:text-6xl">
+		<h1 class="mb-6 text-4xl font-extrabold md:text-6xl flex flex-col items-center">
 			<span class="gradient-text">Lorem Ipsum</span>
-			<br />
 			<span class="typewriter">text animation</span>
 		</h1>
 		<p class="text-muted-foreground mx-auto mt-6 max-w-3xl text-xl">
