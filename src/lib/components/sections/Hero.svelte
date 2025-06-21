@@ -1,15 +1,15 @@
 <script lang="ts">
-	import { Button } from '$lib/components/ui/button';
+	import { Button } from '$lib/components/ui/button'
 </script>
 
 <header class="relative overflow-hidden">
-	<div class="max-w-7xl mx-auto py-24 px-4 sm:py-32 sm:px-6 lg:px-8 text-center">
-		<h1 class="text-4xl md:text-6xl font-extrabold mb-6">
+	<div class="mx-auto max-w-7xl px-4 py-24 text-center sm:px-6 sm:py-32 lg:px-8">
+		<h1 class="mb-6 text-4xl font-extrabold md:text-6xl">
 			<span class="gradient-text">Lorem Ipsum</span>
 			<br />
 			<span class="typewriter">text animation</span>
 		</h1>
-		<p class="mt-6 text-xl text-muted-foreground max-w-3xl mx-auto">
+		<p class="text-muted-foreground mx-auto mt-6 max-w-3xl text-xl">
 			I'm a developer passionate about creating useful and beautiful applications.
 		</p>
 		<div class="mt-10 flex justify-center space-x-4">
