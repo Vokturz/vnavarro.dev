@@ -8,9 +8,7 @@
       <span class="gradient-text">vnavarro.dev</span>
       <span class="typewriter">Developer & Astronomer</span>
     </h1>
-    <!-- <p class="text-muted-foreground mx-auto mt-6 max-w-3xl text-xl">
-      I'm a developer passionate about creating useful and beautiful applications.
-    </p> -->
+
     <div class="mt-10 flex justify-center space-x-4">
       <Button size="lg">
         <a href="/#about">Learn About Me</a>

@@ -1,18 +1,20 @@
 <script lang="ts">
   import Hero from '$lib/components/sections/Hero.svelte'
   import PostCard from '$lib/components/PostCard.svelte'
-  import { Badge } from '$lib/components/ui/badge'
   import { Button } from '$lib/components/ui/button'
   import { scrollIntoView } from '$lib/actions'
   import { ExternalLink } from 'lucide-svelte'
+  import ConstellationBackground from '$lib/components/ConstellationBackground.svelte'
 
   export let data
 </script>
 
 <div class="star-bg">
-  <main>
+  <div class="mt-[-120px] w-screen relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] pb-32">
+    <ConstellationBackground />
     <Hero />
-
+  </div>
+  <main class="mt-[-128px]">
     <section id="about" class="mx-auto max-w-4xl px-4 py-2 sm:px-6 lg:px-8" use:scrollIntoView>
       <h2 class="gradient-text text-center text-3xl font-extrabold sm:text-4xl">About Me</h2>
       <div class="bg-primary mx-auto mt-4 h-1 w-20 rounded-full"></div>
@@ -34,19 +36,19 @@
 
         <!-- Content Section -->
         <div class="lg:col-span-2">
-          <p class="text-muted-foreground text-lg leading-relaxed">
+          <!-- <p class="text-muted-foreground text-lg leading-relaxed">
             With a background in software development and data science, I enjoy building projects
             with Svelte, TypeScript, and Go. My focus is on creating clean, efficient, and
             user-friendly solutions. I'm always learning and exploring new technologies to improve
             my craft.
-          </p>
+          </p> -->
 
-          <p class="text-muted-foreground mt-4 text-lg leading-relaxed">
+          <!-- <p class="text-muted-foreground mt-4 text-lg leading-relaxed">
             Currently working as an AI Engineer at CodeGPT, where I design knowledge-graph
             algorithms and deploy production AI models. I hold a Master's in Astronomy and have
             published research in prestigious journals including Scientific Reports and Nature
             Scientific Data.
-          </p>
+          </p> -->
 
           <div class="mt-8">
             <Button variant="outline" class="group">
