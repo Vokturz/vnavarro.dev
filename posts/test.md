@@ -10,7 +10,7 @@ This is the content of my first blog post.
 
 ```typescript
 function sum(a: number, b: number): number {
-	return a + b
+  return a + b
 }
 ```
 
