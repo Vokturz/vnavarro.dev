@@ -53,6 +53,7 @@
     "highlight.js": "^11.11.1",
     "lucide-svelte": "^0.516.0",
     "marked": "^15.0.12",
-    "marked-highlight": "^2.2.1"
+    "marked-highlight": "^2.2.1",
+    "simple-icons": "^15.2.0"
   }
 }
