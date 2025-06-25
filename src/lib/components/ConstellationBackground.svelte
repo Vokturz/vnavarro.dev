@@ -11,7 +11,7 @@
       vmag: string
     }[]
     constellations: {
-      [id:string]: number[][]
+      [id: string]: number[][]
     }
   }
 
@@ -31,7 +31,7 @@
   let starMesh: THREE.Points
   let lineMesh: THREE.LineSegments
   let animationId: number
-  let clock: THREE.Clock // FIX: Declare a clock
+  let clock: THREE.Clock
 
   const decLimits = { min: -45, max: 45 }
   const raLimits = { min: 10, max: 380 }
@@ -43,8 +43,12 @@
   )
 
   // Derived color values based on theme
-  const starColor = $derived($theme === 'terminal' ? new THREE.Color(1.0, 1.0, 1.0) : new THREE.Color(0.2, 0.2, 0.3))
-  const lineColor = $derived($theme === 'terminal' ? new THREE.Color(1.0, 1.0, 1.0) : new THREE.Color(0.3, 0.3, 0.4))
+  const starColor = $derived(
+    $theme === 'terminal' ? new THREE.Color(1.0, 1.0, 1.0) : new THREE.Color(0.2, 0.2, 0.3)
+  )
+  const lineColor = $derived(
+    $theme === 'terminal' ? new THREE.Color(1.0, 1.0, 1.0) : new THREE.Color(0.3, 0.3, 0.4)
+  )
 
   // Star vertex shader with spark effect
   const starVertexShader = `
@@ -126,14 +130,23 @@
     camera = new THREE.OrthographicCamera(-aspect, aspect, 1, -1, 0.1, 1000)
     camera.position.z = 1
 
-    // Renderer setup
     renderer = new THREE.WebGLRenderer({
       canvas,
       alpha: true,
       antialias: true
     })
-    renderer.setSize(containerSize.width, containerSize.height)
+
+    // Calculate scale factor for high-DPI rendering on mobile
+    const scaleFactor = containerSize.width < 1024 ? 1.5 : 1
+    const renderWidth = containerSize.width * scaleFactor
+    const renderHeight = containerSize.height * scaleFactor
+
+    renderer.setSize(renderWidth, renderHeight)
     renderer.setPixelRatio(window.devicePixelRatio)
+
+    // Set canvas display size via CSS
+    canvas.style.width = containerSize.width + 'px'
+    canvas.style.height = containerSize.height + 'px'
 
     // Star material
     starMaterial = new THREE.ShaderMaterial({
@@ -173,13 +186,13 @@
     const starOpacities = new Float32Array(stars.length)
     const starTwinklePhases = new Float32Array(stars.length)
 
-    const aspect = containerSize.width / containerSize.height;
+    const aspect = containerSize.width / containerSize.height
 
     stars.forEach((star, i) => {
       const x = (star.ra / 100) * 2 - 1
       const y = -((star.dec / 100) * 2 - 1)
 
-      starPositions[i * 3] = x * aspect; // Use current aspect ratio
+      starPositions[i * 3] = x * aspect // Use current aspect ratio
       starPositions[i * 3 + 1] = y
       starPositions[i * 3 + 2] = 0
 
@@ -264,8 +277,8 @@
       lineMaterial.uniforms.lineColor.value = lineColor
     }
   })
-  
-  let isInitialized = false;
+
+  let isInitialized = false
   onMount(async () => {
     // The onMount logic can remain largely the same for data fetching.
     // The $effect below will handle the one-time initialization.
@@ -340,15 +353,23 @@
 
   // Handle container resize
   $effect(() => {
-    if (!isInitialized || !renderer || !camera || !containerSize.width || !containerSize.height) return;
+    if (!isInitialized || !renderer || !camera || !containerSize.width || !containerSize.height)
+      return
 
     const aspect = containerSize.width / containerSize.height
     camera.left = -aspect
     camera.right = aspect
     camera.updateProjectionMatrix()
-    renderer.setSize(containerSize.width, containerSize.height)
+    
+    // Apply scale factor for mobile
+    const scaleFactor = containerSize.width < 1024 ? 1.5 : 1
+    const renderWidth = containerSize.width * scaleFactor
+    const renderHeight = containerSize.height * scaleFactor
+    
+    renderer.setSize(renderWidth, renderHeight)
+    canvas.style.width = containerSize.width + 'px'
+    canvas.style.height = containerSize.height + 'px'
 
-    // FIX: Regenerate geometry on resize to correct the aspect ratio of star positions
     updateGeometry()
   })
 
@@ -391,6 +412,11 @@
     width: 100%;
     height: 100%;
     display: block;
+
+    @media (max-width: 1024px) {
+      transform: scalex(1.2);
+      transform-origin: center center;
+    }
   }
 
   .fade-overlay {
@@ -398,12 +424,8 @@
     bottom: 0;
     left: 0;
     right: 0;
-    height: 200px; /* Adjust fade height */
-    background: linear-gradient(
-      to top,
-      var(--background) 0%,
-      transparent 100%
-    );
+    height: 200px;
+    background: linear-gradient(to top, var(--background) 0%, transparent 100%);
     pointer-events: none;
   }
 </style>
