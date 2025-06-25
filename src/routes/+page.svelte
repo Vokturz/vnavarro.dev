@@ -10,11 +10,15 @@
 </script>
 
 <div class="star-bg">
-  <div class="relative right-1/2 left-1/2 mt-[-120px] -mr-[50vw] -ml-[50vw] w-screen pb-32">
+  <div class="absolute inset-x-0 top-0 h-screen w-full overflow-hidden max-h-150">
     <ConstellationBackground />
+  </div>
+  
+  <div class="relative z-10 mt-[-120px] pb-32">
     <Hero />
   </div>
-  <main class="mt-[-128px]">
+  
+  <main class="relative z-10 mt-[-128px]">
     <section id="about" class="mx-auto max-w-4xl px-4 py-2 sm:px-6 lg:px-8" use:scrollIntoView>
       <h2 class="gradient-text text-center text-3xl font-extrabold sm:text-4xl">About Me</h2>
       <div class="bg-primary mx-auto mt-4 h-1 w-20 rounded-full"></div>

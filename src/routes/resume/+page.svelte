@@ -5,6 +5,7 @@
   import { Button } from '$lib/components/ui/button'
   import * as langIcons from 'simple-icons'
   import TechIcon from '$lib/components/TechIcon.svelte'
+  import ConstellationBackground from '$lib/components/ConstellationBackground.svelte'
 
   function downloadCV() {
     window.open('/VNavarro_CV.pdf', '_blank')
@@ -12,6 +13,9 @@
 </script>
 
 <div class="star-bg">
+  <div class="absolute inset-x-0 top-0 h-screen w-full overflow-hidden max-h-150">
+    <ConstellationBackground />
+  </div>
   <main class="text-foreground container mx-auto px-4 py-12">
     <header class="mb-16 text-center">
       <h1 class="gradient-text text-5xl font-extrabold tracking-tight lg:text-6xl">
@@ -88,6 +92,34 @@
               Developed algorithm for characterizing Blazar variability using Approximate Bayesian
               Computation
             </li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="text-2xl font-semibold">Developer</h3>
+          <p class="text-muted-foreground">FONDECYT 11180913 | Jul 2019 - Jul 2020</p>
+          <ul class="mt-2 list-inside list-disc space-y-1 text-lg">
+            <li>
+              Developed Topic-Supervised Non-Negative Matrix Factorization algorithm using sparse
+              matrices
+            </li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="text-2xl font-semibold">Research Assistant</h3>
+          <p class="text-muted-foreground">
+            National Astronomical Observatory, University of Chile | Jan 2017 - Jul 2017
+          </p>
+          <ul class="mt-2 list-inside list-disc space-y-1 text-lg">
+            <li>Collected astronomical data for the DoAr 44 T Tauri object</li>
+            <li>Developed a draft radiative transfer model for DoAr 44 T Tauri object</li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="text-2xl font-semibold">Web Developer</h3>
+          <p class="text-muted-foreground">Correos de Chile | Jan 2018 - Feb 2018</p>
+          <ul class="mt-2 list-inside list-disc space-y-1 text-lg">
+            <li>Resolved bugs in .NET based platform</li>
+            <li>Created UML diagrams for core platform components</li>
           </ul>
         </div>
       </div>
@@ -232,6 +264,35 @@
               Docker
             </Badge>
           </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="mb-16" use:scrollIntoView>
+      <h2 class="border-primary gradient-text mb-6 border-b-2 pb-2 text-3xl font-bold">
+        Teaching Experience
+      </h2>
+      <div class="space-y-8">
+        <div>
+          <h3 class="text-2xl font-semibold">Python for Data Science course for Master students</h3>
+          <p class="text-muted-foreground">Universidad del Desarrollo | Jun 2024 - Jul 2024</p>
+          <ul class="mt-2 list-inside list-disc space-y-1 text-lg">
+            <li>Designed and taught introductory programming course for Master in Data Science students</li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="text-2xl font-semibold">Introduction to Programming for undergraduate students</h3>
+          <p class="text-muted-foreground">Universidad del Desarrollo | Mar 2024 - Jul 2024</p>
+          <ul class="mt-2 list-inside list-disc space-y-1 text-lg">
+            <li>Designed and taught Introduction to Programming for first-year students</li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="text-2xl font-semibold">Programming in Python course</h3>
+          <p class="text-muted-foreground">Central Bank of Chile | Oct 2023</p>
+          <ul class="mt-2 list-inside list-disc space-y-1 text-lg">
+            <li>Designed and taught Python programming focused on data analytics</li>
+          </ul>
         </div>
       </div>
     </section>

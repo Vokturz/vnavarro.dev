@@ -1,6 +1,5 @@
 <script lang="ts">
   import { onMount } from 'svelte'
-  import { theme } from '$lib/stores/theme'
   import * as THREE from 'three'
 
   interface ConstellationData {
@@ -16,7 +15,6 @@
   }
 
   let canvas: HTMLCanvasElement
-  let containerElement: HTMLDivElement
   let rawData: ConstellationData | null = $state(null)
   let containerSize = $state({ width: 0, height: 0 })
 
@@ -33,6 +31,8 @@
   let animationId: number
   let clock: THREE.Clock
 
+  let mouse = new THREE.Vector2(-10, -10) // Initialize off-screen
+
   const decLimits = { min: -45, max: 45 }
   const raLimits = { min: 10, max: 380 }
 
@@ -43,42 +43,47 @@
   )
 
   // Derived color values based on theme
-  const starColor = $derived(
-    $theme === 'terminal' ? new THREE.Color(1.0, 1.0, 1.0) : new THREE.Color(0.2, 0.2, 0.3)
-  )
-  const lineColor = $derived(
-    $theme === 'terminal' ? new THREE.Color(1.0, 1.0, 1.0) : new THREE.Color(0.3, 0.3, 0.4)
-  )
+  const starColor = new THREE.Color(0.5, 0.5, 0.5)
+  const lineColor = new THREE.Color(0.5, 0.5, 0.5)
 
-  // Star vertex shader with spark effect
   const starVertexShader = `
     attribute float size;
     attribute float opacity;
     attribute float twinklePhase;
+    attribute float isConstellation;
     uniform float time;
+    uniform vec2 uMouse;
+    uniform float uHoverRadius;
+    uniform float uHoverIntensity;
     varying float vOpacity;
-    varying float vSize;
+    varying float vHoverFactor;
     
     void main() {
       vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
       gl_Position = projectionMatrix * mvPosition;
       
+      // Calculate distance to mouse in world space
+      float dist = distance(position.xy, uMouse);
+      float hoverFactor = 1.0 - smoothstep(0.0, uHoverRadius, dist);
+      // Only apply hover effect to constellation stars
+      vHoverFactor = hoverFactor * isConstellation;
+      
       // Twinkling effect for opacity
       float opacityTwinkle = sin(time * 2.0 + twinklePhase) * 0.3 + 0.7;
       vOpacity = opacity * opacityTwinkle;
       
-      // Spark effect (pulsating size)
+      // Spark effect (pulsating size) + hover effect
       float sizeSpark = sin(time * 1.2 + twinklePhase * 1.5) * 0.25 + 1.0;
-      vSize = size * sizeSpark;
-      gl_PointSize = max(1.0, vSize);
+      float finalSize = size * sizeSpark * (1.0 + vHoverFactor * uHoverIntensity);
+      gl_PointSize = max(1.0, finalSize);
     }
   `
 
-  // Star fragment shader
+  // Updated star fragment shader with hover effect
   const starFragmentShader = `
     uniform vec3 starColor;
     varying float vOpacity;
-    varying float vSize;
+    varying float vHoverFactor;
     
     void main() {
       vec2 center = gl_PointCoord - 0.5;
@@ -86,46 +91,58 @@
       
       if (dist > 0.5) discard;
       
-      float alpha = smoothstep(0.5, 0.2, dist) * vOpacity;
-      float glow = smoothstep(0.5, 0.0, dist);
+      // Base alpha with twinkle
+      float baseAlpha = smoothstep(0.5, 0.2, dist) * vOpacity;
       
-      gl_FragColor = vec4(starColor, alpha);
+      // Hover adds a bright glow
+      float hoverGlow = smoothstep(0.4, 0.0, dist) * vHoverFactor;
+      
+      // Combine and clamp
+      float finalAlpha = min(1.0, baseAlpha + hoverGlow);
+      
+      gl_FragColor = vec4(starColor, finalAlpha);
     }
   `
 
-  // Line vertex shader
   const lineVertexShader = `
     attribute float opacity;
+    uniform vec2 uMouse;
+    uniform float uHoverRadius;
     varying float vOpacity;
+    varying float vHoverFactor;
+    varying float vLineWidth;
+
     
     void main() {
       vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
       gl_Position = projectionMatrix * mvPosition;
       
+      // Calculate distance to mouse
+      float dist = distance(position.xy, uMouse);
+      vHoverFactor = 1.0 - smoothstep(0.0, uHoverRadius, dist);
+      
       vOpacity = opacity;
     }
   `
 
-  // Line fragment shader
+  // Updated line fragment shader with hover effect
   const lineFragmentShader = `
     uniform vec3 lineColor;
+    uniform float uHoverIntensity;
     varying float vOpacity;
+    varying float vHoverFactor;
     
     void main() {
-      gl_FragColor = vec4(lineColor, vOpacity * 0.3);
+      float finalOpacity = vOpacity * 0.3 + vHoverFactor * uHoverIntensity;
+      gl_FragColor = vec4(lineColor, min(1.0, finalOpacity));
     }
   `
 
   const initThreeJS = () => {
     if (!canvas) return
 
-    // FIX: Instantiate the clock
     clock = new THREE.Clock()
-
-    // Scene setup
     scene = new THREE.Scene()
-
-    // Camera setup (orthographic for 2D-like projection)
     const aspect = containerSize.width / containerSize.height
     camera = new THREE.OrthographicCamera(-aspect, aspect, 1, -1, 0.1, 1000)
     camera.position.z = 1
@@ -136,7 +153,6 @@
       antialias: true
     })
 
-    // Calculate scale factor for high-DPI rendering on mobile
     const scaleFactor = containerSize.width < 1024 ? 1.5 : 1
     const renderWidth = containerSize.width * scaleFactor
     const renderHeight = containerSize.height * scaleFactor
@@ -144,28 +160,33 @@
     renderer.setSize(renderWidth, renderHeight)
     renderer.setPixelRatio(window.devicePixelRatio)
 
-    // Set canvas display size via CSS
     canvas.style.width = containerSize.width + 'px'
     canvas.style.height = containerSize.height + 'px'
 
-    // Star material
+    // Add mouse and hover uniforms to star material
     starMaterial = new THREE.ShaderMaterial({
       vertexShader: starVertexShader,
       fragmentShader: starFragmentShader,
       transparent: true,
       uniforms: {
         time: { value: 0 },
-        starColor: { value: starColor }
+        starColor: { value: starColor },
+        uMouse: { value: mouse },
+        uHoverRadius: { value: 0.6 },
+        uHoverIntensity: { value: 0.8 }
       }
     })
 
-    // Line material
+    // Add mouse and hover uniforms to line material
     lineMaterial = new THREE.ShaderMaterial({
       vertexShader: lineVertexShader,
       fragmentShader: lineFragmentShader,
       transparent: true,
       uniforms: {
-        lineColor: { value: lineColor }
+        lineColor: { value: lineColor },
+        uMouse: { value: mouse },
+        uHoverRadius: { value: 0.6 },
+        uHoverIntensity: { value: 1.5 }
       }
     })
   }
@@ -176,15 +197,24 @@
     const { stars, constellations } = rawData
     if (!stars || !constellations) return
 
-    // Clear existing meshes
     if (starMesh) scene.remove(starMesh)
     if (lineMesh) scene.remove(lineMesh)
 
-    // Star geometry
+    // Create a set of constellation star IDs
+    const constellationStarIds = new Set<number>()
+    for (const constellationName in constellations) {
+      const connections = constellations[constellationName]
+      for (const connection of connections) {
+        constellationStarIds.add(connection[0])
+        constellationStarIds.add(connection[1])
+      }
+    }
+
     const starPositions = new Float32Array(stars.length * 3)
     const starSizes = new Float32Array(stars.length)
     const starOpacities = new Float32Array(stars.length)
     const starTwinklePhases = new Float32Array(stars.length)
+    const starIsConstellation = new Float32Array(stars.length)
 
     const aspect = containerSize.width / containerSize.height
 
@@ -192,13 +222,15 @@
       const x = (star.ra / 100) * 2 - 1
       const y = -((star.dec / 100) * 2 - 1)
 
-      starPositions[i * 3] = x * aspect // Use current aspect ratio
+      starPositions[i * 3] = x * aspect
       starPositions[i * 3 + 1] = y
       starPositions[i * 3 + 2] = 0
 
       starSizes[i] = magnitudeToSize(star.vmag) * 2
       starOpacities[i] = magnitudeToOpacity(star.vmag)
       starTwinklePhases[i] = Math.random() * Math.PI * 2
+      // Set 1.0 if star is part of constellation, 0.0 otherwise
+      starIsConstellation[i] = constellationStarIds.has(star.id) ? 1.0 : 0.0
     })
 
     starGeometry = new THREE.BufferGeometry()
@@ -206,11 +238,11 @@
     starGeometry.setAttribute('size', new THREE.BufferAttribute(starSizes, 1))
     starGeometry.setAttribute('opacity', new THREE.BufferAttribute(starOpacities, 1))
     starGeometry.setAttribute('twinklePhase', new THREE.BufferAttribute(starTwinklePhases, 1))
+    starGeometry.setAttribute('isConstellation', new THREE.BufferAttribute(starIsConstellation, 1))
 
     starMesh = new THREE.Points(starGeometry, starMaterial)
     scene.add(starMesh)
 
-    // Line geometry
     const linePositions: number[] = []
     const lineOpacities: number[] = []
 
@@ -224,11 +256,11 @@
         if (star1 && star2) {
           const x1 = (star1.ra / 100) * 2 - 1
           const y1 = -((star1.dec / 100) * 2 - 1)
-          linePositions.push(x1 * aspect, y1, 0) // Use current aspect ratio
+          linePositions.push(x1 * aspect, y1, 0)
 
           const x2 = (star2.ra / 100) * 2 - 1
           const y2 = -((star2.dec / 100) * 2 - 1)
-          linePositions.push(x2 * aspect, y2, 0) // Use current aspect ratio
+          linePositions.push(x2 * aspect, y2, 0)
 
           const dx = x2 - x1
           const dy = y2 - y1
@@ -259,7 +291,6 @@
   const animate = () => {
     if (!renderer || !scene || !camera) return
 
-    // FIX: Use elapsed time from the clock for smooth animation
     const elapsedTime = clock.getElapsedTime()
 
     if (starMaterial) {
@@ -270,7 +301,6 @@
     animationId = requestAnimationFrame(animate)
   }
 
-  // Update colors when theme changes
   $effect(() => {
     if (starMaterial && lineMaterial) {
       starMaterial.uniforms.starColor.value = starColor
@@ -280,8 +310,17 @@
 
   let isInitialized = false
   onMount(async () => {
-    // The onMount logic can remain largely the same for data fetching.
-    // The $effect below will handle the one-time initialization.
+    // Mouse move event handler
+    const onMouseMove = (event: MouseEvent) => {
+      if (!containerSize.width || !containerSize.height) return
+      const aspect = containerSize.width / containerSize.height
+      mouse.x = ((event.clientX / containerSize.width) * 2 - 1) * aspect
+      mouse.y = -(event.clientY / containerSize.height) * 2 + 1
+    }
+
+    // Add event listener
+    window.addEventListener('mousemove', onMouseMove)
+
     try {
       const response = await fetch('/constellations_xy.json')
       if (!response.ok) {
@@ -289,8 +328,7 @@
       }
       rawData = await response.json()
       if (rawData && rawData.stars.length > 0) {
-        // Add random stars
-        for (let i = 0; i < 1000; i++) {
+        for (let i = 0; i < 500; i++) {
           rawData.stars.push({
             id: -i,
             ra: Math.random() * 360 + 10,
@@ -299,7 +337,6 @@
           })
         }
 
-        // Filter stars within limits
         rawData.stars = rawData.stars.filter(
           (star) =>
             star.ra > raLimits.min &&
@@ -308,7 +345,6 @@
             star.dec < decLimits.max
         )
 
-        // Convert to percentage coordinates
         const adjustedRA = (ra: number) =>
           ((ra - raLimits.min) / (raLimits.max - raLimits.min)) * 100
         const adjustedDec = (dec: number) =>
@@ -332,10 +368,11 @@
       if (renderer) {
         renderer.dispose()
       }
+      // Clean up event listener
+      window.removeEventListener('mousemove', onMouseMove)
     }
   })
 
-  // Initialize Three.js ONCE when canvas is available and container is sized
   $effect(() => {
     if (!isInitialized && canvas && containerSize.width > 0 && containerSize.height > 0) {
       initThreeJS()
@@ -344,14 +381,12 @@
     }
   })
 
-  // Update geometry when data changes
   $effect(() => {
     if (isInitialized && rawData && scene) {
       updateGeometry()
     }
   })
 
-  // Handle container resize
   $effect(() => {
     if (!isInitialized || !renderer || !camera || !containerSize.width || !containerSize.height)
       return
@@ -361,7 +396,6 @@
     camera.right = aspect
     camera.updateProjectionMatrix()
     
-    // Apply scale factor for mobile
     const scaleFactor = containerSize.width < 1024 ? 1.5 : 1
     const renderWidth = containerSize.width * scaleFactor
     const renderHeight = containerSize.height * scaleFactor
@@ -405,7 +439,7 @@
       ellipse at center,
       color-mix(in oklch, var(--background) 90%, transparent 10%) 100%
     );
-    pointer-events: none;
+    pointer-events: auto;
   }
 
   canvas {
@@ -414,7 +448,7 @@
     display: block;
 
     @media (max-width: 1024px) {
-      transform: scalex(1.2);
+      transform: scalex(1.5);
       transform-origin: center center;
     }
   }
