@@ -1,5 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte'
+  import { theme } from '$lib/stores/theme'
+  import * as THREE from 'three'
 
   interface ConstellationData {
     stars: {
@@ -9,104 +11,195 @@
       vmag: string
     }[]
     constellations: {
-      [id: string]: number[][]
+      [id:string]: number[][]
     }
   }
 
+  let canvas: HTMLCanvasElement
+  let containerElement: HTMLDivElement
   let rawData: ConstellationData | null = $state(null)
-  let lines: {
-    id: string
-    width: number
-    left: number
-    top: number
-    angle: number
-    opacity: number
-  }[] = $state([])
   let containerSize = $state({ width: 0, height: 0 })
-  let mousePosition = $state({ x: 0, y: 0 })
-  let hoveredStarId = $state<number | null>(null)
-  let isHeroHovered = $state(false)
+
+  // Three.js objects
+  let scene: THREE.Scene
+  let camera: THREE.OrthographicCamera
+  let renderer: THREE.WebGLRenderer
+  let starGeometry: THREE.BufferGeometry
+  let starMaterial: THREE.ShaderMaterial
+  let lineGeometry: THREE.BufferGeometry
+  let lineMaterial: THREE.ShaderMaterial
+  let starMesh: THREE.Points
+  let lineMesh: THREE.LineSegments
+  let animationId: number
+  let clock: THREE.Clock // FIX: Declare a clock
 
   const decLimits = { min: -45, max: 45 }
   const raLimits = { min: 10, max: 380 }
 
   const starsById: Map<number, ConstellationData['stars'][0]> = $derived(
-    rawData ? new Map((rawData as ConstellationData).stars.map((star) => [star.id, star])) : new Map()
+    rawData
+      ? new Map((rawData as ConstellationData).stars.map((star) => [star.id, star]))
+      : new Map()
   )
 
-  onMount(async () => {
-    try {
-      const response = await fetch('/constellations_xy.json')
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`)
-      }
-      rawData = await response.json()
-      if (rawData && rawData.stars.length > 0) {
-        for (let i = 0; i < 1000; i++) {
-          rawData.stars.push({
-            id: -i,
-            ra: Math.random() * 360 + 10,
-            dec: Math.random() * 90 - 45,
-            vmag: (Math.random() * 6 + 1).toFixed(2)
-          })
-        }
-        rawData.stars = rawData.stars.filter(star => star.ra > raLimits.min && star.ra < raLimits.max && star.dec > decLimits.min && star.dec < decLimits.max)
+  // Derived color values based on theme
+  const starColor = $derived($theme === 'terminal' ? new THREE.Color(1.0, 1.0, 1.0) : new THREE.Color(0.2, 0.2, 0.3))
+  const lineColor = $derived($theme === 'terminal' ? new THREE.Color(1.0, 1.0, 1.0) : new THREE.Color(0.3, 0.3, 0.4))
 
-
-        const adjustedRA = (ra: number) => ((ra - raLimits.min) / (raLimits.max - ra)) * 100
-        const adjustedDec = (dec: number) => ((dec + (decLimits.max - decLimits.min)/2) / (decLimits.max - decLimits.min)) * 100
-        rawData.stars.forEach(star => {
-          star.ra = adjustedRA(star.ra)
-          star.dec = adjustedDec(star.dec)
-        })
-        console.log(`Loaded ${rawData.stars.length} stars and their constellation lines.`)
-      }
-    } catch (error) {
-      console.error('Error loading constellations:', error)
+  // Star vertex shader with spark effect
+  const starVertexShader = `
+    attribute float size;
+    attribute float opacity;
+    attribute float twinklePhase;
+    uniform float time;
+    varying float vOpacity;
+    varying float vSize;
+    
+    void main() {
+      vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+      gl_Position = projectionMatrix * mvPosition;
+      
+      // Twinkling effect for opacity
+      float opacityTwinkle = sin(time * 2.0 + twinklePhase) * 0.3 + 0.7;
+      vOpacity = opacity * opacityTwinkle;
+      
+      // Spark effect (pulsating size)
+      float sizeSpark = sin(time * 1.2 + twinklePhase * 1.5) * 0.25 + 1.0;
+      vSize = size * sizeSpark;
+      gl_PointSize = max(1.0, vSize);
     }
+  `
 
-    // Listen for mouse events on the entire document to capture hero hover
-    const handleDocumentMouseMove = (event: MouseEvent) => {
-      const heroElement = document.querySelector('header')
-      if (heroElement) {
-        const rect = heroElement.getBoundingClientRect()
-        const isOverHero = event.clientX >= rect.left && 
-                          event.clientX <= rect.right && 
-                          event.clientY >= rect.top && 
-                          event.clientY <= rect.bottom
-        
-        if (isOverHero) {
-          isHeroHovered = true
-          // Update mouse position relative to the constellation container
-          const containerElement = document.querySelector('.constellation-container')
-          if (containerElement) {
-            const containerRect = containerElement.getBoundingClientRect()
-            mousePosition = {
-              x: event.clientX - containerRect.left,
-              y: event.clientY - containerRect.top
-            }
-          }
-        } else {
-          isHeroHovered = false
-        }
+  // Star fragment shader
+  const starFragmentShader = `
+    uniform vec3 starColor;
+    varying float vOpacity;
+    varying float vSize;
+    
+    void main() {
+      vec2 center = gl_PointCoord - 0.5;
+      float dist = length(center);
+      
+      if (dist > 0.5) discard;
+      
+      float alpha = smoothstep(0.5, 0.2, dist) * vOpacity;
+      float glow = smoothstep(0.5, 0.0, dist);
+      
+      gl_FragColor = vec4(starColor, alpha);
+    }
+  `
+
+  // Line vertex shader
+  const lineVertexShader = `
+    attribute float opacity;
+    varying float vOpacity;
+    
+    void main() {
+      vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+      gl_Position = projectionMatrix * mvPosition;
+      
+      vOpacity = opacity;
+    }
+  `
+
+  // Line fragment shader
+  const lineFragmentShader = `
+    uniform vec3 lineColor;
+    varying float vOpacity;
+    
+    void main() {
+      gl_FragColor = vec4(lineColor, vOpacity * 0.3);
+    }
+  `
+
+  const initThreeJS = () => {
+    if (!canvas) return
+
+    // FIX: Instantiate the clock
+    clock = new THREE.Clock()
+
+    // Scene setup
+    scene = new THREE.Scene()
+
+    // Camera setup (orthographic for 2D-like projection)
+    const aspect = containerSize.width / containerSize.height
+    camera = new THREE.OrthographicCamera(-aspect, aspect, 1, -1, 0.1, 1000)
+    camera.position.z = 1
+
+    // Renderer setup
+    renderer = new THREE.WebGLRenderer({
+      canvas,
+      alpha: true,
+      antialias: true
+    })
+    renderer.setSize(containerSize.width, containerSize.height)
+    renderer.setPixelRatio(window.devicePixelRatio)
+
+    // Star material
+    starMaterial = new THREE.ShaderMaterial({
+      vertexShader: starVertexShader,
+      fragmentShader: starFragmentShader,
+      transparent: true,
+      uniforms: {
+        time: { value: 0 },
+        starColor: { value: starColor }
       }
-    }
+    })
 
-    document.addEventListener('mousemove', handleDocumentMouseMove)
-  })
+    // Line material
+    lineMaterial = new THREE.ShaderMaterial({
+      vertexShader: lineVertexShader,
+      fragmentShader: lineFragmentShader,
+      transparent: true,
+      uniforms: {
+        lineColor: { value: lineColor }
+      }
+    })
+  }
 
-  $effect(() => {
-    if (!rawData || !containerSize.width || !containerSize.height) {
-      lines = []
-      return
-    }
+  const updateGeometry = () => {
+    if (!rawData || !scene) return
 
     const { stars, constellations } = rawData
     if (!stars || !constellations) return
-    const { width, height } = containerSize
 
-    const calculatedLines = []
+    // Clear existing meshes
+    if (starMesh) scene.remove(starMesh)
+    if (lineMesh) scene.remove(lineMesh)
 
+    // Star geometry
+    const starPositions = new Float32Array(stars.length * 3)
+    const starSizes = new Float32Array(stars.length)
+    const starOpacities = new Float32Array(stars.length)
+    const starTwinklePhases = new Float32Array(stars.length)
+
+    const aspect = containerSize.width / containerSize.height;
+
+    stars.forEach((star, i) => {
+      const x = (star.ra / 100) * 2 - 1
+      const y = -((star.dec / 100) * 2 - 1)
+
+      starPositions[i * 3] = x * aspect; // Use current aspect ratio
+      starPositions[i * 3 + 1] = y
+      starPositions[i * 3 + 2] = 0
+
+      starSizes[i] = magnitudeToSize(star.vmag) * 2
+      starOpacities[i] = magnitudeToOpacity(star.vmag)
+      starTwinklePhases[i] = Math.random() * Math.PI * 2
+    })
+
+    starGeometry = new THREE.BufferGeometry()
+    starGeometry.setAttribute('position', new THREE.BufferAttribute(starPositions, 3))
+    starGeometry.setAttribute('size', new THREE.BufferAttribute(starSizes, 1))
+    starGeometry.setAttribute('opacity', new THREE.BufferAttribute(starOpacities, 1))
+    starGeometry.setAttribute('twinklePhase', new THREE.BufferAttribute(starTwinklePhases, 1))
+
+    starMesh = new THREE.Points(starGeometry, starMaterial)
+    scene.add(starMesh)
+
+    // Line geometry
+    const linePositions: number[] = []
+    const lineOpacities: number[] = []
 
     for (const constellationName in constellations) {
       const connections = constellations[constellationName]
@@ -115,90 +208,149 @@
         const star1 = starsById.get(connection[0])
         const star2 = starsById.get(connection[1])
 
-
         if (star1 && star2) {
-          const pos1 = { x: (star1.ra / 100) * width, y: (star1.dec / 100) * height }
-          const pos2 = { x: (star2.ra / 100) * width, y: (star2.dec / 100) * height }
+          const x1 = (star1.ra / 100) * 2 - 1
+          const y1 = -((star1.dec / 100) * 2 - 1)
+          linePositions.push(x1 * aspect, y1, 0) // Use current aspect ratio
 
-          const dx = pos2.x - pos1.x
-          const dy = pos2.y - pos1.y
+          const x2 = (star2.ra / 100) * 2 - 1
+          const y2 = -((star2.dec / 100) * 2 - 1)
+          linePositions.push(x2 * aspect, y2, 0) // Use current aspect ratio
+
+          const dx = x2 - x1
+          const dy = y2 - y1
           const distance = Math.sqrt(dx * dx + dy * dy)
-          const angle = (Math.atan2(dy, dx) * 180) / Math.PI
+          const opacity = Math.max(0.1, 0.4 - distance * 0.3)
 
-          calculatedLines.push({
-            id: `${star1.id}-${star2.id}`,
-            width: distance,
-            left: star1.ra,
-            top: star1.dec,
-            angle: angle,
-            opacity: Math.max(0.1, 0.4 - (distance / Math.max(width, height)) * 0.3)
-          })
+          lineOpacities.push(opacity, opacity)
         }
       }
     }
-    lines = calculatedLines
-  })
 
-  const handleMouseMove = (event: MouseEvent) => {
-    const rect = (event.currentTarget as HTMLElement).getBoundingClientRect()
-    mousePosition = {
-      x: event.clientX - rect.left,
-      y: event.clientY - rect.top
+    if (linePositions.length > 0) {
+      lineGeometry = new THREE.BufferGeometry()
+      lineGeometry.setAttribute(
+        'position',
+        new THREE.BufferAttribute(new Float32Array(linePositions), 3)
+      )
+      lineGeometry.setAttribute(
+        'opacity',
+        new THREE.BufferAttribute(new Float32Array(lineOpacities), 1)
+      )
+
+      lineMesh = new THREE.LineSegments(lineGeometry, lineMaterial)
+      scene.add(lineMesh)
     }
   }
 
-  const getDistanceToStar = (star: { ra: number; dec: number }) => {
-    const starX = (star.ra / 100) * containerSize.width
-    const starY = (star.dec / 100) * containerSize.height
-    const dx = mousePosition.x - starX
-    const dy = mousePosition.y - starY
-    return Math.sqrt(dx * dx + dy * dy)
+  const animate = () => {
+    if (!renderer || !scene || !camera) return
+
+    // FIX: Use elapsed time from the clock for smooth animation
+    const elapsedTime = clock.getElapsedTime()
+
+    if (starMaterial) {
+      starMaterial.uniforms.time.value = elapsedTime
+    }
+
+    renderer.render(scene, camera)
+    animationId = requestAnimationFrame(animate)
   }
 
-  const getDistanceToLine = (star1: { ra: number; dec: number }, star2: { ra: number; dec: number }) => {
-    const star1X = (star1.ra / 100) * containerSize.width
-    const star1Y = (star1.dec / 100) * containerSize.height
-    const star2X = (star2.ra / 100) * containerSize.width
-    const star2Y = (star2.dec / 100) * containerSize.height
-    
-    // Calculate distance from mouse to line segment
-    const A = mousePosition.x - star1X
-    const B = mousePosition.y - star1Y
-    const C = star2X - star1X
-    const D = star2Y - star1Y
-    
-    const dot = A * C + B * D
-    const lenSq = C * C + D * D
-    
-    if (lenSq === 0) return Math.sqrt(A * A + B * B)
-    
-    let param = dot / lenSq
-    param = Math.max(0, Math.min(1, param))
-    
-    const xx = star1X + param * C
-    const yy = star1Y + param * D
-    
-    const dx = mousePosition.x - xx
-    const dy = mousePosition.y - yy
-    
-    return Math.sqrt(dx * dx + dy * dy)
-  }
+  // Update colors when theme changes
+  $effect(() => {
+    if (starMaterial && lineMaterial) {
+      starMaterial.uniforms.starColor.value = starColor
+      lineMaterial.uniforms.lineColor.value = lineColor
+    }
+  })
+  
+  let isInitialized = false;
+  onMount(async () => {
+    // The onMount logic can remain largely the same for data fetching.
+    // The $effect below will handle the one-time initialization.
+    try {
+      const response = await fetch('/constellations_xy.json')
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+      rawData = await response.json()
+      if (rawData && rawData.stars.length > 0) {
+        // Add random stars
+        for (let i = 0; i < 1000; i++) {
+          rawData.stars.push({
+            id: -i,
+            ra: Math.random() * 360 + 10,
+            dec: Math.random() * 90 - 45,
+            vmag: (Math.random() * 6 + 1).toFixed(2)
+          })
+        }
 
-  const getHoverIntensity = (star: { ra: number; dec: number }) => {
-    if (!isHeroHovered) return 0
-    const distance = getDistanceToStar(star)
-    const maxDistance = 150 // Increased for better hero hover effect
-    if (distance > maxDistance) return 0
-    return Math.max(0, 1 - distance / maxDistance)
-  }
+        // Filter stars within limits
+        rawData.stars = rawData.stars.filter(
+          (star) =>
+            star.ra > raLimits.min &&
+            star.ra < raLimits.max &&
+            star.dec > decLimits.min &&
+            star.dec < decLimits.max
+        )
 
-  const getLineVisibility = (star1: { ra: number; dec: number }, star2: { ra: number; dec: number }) => {
-    if (!isHeroHovered) return 0
-    const distance = getDistanceToLine(star1, star2)
-    const maxDistance = 100 // Distance threshold for line visibility
-    if (distance > maxDistance) return 0
-    return Math.max(0, 1 - distance / maxDistance)
-  }
+        // Convert to percentage coordinates
+        const adjustedRA = (ra: number) =>
+          ((ra - raLimits.min) / (raLimits.max - raLimits.min)) * 100
+        const adjustedDec = (dec: number) =>
+          ((dec + (decLimits.max - decLimits.min) / 2) / (decLimits.max - decLimits.min)) * 100
+
+        rawData.stars.forEach((star) => {
+          star.ra = adjustedRA(star.ra)
+          star.dec = adjustedDec(star.dec)
+        })
+
+        console.log(`Loaded ${rawData.stars.length} stars and their constellation lines.`)
+      }
+    } catch (error) {
+      console.error('Error loading constellations:', error)
+    }
+
+    return () => {
+      if (animationId) {
+        cancelAnimationFrame(animationId)
+      }
+      if (renderer) {
+        renderer.dispose()
+      }
+    }
+  })
+
+  // Initialize Three.js ONCE when canvas is available and container is sized
+  $effect(() => {
+    if (!isInitialized && canvas && containerSize.width > 0 && containerSize.height > 0) {
+      initThreeJS()
+      animate()
+      isInitialized = true
+    }
+  })
+
+  // Update geometry when data changes
+  $effect(() => {
+    if (isInitialized && rawData && scene) {
+      updateGeometry()
+    }
+  })
+
+  // Handle container resize
+  $effect(() => {
+    if (!isInitialized || !renderer || !camera || !containerSize.width || !containerSize.height) return;
+
+    const aspect = containerSize.width / containerSize.height
+    camera.left = -aspect
+    camera.right = aspect
+    camera.updateProjectionMatrix()
+    renderer.setSize(containerSize.width, containerSize.height)
+
+    // FIX: Regenerate geometry on resize to correct the aspect ratio of star positions
+    updateGeometry()
+  })
 
   const magnitudeToSize = (vmag: string) => {
     const clampedMag = Math.max(-2, Math.min(6, parseFloat(vmag)))
@@ -211,63 +363,15 @@
   }
 </script>
 
-<div 
-  class="constellation-container" 
-  class:hero-hovered={isHeroHovered}
+<div
+  bind:this={containerElement}
+  class="constellation-container"
   aria-hidden="true"
   bind:clientWidth={containerSize.width}
   bind:clientHeight={containerSize.height}
-  onmousemove={handleMouseMove}
-  onmouseleave={() => { hoveredStarId = null }}
 >
-  {#if rawData}
-    {#each rawData.stars as star (star.id)}
-      {@const size = magnitudeToSize(star.vmag)}
-      {@const opacity = magnitudeToOpacity(star.vmag)}
-      {@const duration = Math.random() * 3 + 2}
-      {@const delay = Math.random() * 5}
-      {@const hoverIntensity = getHoverIntensity(star)}
-      {@const isNearMouse = hoverIntensity > 0}
-      <div
-        role="presentation"
-        class="star"
-        class:near-mouse={isNearMouse}
-        style:left="{star.ra}%"
-        style:top="{star.dec}%"
-        style:width="{size}px"
-        style:height="{size}px"
-        style:--glow="{size * 1.5}px"
-        style:--min-opacity={opacity * 0.3}
-        style:--max-opacity={opacity}
-        style:--duration="{duration}s"
-        style:--hover-intensity={hoverIntensity}
-        style:animation-delay="{delay}s"
-        onmouseenter={() => { hoveredStarId = star.id }}
-        onmouseleave={() => { hoveredStarId = null }}
-      ></div>
-    {/each}
-
-    {#each lines as line (line.id)}
-      {@const [star1Id, star2Id] = line.id.split('-').map(Number)}
-      {@const star1 = starsById.get(star1Id)}
-      {@const star2 = starsById.get(star2Id)}
-      {@const isConnectedToHovered = star1Id === hoveredStarId || star2Id === hoveredStarId}
-      {@const lineVisibility = star1 && star2 ? getLineVisibility(star1, star2) : 0}
-      {@const shouldShowLine = lineVisibility > 0 || isConnectedToHovered}
-      {#if shouldShowLine}
-        <div
-          class="constellation-line"
-          class:connected-to-hovered={isConnectedToHovered}
-          class:near-mouse={lineVisibility > 0}
-          style:left="{line.left}%"
-          style:top="{line.top}%"
-          style:width="{line.width}px"
-          style:transform="rotate({line.angle}deg)"
-          style:opacity={isConnectedToHovered ? line.opacity + 0.4 : line.opacity * lineVisibility}
-        ></div>
-      {/if}
-    {/each}
-  {/if}
+  <canvas bind:this={canvas} width={containerSize.width} height={containerSize.height}></canvas>
+  <div class="fade-overlay"></div>
 </div>
 
 <style>
@@ -280,66 +384,26 @@
       ellipse at center,
       color-mix(in oklch, var(--background) 90%, transparent 10%) 100%
     );
-    pointer-events: none; /* Allow events to pass through to hero content */
+    pointer-events: none;
   }
 
-  .star {
+  canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  .fade-overlay {
     position: absolute;
-    background-color: var(--foreground);
-    border-radius: 50%;
-    animation: twinkle var(--duration) infinite ease-in-out;
-    opacity: 0;
-    box-shadow: 0 0 var(--glow) color-mix(in oklch, var(--foreground) 40%, transparent 20%);
-    transition:
-      transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
-      opacity 0.3s ease-in-out,
-      box-shadow 0.3s ease-in-out;
-    cursor: pointer;
-  }
-
-  .star.near-mouse {
-    transform: scale(calc(1 + var(--hover-intensity) * 0.8));
-    box-shadow: 
-      0 0 calc(var(--glow) * (1 + var(--hover-intensity) * 2)) 
-      color-mix(in oklch, var(--foreground) calc(40% + var(--hover-intensity) * 30%), transparent 20%);
-    --min-opacity: calc(var(--min-opacity) + var(--hover-intensity) * 0.5);
-    --max-opacity: calc(var(--max-opacity) + var(--hover-intensity) * 0.3);
-  }
-
-  .constellation-line {
-    position: absolute;
-    height: 1px;
-    background: color-mix(in oklch, var(--foreground) 30%, transparent 10%);
-    opacity: 0.2;
-    transform-origin: left center;
-    z-index: 10;
-    transition: opacity 0.3s ease-in-out;
-  }
-
-  .constellation-line.connected-to-hovered {
-    background: color-mix(in oklch, var(--foreground) 50%, transparent 10%);
-    opacity: 0.4;
-  }
-
-  .constellation-line.near-mouse {
-    background: color-mix(in oklch, var(--foreground) 70%, transparent 10%);
-    opacity: 0.6;
-  }
-
-  @keyframes twinkle {
-    0%,
-    100% {
-      opacity: var(--min-opacity);
-      transform: scale(0.8);
-    }
-    50% {
-      opacity: var(--max-opacity);
-      transform: scale(1.2);
-    }
-  }
-
-  .constellation-container:hover .star {
-    --min-opacity: 0.7;
-    --max-opacity: 1;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 200px; /* Adjust fade height */
+    background: linear-gradient(
+      to top,
+      var(--background) 0%,
+      transparent 100%
+    );
+    pointer-events: none;
   }
 </style>

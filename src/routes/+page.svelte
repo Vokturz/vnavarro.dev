@@ -10,7 +10,7 @@
 </script>
 
 <div class="star-bg">
-  <div class="mt-[-120px] w-screen relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] pb-32">
+  <div class="relative right-1/2 left-1/2 mt-[-120px] -mr-[50vw] -ml-[50vw] w-screen pb-32">
     <ConstellationBackground />
     <Hero />
   </div>

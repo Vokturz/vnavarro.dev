@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { theme } from '$lib/stores/theme'
+
   import { onMount } from 'svelte'
   import { slide, fade } from 'svelte/transition'
   import { Github, Linkedin, MoonIcon, SunIcon, Menu, X } from 'lucide-svelte'
@@ -7,18 +9,6 @@
   let isDarkMode = $state(false)
   let isMobileMenuOpen = $state(false)
 
-  function toggleDarkMode() {
-    isDarkMode = !isDarkMode
-    if (isDarkMode) {
-      document.body.classList.add('terminal')
-      localStorage.setItem('theme', 'terminal')
-      updateHighlightTheme('sunburst')
-    } else {
-      document.body.classList.remove('terminal')
-      localStorage.setItem('theme', 'light')
-      updateHighlightTheme('github')
-    }
-  }
 
   function toggleMobileMenu() {
     isMobileMenuOpen = !isMobileMenuOpen
@@ -40,16 +30,25 @@
     document.head.appendChild(link)
   }
 
-  onMount(() => {
-    const savedTheme = localStorage.getItem('theme')
-    if (savedTheme === 'terminal') {
-      isDarkMode = true
+onMount(() => {
+  theme.init()
+  
+  // Subscribe to theme changes
+  const unsubscribe = theme.subscribe((currentTheme: string) => {
+    if (currentTheme === 'terminal') {
       document.body.classList.add('terminal')
+      localStorage.setItem('theme', 'terminal')
       updateHighlightTheme('sunburst')
     } else {
+      document.body.classList.remove('terminal')
+      localStorage.setItem('theme', 'light')
       updateHighlightTheme('github')
     }
   })
+
+  return unsubscribe
+})
+
 </script>
 
 <nav class="bg-card/90 sticky top-0 z-50 backdrop-blur-sm">
@@ -84,7 +83,7 @@
         </div>
         <div class="bg-border hidden h-6 w-px md:block"></div>
         <Button
-          onclick={toggleDarkMode}
+          onclick={theme.toggle}
           variant="outline"
           size="icon"
           class="h-10 w-10 flex-shrink-0"
