@@ -458,7 +458,7 @@
     bottom: 0;
     left: 0;
     right: 0;
-    height: 200px;
+    height: 400px;
     background: linear-gradient(to top, var(--background) 0%, transparent 100%);
     pointer-events: none;
   }

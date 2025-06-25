@@ -10,7 +10,7 @@
 </script>
 
 <div class="star-bg">
-  <div class="absolute inset-x-0 top-0 h-screen w-full overflow-hidden max-h-150">
+  <div class="absolute inset-x-0 top-0 h-screen w-full overflow-hidden max-h-200">
     <ConstellationBackground />
   </div>
   
