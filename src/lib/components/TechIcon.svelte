@@ -4,7 +4,7 @@
   // @ts-ignore
   import { AwsIcon, AzureIcon } from '$lib/icons'
 
-  let { name, size = 'h-4 w-4' }: { name: string; size?: string } = $props()
+  let { name, class: className = 'h-4 w-4' }: { name: string; class?: string } = $props()
 
   const customIcons = {
     aws: AwsIcon,
@@ -17,13 +17,13 @@
 </script>
 
 {#if CustomIcon}
-  <CustomIcon class={size} />
+  <CustomIcon class={className} />
 {:else}
-  <svg class={size} viewBox="0 0 24 24" fill="currentColor">
+  <svg class={className} viewBox="0 0 24 24" fill="currentColor">
     {#if iconData}
       <path d={iconData.path} />
     {:else}
-      <Code class={size} />
+      <Code class={className} />
     {/if}
   </svg>
 {/if}

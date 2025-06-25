@@ -40,19 +40,19 @@
 
         <!-- Content Section -->
         <div class="lg:col-span-2">
-          <!-- <p class="text-muted-foreground text-lg leading-relaxed">
+          <p class="text-muted-foreground text-lg leading-relaxed">
             With a background in software development and data science, I enjoy building projects
             with Svelte, TypeScript, and Go. My focus is on creating clean, efficient, and
             user-friendly solutions. I'm always learning and exploring new technologies to improve
             my craft.
-          </p> -->
+          </p>
 
-          <!-- <p class="text-muted-foreground mt-4 text-lg leading-relaxed">
+          <p class="text-muted-foreground mt-4 text-lg leading-relaxed">
             Currently working as an AI Engineer at CodeGPT, where I design knowledge-graph
             algorithms and deploy production AI models. I hold a Master's in Astronomy and have
             published research in prestigious journals including Scientific Reports and Nature
             Scientific Data.
-          </p> -->
+          </p>
 
           <div class="mt-8">
             <Button variant="outline" class="group">

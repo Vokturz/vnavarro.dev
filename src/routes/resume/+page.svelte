@@ -10,6 +10,40 @@
   function downloadCV() {
     window.open('/VNavarro_CV.pdf', '_blank')
   }
+
+const skillsData = {
+    'Programming Languages': [
+      { name: 'Python', iconName: 'python', color: 'text-yellow-400' },
+      { name: 'Typescript', iconName: 'typescript', color: 'text-blue-600' },
+      { name: 'Javascript', iconName: 'javascript', color: 'text-yellow-500' },
+      { name: 'C', iconName: 'c', color: 'text-blue-700' },
+      { name: 'Go', iconName: 'go', color: 'text-cyan-400' },
+      { name: 'bash', iconName: 'gnubash', color: 'text-gray-800' },
+      { name: 'SQL', iconName: 'postgresql', color: 'text-blue-500' },
+      { name: 'C#', iconName: 'sharp', color: 'text-purple-600' },
+      { name: 'R', iconName: 'r', color: 'text-blue-400' }
+    ],
+    'Web Technologies': [
+      { name: 'Next.js', iconName: 'nextdotjs', color: 'text-black' },
+      { name: 'Svelte', iconName: 'svelte', color: 'text-orange-500' }
+    ],
+    'Data Science & Machine Learning': [
+      { name: 'Google BigQuery', iconName: 'Googlebigquery', color: 'text-blue-500' },
+      { name: 'Spark', iconName: 'apachespark', color: 'text-orange-600' },
+      { name: 'PyTorch', iconName: 'pytorch', color: 'text-red-500' }
+    ],
+    'Cloud Technologies': [
+      { name: 'AWS', iconName: 'aws', color: 'text-orange-400' },
+      { name: 'Supabase', iconName: 'supabase', color: 'text-green-500' },
+      { name: 'Google Cloud', iconName: 'googlecloud', color: 'text-blue-500' },
+      { name: 'Azure', iconName: 'azure', color: 'text-blue-600' }
+    ],
+    'DevOps & Version Control': [
+      { name: 'GitHub', iconName: 'github', color: 'text-gray-800' },
+      { name: 'Docker', iconName: 'docker', color: 'text-blue-500' }
+    ]
+  }
+
 </script>
 
 <div class="star-bg">
@@ -156,115 +190,19 @@
     <section class="mb-16" use:scrollIntoView>
       <h2 class="border-primary gradient-text mb-6 border-b-2 pb-2 text-3xl font-bold">Skills</h2>
       <div class="space-y-6">
-        <div>
-          <h3 class="text-2xl font-semibold">Programming Languages</h3>
-          <div class="mt-2 flex flex-wrap gap-4">
-            <Badge variant="secondary" class="flex items-center gap-2">
-              <TechIcon name="python" />
-              Python
-            </Badge>
-            <Badge variant="secondary" class="flex items-center gap-2">
-              <TechIcon name="typescript" />
-              Typescript
-            </Badge>
-            <Badge variant="secondary" class="flex items-center gap-2">
-              <TechIcon name="javascript" />
-              Javascript
-            </Badge>
-            <Badge variant="secondary" class="flex items-center gap-2">
-              <TechIcon name="c" />
-              C
-            </Badge>
-            <Badge variant="secondary" class="flex items-center gap-2">
-              <TechIcon name="go" />
-              Go
-            </Badge>
-            <Badge variant="secondary" class="flex items-center gap-2">
-              <TechIcon name="gnubash" />
-              bash
-            </Badge>
-            <Badge variant="secondary" class="flex items-center gap-2">
-              <TechIcon name="postgresql" />
-              SQL
-            </Badge>
-            <Badge variant="secondary" class="flex items-center gap-2">
-              <TechIcon name="sharp" />
-              C#
-            </Badge>
-            <Badge variant="secondary" class="flex items-center gap-2">
-              <TechIcon name="r" />
-              R
-            </Badge>
+        {#each Object.entries(skillsData) as [category, skills]}
+          <div>
+            <h3 class="text-2xl font-semibold">{category}</h3>
+            <div class="mt-2 flex flex-wrap gap-4">
+              {#each skills as skill}
+                <Badge variant="secondary" class="flex items-center gap-2 hover:scale-105 transition-transform">
+                  <TechIcon name={skill.iconName} class={`${skill.color} h-4 w-4`}/>
+                  {skill.name}
+                </Badge>
+              {/each}
+            </div>
           </div>
-        </div>
-        <div>
-          <h3 class="text-2xl font-semibold">Web Technologies</h3>
-          <div class="mt-2 flex flex-wrap gap-4">
-            <Badge variant="secondary" class="flex items-center gap-2">
-              <TechIcon name="nextdotjs" />
-              Next.js
-            </Badge>
-            <Badge variant="secondary" class="flex items-center gap-2">
-              <TechIcon name="svelte" />
-              Svelte
-            </Badge>
-          </div>
-        </div>
-        <div>
-          <h3 class="text-2xl font-semibold">Data Science & Machine Learning</h3>
-          <div class="mt-2 flex flex-wrap gap-4">
-            <Badge variant="secondary" class="flex items-center gap-2">
-              <TechIcon name="Googlebigquery" />
-              Google BigQuery
-            </Badge>
-            <Badge variant="secondary" class="flex items-center gap-2">
-              <TechIcon name="apachespark" />
-              Spark
-            </Badge>
-            <Badge variant="secondary" class="flex items-center gap-2">
-              <TechIcon name="pytorch" />
-              PyTorch
-            </Badge>
-          </div>
-        </div>
-        <div>
-          <h3 class="text-2xl font-semibold">Cloud Technologies</h3>
-          <div class="mt-2 flex flex-wrap gap-4">
-            <Badge variant="secondary" class="flex items-center gap-2">
-              <TechIcon name="aws" />
-              AWS
-            </Badge>
-            <Badge variant="secondary" class="flex items-center gap-2">
-              <TechIcon name="supabase" />
-              Supabase
-            </Badge>
-            <Badge variant="secondary" class="flex items-center gap-2">
-              <TechIcon name="googlecloud" />
-              Google Cloud
-            </Badge>
-            <Badge variant="secondary" class="flex items-center gap-2">
-              <TechIcon name="azure" />
-              Azure
-            </Badge>
-          </div>
-        </div>
-        <div>
-          <h3 class="text-2xl font-semibold">DevOps & Version Control</h3>
-          <div class="mt-2 flex flex-wrap gap-4">
-            <Badge variant="secondary" class="flex items-center gap-2">
-              <svg class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
-                <path d={langIcons.siGithub.path} />
-              </svg>
-              GitHub
-            </Badge>
-            <Badge variant="secondary" class="flex items-center gap-2">
-              <svg class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
-                <path d={langIcons.siDocker.path} />
-              </svg>
-              Docker
-            </Badge>
-          </div>
-        </div>
+        {/each}
       </div>
     </section>
 

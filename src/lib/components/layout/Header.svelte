@@ -5,6 +5,7 @@
   import { slide, fade } from 'svelte/transition'
   import { Github, Linkedin, MoonIcon, SunIcon, Menu, X } from 'lucide-svelte'
   import { Button } from '$lib/components/ui/button'
+  import TechIcon from '../TechIcon.svelte'
 
   let isDarkMode = $state(false)
   let isMobileMenuOpen = $state(false)
@@ -58,7 +59,7 @@ onMount(() => {
         <a href="/" class="gradient-text text-2xl font-bold">vnavarro.dev</a>
         <div class="hidden md:block">
           <div class="ml-10 flex items-baseline space-x-8">
-            <a href="/#about" class="nav-link">About</a>
+            <a href="/" class="nav-link">Home</a>
             <a href="/blog" class="nav-link">Blog</a>
             <a href="/resume" class="nav-link">Resume</a>
           </div>
@@ -68,7 +69,7 @@ onMount(() => {
         <div class="hidden items-center space-x-2 md:flex">
           <Button variant="outline" size="icon">
             <a href="https://github.com/Vokturz" target="_blank" rel="noopener noreferrer">
-              <Github class="h-5 w-5" />
+              <TechIcon name='github' class="h-5 w-5" />
             </a>
           </Button>
           <Button variant="outline" size="icon">
@@ -78,6 +79,15 @@ onMount(() => {
               rel="noopener noreferrer"
             >
               <Linkedin class="h-5 w-5" />
+            </a>
+          </Button>
+          <Button variant="outline" size="icon">
+            <a
+              href="https://huggingface.co/Vokturz"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <TechIcon name='huggingface' class="h-5 w-5" />
             </a>
           </Button>
         </div>
@@ -116,12 +126,12 @@ onMount(() => {
     <div class="md:hidden" transition:slide={{ duration: 300 }}>
       <div class="bg-card/95 space-y-1 border-t px-2 pt-2 pb-3 backdrop-blur-sm sm:px-3">
         <a
-          href="/#about"
+          href="/Home"
           class="nav-link block px-3 py-2 text-base font-medium"
           onclick={closeMobileMenu}
           in:fade={{ delay: 100, duration: 200 }}
         >
-          About
+          Home
         </a>
         <a
           href="/blog"
@@ -145,7 +155,7 @@ onMount(() => {
         >
           <Button variant="outline" size="icon">
             <a href="https://github.com/Vokturz" target="_blank" rel="noopener noreferrer">
-              <Github class="h-5 w-5" />
+              <TechIcon name='github' class="h-5 w-5" />
             </a>
           </Button>
           <Button variant="outline" size="icon">
@@ -155,6 +165,15 @@ onMount(() => {
               rel="noopener noreferrer"
             >
               <Linkedin class="h-5 w-5" />
+            </a>
+          </Button>
+          <Button variant="outline" size="icon">
+            <a
+              href="https://huggingface.co/Vokturz"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <TechIcon name='huggingface' class="h-5 w-5" />
             </a>
           </Button>
         </div>
