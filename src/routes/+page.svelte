@@ -10,8 +10,8 @@
 </script>
 
 <div class="star-bg">
-  <div class="absolute inset-x-0 top-0 h-screen w-full overflow-hidden max-h-200">
-    <ConstellationBackground />
+  <div class="absolute inset-x-0 top-0 h-screen w-full overflow-hidden max-h-150">
+    <ConstellationBackground useWindowMouse={true} />
   </div>
   
   <div class="relative z-10 mt-[-120px] pb-32">

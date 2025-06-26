@@ -48,7 +48,7 @@ const skillsData = {
 
 <div class="star-bg">
   <div class="absolute inset-x-0 top-0 h-screen w-full overflow-hidden max-h-150">
-    <ConstellationBackground />
+    <ConstellationBackground useWindowMouse={true} />
   </div>
   <main class="text-foreground container mx-auto px-4 py-12">
     <header class="mb-16 text-center">
