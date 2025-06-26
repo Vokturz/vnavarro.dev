@@ -3,7 +3,7 @@
 
   import { onMount } from 'svelte'
   import { slide, fade } from 'svelte/transition'
-  import { Github, Linkedin, MoonIcon, SunIcon, Menu, X } from 'lucide-svelte'
+  import { Linkedin, MoonIcon, SunIcon, Menu, X } from 'lucide-svelte'
   import { Button } from '$lib/components/ui/button'
   import TechIcon from '../TechIcon.svelte'
 

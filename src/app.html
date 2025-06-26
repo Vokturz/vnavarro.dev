@@ -4,6 +4,43 @@
     <meta charset="utf-8" />
     <link rel="icon" href="%sveltekit.assets%/favicon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script>
+      // Prevent FOUC by applying theme immediately
+      ;(function () {
+        function applyTheme(themeValue) {
+          if (themeValue === 'terminal') {
+            document.body.classList.add('terminal')
+            // Remove existing highlight.js stylesheets
+            const existingLinks = document.querySelectorAll('link[href*="highlight.js/styles"]')
+            existingLinks.forEach((link) => link.remove())
+            // Add terminal theme
+            const link = document.createElement('link')
+            link.rel = 'stylesheet'
+            link.href =
+              'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/sunburst.min.css'
+            document.head.appendChild(link)
+          } else {
+            document.body.classList.remove('terminal')
+            // Remove existing highlight.js stylesheets
+            const existingLinks = document.querySelectorAll('link[href*="highlight.js/styles"]')
+            existingLinks.forEach((link) => link.remove())
+            // Add light theme
+            const link = document.createElement('link')
+            link.rel = 'stylesheet'
+            link.href =
+              'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css'
+            document.head.appendChild(link)
+          }
+        }
+
+        // Apply initial theme from localStorage
+        const savedTheme = localStorage.getItem('theme') || 'light'
+        applyTheme(savedTheme)
+
+        // Make the function globally available for your Svelte component
+        window.applyThemeGlobally = applyTheme
+      })()
+    </script>
     %sveltekit.head%
   </head>
   <body data-sveltekit-preload-data="hover">

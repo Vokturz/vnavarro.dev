@@ -18,13 +18,13 @@ const skillsData = {
       { name: 'Javascript', iconName: 'javascript', color: 'text-yellow-500' },
       { name: 'C', iconName: 'c', color: 'text-blue-700' },
       { name: 'Go', iconName: 'go', color: 'text-cyan-400' },
-      { name: 'bash', iconName: 'gnubash', color: 'text-gray-800' },
+      { name: 'bash', iconName: 'gnubash' },
       { name: 'SQL', iconName: 'postgresql', color: 'text-blue-500' },
       { name: 'C#', iconName: 'sharp', color: 'text-purple-600' },
       { name: 'R', iconName: 'r', color: 'text-blue-400' }
     ],
     'Web Technologies': [
-      { name: 'Next.js', iconName: 'nextdotjs', color: 'text-black' },
+      { name: 'Next.js', iconName: 'nextdotjs' },
       { name: 'Svelte', iconName: 'svelte', color: 'text-orange-500' }
     ],
     'Data Science & Machine Learning': [
@@ -39,7 +39,7 @@ const skillsData = {
       { name: 'Azure', iconName: 'azure', color: 'text-blue-600' }
     ],
     'DevOps & Version Control': [
-      { name: 'GitHub', iconName: 'github', color: 'text-gray-800' },
+      { name: 'GitHub', iconName: 'github' },
       { name: 'Docker', iconName: 'docker', color: 'text-blue-500' }
     ]
   }
