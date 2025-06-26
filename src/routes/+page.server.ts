@@ -17,7 +17,8 @@ export async function load() {
       slug,
       title: data.title,
       date: data.date,
-      summary: data.summary
+      summary: data.summary,
+      image: data.image
     }
   })
 

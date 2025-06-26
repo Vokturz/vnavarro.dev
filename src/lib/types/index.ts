@@ -3,6 +3,7 @@ export type Post = {
   date: string
   summary: string
   slug: string
+  image?: string
 }
 
 export type PostWithContent = Post & {

@@ -22,6 +22,7 @@ export const load: PageServerLoad = async ({ params }) => {
     date: data.date,
     summary: data.summary,
     slug: slug,
+    image: data.image,
     content: await marked.parse(content)
   }
 

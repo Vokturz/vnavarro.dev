@@ -47,11 +47,11 @@ const skillsData = {
 </script>
 
 <div class="star-bg">
-  <div class="absolute inset-x-0 top-0 h-screen w-full overflow-hidden max-h-150">
+  <!-- <div class="absolute inset-x-0 top-0 h-screen w-full overflow-hidden max-h-150">
     <ConstellationBackground useWindowMouse={true} />
-  </div>
+  </div> -->
   <main class="text-foreground container mx-auto px-4 py-12">
-    <header class="mb-16 text-center">
+    <header class=" mb-16 text-center">
       <h1 class="gradient-text text-5xl font-extrabold tracking-tight lg:text-6xl">
         Víctor Navarro Aránguiz
       </h1>
