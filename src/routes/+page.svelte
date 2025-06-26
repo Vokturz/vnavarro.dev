@@ -19,7 +19,7 @@
   </div>
   
   <main class="relative z-10 mt-[-128px]">
-    <section id="about" class="mx-auto max-w-4xl px-4 py-2 sm:px-6 lg:px-8" use:scrollIntoView>
+    <section id="about" class="mx-auto max-w-4xl px-4 pt-20 py-2 sm:px-6 lg:px-8" use:scrollIntoView>
       <h2 class="gradient-text text-center text-3xl font-extrabold sm:text-4xl">About Me</h2>
       <div class="bg-primary mx-auto mt-4 h-1 w-20 rounded-full"></div>
 
@@ -66,7 +66,7 @@
       </div>
     </section>
 
-    <section id="blog" class="bg-card/50 py-20">
+    <section id="blog" class="bg-card/50 py-20 mt-16 rounded-lg border">
       <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div class="mb-16 text-center">
           <h2 class="gradient-text text-3xl font-extrabold sm:text-4xl">Latest Blog Posts</h2>
