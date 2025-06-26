@@ -354,8 +354,6 @@
           star.ra = adjustedRA(star.ra)
           star.dec = adjustedDec(star.dec)
         })
-
-        console.log(`Loaded ${rawData.stars.length} stars and their constellation lines.`)
       }
     } catch (error) {
       console.error('Error loading constellations:', error)
@@ -419,7 +417,6 @@
 </script>
 
 <div
-  bind:this={containerElement}
   class="constellation-container"
   aria-hidden="true"
   bind:clientWidth={containerSize.width}

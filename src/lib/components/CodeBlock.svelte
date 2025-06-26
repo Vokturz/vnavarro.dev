@@ -3,22 +3,22 @@
   import { Button } from '$lib/components/ui/button'
   import hljs from 'highlight.js'
 
-  export let code: string
-  export let language: string = 'plaintext'
+  const { code, language = 'plaintext' } : { code: string, language?: string } = $props()
 
-  let copied = false
-
-  // Highlight the code
-  $: highlightedCode = hljs.highlight(code, { language }).value
+  let copied = $state(false)
+  
+  let highlightedCode = $derived(
+    hljs.highlight(code, { language }).value
+  )
 
   async function copyCode() {
     await navigator.clipboard.writeText(code)
     copied = true
-    setTimeout(() => (copied = false), 2000)
+    setTimeout(() => copied = false, 2000)
   }
 </script>
 
-<div class="group relative">
+<div class="group relative overflow-hidden">
   <pre class="overflow-x-auto rounded-md border"><code class="hljs language-{language}"
       >{@html highlightedCode}</code
     ></pre>
@@ -34,4 +34,8 @@
       <Copy class="h-4 w-4" />
     {/if}
   </Button>
+  
+  <div class="absolute bottom-6 right-0 rounded-tl rounded-br bg-muted px-1 py-1 text-xs text-muted-foreground pointer-events-none">
+    {language}
+  </div>
 </div>
