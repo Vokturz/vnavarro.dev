@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { constellationData, loadConstellationData } from '$lib/stores/constellation-store'
   import { onMount } from 'svelte'
   import * as THREE from 'three'
 
@@ -14,7 +15,18 @@
     }
   }
 
+  let { 
+    hoverRadius = 0.6,
+    fadeHeight = 400,
+    useWindowMouse = false
+  }: { 
+    hoverRadius?: number
+    fadeHeight?: number
+    useWindowMouse?: boolean 
+  } = $props()
+
   let canvas: HTMLCanvasElement
+  let containerElement: HTMLDivElement
   let rawData: ConstellationData | null = $state(null)
   let containerSize = $state({ width: 0, height: 0 })
 
@@ -172,7 +184,7 @@
         time: { value: 0 },
         starColor: { value: starColor },
         uMouse: { value: mouse },
-        uHoverRadius: { value: 0.6 },
+        uHoverRadius: { value: hoverRadius },
         uHoverIntensity: { value: 0.8 }
       }
     })
@@ -185,7 +197,7 @@
       uniforms: {
         lineColor: { value: lineColor },
         uMouse: { value: mouse },
-        uHoverRadius: { value: 0.6 },
+        uHoverRadius: { value: hoverRadius },
         uHoverIntensity: { value: 1.5 }
       }
     })
@@ -310,33 +322,47 @@
 
   let isInitialized = false
   onMount(async () => {
-    // Mouse move event handler
-    const onMouseMove = (event: MouseEvent) => {
-      if (!containerSize.width || !containerSize.height) return
+    // Mouse move event handler for window
+    const onWindowMouseMove = (event: MouseEvent) => {
+      if (!containerElement || !containerSize.width || !containerSize.height) return
+      
+      const rect = containerElement.getBoundingClientRect()
+      const x = event.clientX - rect.left
+      const y = event.clientY - rect.top
+      
       const aspect = containerSize.width / containerSize.height
-      mouse.x = ((event.clientX / containerSize.width) * 2 - 1) * aspect
-      mouse.y = -(event.clientY / containerSize.height) * 2 + 1
+      mouse.x = ((x / containerSize.width) * 2 - 1) * aspect
+      mouse.y = -((y / containerSize.height) * 2 - 1)
     }
 
-    // Add event listener
-    window.addEventListener('mousemove', onMouseMove)
+    // Mouse move event handler for container
+    const onContainerMouseMove = (event: MouseEvent) => {
+      if (!containerElement || !containerSize.width || !containerSize.height) return
+      
+      const rect = containerElement.getBoundingClientRect()
+      const x = event.clientX - rect.left
+      const y = event.clientY - rect.top
+      
+      const aspect = containerSize.width / containerSize.height
+      mouse.x = ((x / containerSize.width) * 2 - 1) * aspect
+      mouse.y = -((y / containerSize.height) * 2 - 1)
+    }
+
+    // Add appropriate event listener based on prop
+    const addMouseListener = () => {
+      if (useWindowMouse) {
+        window.addEventListener('mousemove', onWindowMouseMove)
+      } else if (containerElement) {
+        containerElement.addEventListener('mousemove', onContainerMouseMove)
+      }
+    }
+
+    addMouseListener()
 
     try {
-      const response = await fetch('/constellations_xy.json')
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`)
-      }
-      rawData = await response.json()
+      await loadConstellationData()
+      rawData = $constellationData
       if (rawData && rawData.stars.length > 0) {
-        for (let i = 0; i < 500; i++) {
-          rawData.stars.push({
-            id: -i,
-            ra: Math.random() * 360 + 10,
-            dec: Math.random() * 90 - 45,
-            vmag: (Math.random() * 6 + 1).toFixed(2)
-          })
-        }
-
         rawData.stars = rawData.stars.filter(
           (star) =>
             star.ra > raLimits.min &&
@@ -366,8 +392,12 @@
       if (renderer) {
         renderer.dispose()
       }
-      // Clean up event listener
-      window.removeEventListener('mousemove', onMouseMove)
+      // Clean up appropriate event listener
+      if (useWindowMouse) {
+        window.removeEventListener('mousemove', onWindowMouseMove)
+      } else if (containerElement) {
+        containerElement.removeEventListener('mousemove', onContainerMouseMove)
+      }
     }
   })
 
@@ -417,13 +447,18 @@
 </script>
 
 <div
+  bind:this={containerElement}
   class="constellation-container"
   aria-hidden="true"
   bind:clientWidth={containerSize.width}
   bind:clientHeight={containerSize.height}
+  data-instance-id={crypto.randomUUID()}
 >
   <canvas bind:this={canvas} width={containerSize.width} height={containerSize.height}></canvas>
-  <div class="fade-overlay"></div>
+  <div
+  class="fade-overlay"
+  style="--fade-height: {fadeHeight}px"
+  ></div>
 </div>
 
 <style>
@@ -432,10 +467,7 @@
     inset: 0;
     z-index: -10;
     overflow: hidden;
-    background: radial-gradient(
-      ellipse at center,
-      color-mix(in oklch, var(--background) 90%, transparent 10%) 100%
-    );
+
     pointer-events: auto;
   }
 
@@ -455,7 +487,7 @@
     bottom: 0;
     left: 0;
     right: 0;
-    height: 400px;
+    height: var(--fade-height);
     background: linear-gradient(to top, var(--background) 0%, transparent 100%);
     pointer-events: none;
   }
