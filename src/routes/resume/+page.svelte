@@ -1,17 +1,22 @@
 <script lang="ts">
   import { scrollIntoView } from '$lib/actions'
-  import { Mail, Phone, MapPin, Download } from 'lucide-svelte'
-  import { Badge } from '$lib/components/ui/badge'
+  import { Mail, Phone, Download } from 'lucide-svelte'
   import { Button } from '$lib/components/ui/button'
-  import * as langIcons from 'simple-icons'
-  import TechIcon from '$lib/components/TechIcon.svelte'
-  import ConstellationBackground from '$lib/components/ConstellationBackground.svelte'
+  import SkillCard from '$lib/components/SkillCard.svelte'
 
   function downloadCV() {
     window.open('/VNavarro_CV.pdf', '_blank')
   }
 
-const skillsData = {
+  const skillsData: {
+    [key: string]: {
+      name: string
+      iconName: string
+      level?: number
+      color?: string
+      description?: string
+    }[]
+  } = {
     'Programming Languages': [
       { name: 'Python', iconName: 'python', color: 'text-yellow-400' },
       { name: 'Typescript', iconName: 'typescript', color: 'text-blue-600' },
@@ -43,7 +48,6 @@ const skillsData = {
       { name: 'Docker', iconName: 'docker', color: 'text-blue-500' }
     ]
   }
-
 </script>
 
 <div class="star-bg">
@@ -52,17 +56,15 @@ const skillsData = {
   </div> -->
   <main class="text-foreground container mx-auto px-4 py-12">
     <header class="mb-16 text-center">
-      <h1 class="pointer-events-none gradient-text text-5xl font-extrabold tracking-tight lg:text-6xl">
+      <h1
+        class="gradient-text pointer-events-none text-5xl font-extrabold tracking-tight lg:text-6xl"
+      >
         Víctor Navarro Aránguiz
       </h1>
       <div class="bg-primary mx-auto mt-4 h-1 w-40 rounded-full"></div>
 
       <!-- <p class="text-muted-foreground mt-4 text-xl">Software Engineer</p> -->
       <div class="text-muted-foreground mt-6 flex items-center justify-center space-x-6">
-        <!-- <div class="flex items-center">
-          <MapPin class="mr-2 h-5 w-5" />
-          <span>Dublin, Ireland</span>
-        </div> -->
         <a href="mailto:vnavarroaranguiz@gmail.com" class="hover:text-primary flex items-center">
           <Mail class="mr-2 h-5 w-5" />
           <span>vnavarroaranguiz@gmail.com</span>
@@ -79,13 +81,6 @@ const skillsData = {
         </Button>
       </div>
     </header>
-
-    <!-- <section class="mb-16" use:scrollIntoView>
-            <h2 class="text-3xl font-bold border-b-2 border-primary pb-2 mb-6 gradient-text">Objective</h2>
-            <p class="text-lg text-muted-foreground">
-                Highly motivated Software Engineer seeking an opportunity to utilize my broad technical experience in software development and system design. I am enthusiastic about contributing to innovative development efforts, focusing on building robust and scalable applications and solving practical challenges. I am also eager to continuously learn and grow within a dynamic technical environment.
-            </p>
-        </section> -->
 
     <section class="mb-16" use:scrollIntoView>
       <h2 class="border-primary gradient-text mb-6 border-b-2 pb-2 text-3xl font-bold">
@@ -197,10 +192,7 @@ const skillsData = {
             <h3 class="text-2xl font-semibold">{category}</h3>
             <div class="mt-2 flex flex-wrap gap-4">
               {#each skills as skill}
-                <Badge variant="secondary" class="flex items-center gap-2 hover:scale-105 transition-transform">
-                  <TechIcon name={skill.iconName} class={`${skill.color} h-4 w-4`}/>
-                  {skill.name}
-                </Badge>
+                <SkillCard {skill} />
               {/each}
             </div>
           </div>
@@ -217,11 +209,16 @@ const skillsData = {
           <h3 class="text-2xl font-semibold">Python for Data Science course for Master students</h3>
           <p class="text-muted-foreground">Universidad del Desarrollo | Jun 2024 - Jul 2024</p>
           <ul class="mt-2 list-inside list-disc space-y-1 text-lg">
-            <li>Designed and taught introductory programming course for Master in Data Science students</li>
+            <li>
+              Designed and taught introductory programming course for Master in Data Science
+              students
+            </li>
           </ul>
         </div>
         <div>
-          <h3 class="text-2xl font-semibold">Introduction to Programming for undergraduate students</h3>
+          <h3 class="text-2xl font-semibold">
+            Introduction to Programming for undergraduate students
+          </h3>
           <p class="text-muted-foreground">Universidad del Desarrollo | Mar 2024 - Jul 2024</p>
           <ul class="mt-2 list-inside list-disc space-y-1 text-lg">
             <li>Designed and taught Introduction to Programming for first-year students</li>
