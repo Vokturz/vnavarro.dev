@@ -477,8 +477,13 @@
     display: block;
 
     @media (max-width: 1024px) {
-      transform: scalex(1.5);
-      transform-origin: center center;
+      transform: scale(1.5);
+      transform-origin: center top;
+    }
+
+    @media (max-width: 768px) {
+      transform: scalex(2) scaleY(1.5);
+      transform-origin: center bottom;
     }
   }
 
@@ -490,5 +495,9 @@
     height: var(--fade-height);
     background: linear-gradient(to top, var(--background) 0%, transparent 100%);
     pointer-events: none;
+
+    @media (max-width: 1024px) {
+      height: calc(var(--fade-height) * 1.8);
+    }
   }
 </style>

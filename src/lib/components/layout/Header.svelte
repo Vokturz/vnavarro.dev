@@ -96,7 +96,7 @@ onMount(() => {
           onclick={theme.toggle}
           variant="outline"
           size="icon"
-          class="h-10 w-10 flex-shrink-0"
+          class="h-10 w-10 flex-shrink-0 cursor-pointer"
         >
           {#if isDarkMode}
             <SunIcon class="h-5 w-5" />
@@ -109,7 +109,7 @@ onMount(() => {
           onclick={toggleMobileMenu}
           variant="outline"
           size="icon"
-          class="h-10 w-10 flex-shrink-0 md:hidden"
+          class="h-10 w-10 flex-shrink-0 md:hidden cursor-pointer"
         >
           {#if isMobileMenuOpen}
             <X class="h-5 w-5" />

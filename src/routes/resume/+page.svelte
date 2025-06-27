@@ -51,16 +51,18 @@ const skillsData = {
     <ConstellationBackground useWindowMouse={true} />
   </div> -->
   <main class="text-foreground container mx-auto px-4 py-12">
-    <header class=" mb-16 text-center">
-      <h1 class="gradient-text text-5xl font-extrabold tracking-tight lg:text-6xl">
+    <header class="mb-16 text-center">
+      <h1 class="pointer-events-none gradient-text text-5xl font-extrabold tracking-tight lg:text-6xl">
         Víctor Navarro Aránguiz
       </h1>
-      <p class="text-muted-foreground mt-4 text-xl">Software Engineer</p>
+      <div class="bg-primary mx-auto mt-4 h-1 w-40 rounded-full"></div>
+
+      <!-- <p class="text-muted-foreground mt-4 text-xl">Software Engineer</p> -->
       <div class="text-muted-foreground mt-6 flex items-center justify-center space-x-6">
-        <div class="flex items-center">
+        <!-- <div class="flex items-center">
           <MapPin class="mr-2 h-5 w-5" />
           <span>Dublin, Ireland</span>
-        </div>
+        </div> -->
         <a href="mailto:vnavarroaranguiz@gmail.com" class="hover:text-primary flex items-center">
           <Mail class="mr-2 h-5 w-5" />
           <span>vnavarroaranguiz@gmail.com</span>
@@ -71,7 +73,7 @@ const skillsData = {
         </a>
       </div>
       <div class="mt-8">
-        <Button variant="outline" onclick={downloadCV}>
+        <Button variant="outline" onclick={downloadCV} class="cursor-pointer">
           <Download class="mr-2 h-5 w-5" />
           Download CV
         </Button>

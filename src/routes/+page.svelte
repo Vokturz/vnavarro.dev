@@ -14,11 +14,11 @@
     <ConstellationBackground useWindowMouse={true} />
   </div>
   
-  <div class="relative z-10 mt-[-120px] pb-32">
+  <div class="relative z-10 mt-[-50px] pb-32">
     <Hero />
   </div>
   
-  <main class="relative z-10 mt-[-128px]">
+  <main class="relative z-10 mt-[-256px]">
     <section id="about" class="mx-auto max-w-4xl px-4 pt-20 py-2 sm:px-6 lg:px-8" use:scrollIntoView>
       <h2 class="gradient-text text-center text-3xl font-extrabold sm:text-4xl">About Me</h2>
       <div class="bg-primary mx-auto mt-4 h-1 w-20 rounded-full"></div>
@@ -33,7 +33,7 @@
               class="ring-primary/20 h-64 w-64 rounded-full object-cover shadow-lg ring-4"
             />
             <div
-              class="from-primary/20 absolute inset-0 rounded-full bg-gradient-to-tr to-transparent"
+              class="from-ring/20 absolute inset-0 rounded-full bg-gradient-to-tr to-transparent"
             ></div>
           </div>
         </div>
