@@ -3,21 +3,22 @@
   import { browser } from '$app/environment'
   import { Play } from 'lucide-svelte'
   import { Button } from '$lib/components/ui/button'
+  import { pyodideStore, executePython } from '$lib/pyodide-service'
   import type { Writable } from 'svelte/store'
 
-  const { 
-    code: initialCode, 
+  const {
+    code: initialCode,
     language = 'plaintext',
     initialOutput = '',
     onSave,
     onRun,
     executionNumber = null
-  } : { 
-    code: string, 
-    language?: string,
-    initialOutput?: string,
-    onSave?: (newCode: string) => void,
-    onRun?: (code: string) => Promise<string> | string,
+  }: {
+    code: string
+    language?: string
+    initialOutput?: string
+    onSave?: (newCode: string) => void
+    onRun?: (code: string) => Promise<string> | string
     executionNumber?: number | null
   } = $props()
 
@@ -36,6 +37,9 @@
   // Get the global execution counter from context
   const executionCounter = getContext<Writable<number>>('executionCounter')
 
+  // Check if this is a Python code block
+  const isPython = $derived(language === 'python' || language === 'py')
+
   onMount(async () => {
     if (browser && editorRef) {
       // Dynamically import CodeJar and hljs only on the client
@@ -43,7 +47,7 @@
         import('codejar'),
         import('highlight.js')
       ])
-      
+
       CodeJar = CJ
       hljs = hljsModule.default
 
@@ -95,26 +99,38 @@
 
   async function runCode() {
     if (isRunning) return
-    
+
     isRunning = true
     showOutput = true
     hasUserExecuted = true
-    
+
+    // Clear previous output immediately
+    output = ''
+
     // Get and increment the global execution counter
     if (executionCounter) {
-      executionCounter.update(n => {
+      executionCounter.update((n) => {
         currentExecutionNumber = n
         return n + 1
       })
     }
-    
+
     try {
       if (onRun) {
+        // Use custom onRun function if provided
         const result = await onRun(code)
         output = result
+      } else if (isPython && $pyodideStore.ready) {
+        // Run Python code using pyodide
+        const result = await executePython(code)
+        output = formatPythonOutput({ output: result, error: null })
+      } else if (isPython && !$pyodideStore.ready) {
+        // Python code but pyodide not ready
+        output =
+          '<pre class="notebook-error-output">Python environment is not ready yet. Please wait for initialization to complete.</pre>'
       } else {
-        // Fake output for demonstration
-        await new Promise(resolve => setTimeout(resolve, 1000)) // Simulate execution time
+        // Fake output for non-Python code
+        await new Promise((resolve) => setTimeout(resolve, 1000)) // Simulate execution time
         output = generateFakeOutput()
       }
     } catch (error) {
@@ -122,6 +138,34 @@
     } finally {
       isRunning = false
     }
+  }
+
+  function formatPythonOutput(result: { output: string; error: string | null }) {
+    if (result.error) {
+      return `<pre class="notebook-error-output">${result.error}</pre>`
+    }
+
+    // Handle completely empty or whitespace-only output
+    if (!result.output || result.output.trim() === '') {
+      return '<div class="text-sm text-muted-foreground italic">No output</div>'
+    }
+
+    // Check if output is already formatted HTML from pyodide service
+    if (
+      result.output.includes('<pre class="notebook-') ||
+      result.output.includes('<div class="notebook-') ||
+      result.output.includes('<div class="text-sm text-muted-foreground italic">')
+    ) {
+      return result.output
+    }
+
+    // Check if output looks like HTML (but not our formatted output)
+    if (result.output.includes('<') && result.output.includes('>')) {
+      return `<div class="notebook-html-output">${result.output}</div>`
+    }
+
+    // Default to plain text output
+    return `<pre class="notebook-stream-output">${result.output}</pre>`
   }
 
   function generateFakeOutput() {
@@ -133,13 +177,6 @@
       '<pre class="notebook-json-output">{\n  "result": [1, 2, 3, 4, 5],\n  "status": "success"\n}</pre>'
     ]
     return outputs[Math.floor(Math.random() * outputs.length)]
-  }
-
-  // Function to render HTML output safely
-  function renderOutput(htmlContent: string) {
-    if (browser && outputRef) {
-      outputRef.innerHTML = htmlContent
-    }
   }
 
   // Update CodeJar when initialCode changes
@@ -158,31 +195,37 @@
     }
   })
 
-  // Render output when it changes
+  // Render output when it changes - improved version with proper checks
   $effect(() => {
-    if (showOutput && output) {
-      renderOutput(output)
+    if (browser && showOutput && output && outputRef) {
+      // Use requestAnimationFrame to ensure DOM is ready
+      requestAnimationFrame(() => {
+        // Double-check that outputRef still exists and is connected to DOM
+        if (outputRef && outputRef.isConnected) {
+          outputRef.innerHTML = output
+        }
+      })
     }
   })
 </script>
 
 <div class="group relative mt-4">
   <div class="relative rounded-md border">
-    <div class="absolute left-[-2.5rem] top-0 bottom-0 w-10 flex items-start justify-center pt-3">
-      <span class="text-xs font-mono text-muted-foreground">
+    <div class="absolute top-0 bottom-0 left-[-3.5rem] flex w-14 items-start justify-center pt-3">
+      <span class="text-muted-foreground font-mono text-xs">
         {#if isRunning}
-          [*]
+          In [*]:
         {:else if currentExecutionNumber !== null}
-          [{currentExecutionNumber}]
+          In [{currentExecutionNumber}]:
         {:else}
-          [ ]
+          In [ ]:
         {/if}
       </span>
     </div>
 
     <div
       bind:this={editorRef}
-      class="codejar-editor min-h-4 p-3 font-mono text-sm bg-background focus:outline-none focus:ring-2 focus:ring-ring overflow-auto"
+      class="codejar-editor bg-background focus:ring-ring min-h-4 overflow-auto p-3 font-mono text-sm focus:ring-2 focus:outline-none"
       style="white-space: pre; tab-size: 2;"
     >
       {#if !browser}
@@ -190,45 +233,54 @@
         <pre class="m-0 whitespace-pre-wrap">{code}</pre>
       {/if}
     </div>
-    
-    <div class="absolute top-2 right-2 flex gap-1 opacity-0 transition-opacity group-hover:opacity-100">
+
+    <div
+      class="absolute top-2 right-2 flex gap-1 opacity-0 transition-opacity group-hover:opacity-100"
+    >
       <Button
         variant="ghost"
         size="sm"
         onclick={runCode}
-        disabled={isRunning}
-        title="Run code (Ctrl+Enter)"
+        disabled={isRunning || (isPython && !$pyodideStore.ready)}
+        title={isPython ? 'Run Python code (Ctrl+Enter)' : 'Run code (Ctrl+Enter)'}
+        class={isPython && !$pyodideStore.ready ? 'opacity-50' : ''}
       >
         <Play class="h-4 w-4" />
+        {#if isPython && $pyodideStore.loading}
+          <span class="ml-1 text-xs">Loading...</span>
+        {/if}
       </Button>
     </div>
   </div>
 
   {#if showOutput}
-    <div class="mt-2 rounded-md border bg-muted/50">
-      <div class="flex items-center justify-between px-3 py-2 border-b bg-muted/30">
-        <div class="flex items-center gap-2">
-          <span class="text-sm font-medium text-muted-foreground">
-            Output {currentExecutionNumber !== null ? `[${currentExecutionNumber}]` : ''}
-          </span>
-        </div>
-        <Button
-          variant="ghost"
-          size="sm"
-          onclick={() => showOutput = false}
-          class="h-6 w-6 p-0"
-        >
+    <div class="relative bg-muted/50 mt-2 rounded-md border">
+      
+    <div class="absolute top-0 bottom-0 left-[-4rem] flex w-17 items-start justify-center pt-3">
+      <span class="text-muted-foreground font-mono text-xs">
+        {#if isRunning}
+          Out [*]:
+        {:else if currentExecutionNumber !== null}
+          Out [{currentExecutionNumber}]:
+        {:else}
+          Out [ ]:
+        {/if}
+      </span>
+    </div>
+        <Button variant="ghost" size="sm" onclick={() => (showOutput = false)} class="absolute right-2 top-2 h-6 w-6 p-0">
           ×
         </Button>
-      </div>
       <div class="p-3">
+
         {#if isRunning}
-          <div class="flex items-center gap-2 text-sm text-muted-foreground">
-            <div class="animate-spin h-4 w-4 border-2 border-current border-t-transparent rounded-full"></div>
-            Running...
+          <div class="text-muted-foreground flex items-center gap-2 text-sm">
+            <div
+              class="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"
+            ></div>
+            {isPython ? 'Running Python code...' : 'Running...'}
           </div>
         {:else if output.trim() === ''}
-          <div class="text-sm text-muted-foreground italic">No output</div>
+          <div class="text-muted-foreground text-sm italic">No output</div>
         {:else}
           <div bind:this={outputRef} class="notebook-output-container"></div>
         {/if}

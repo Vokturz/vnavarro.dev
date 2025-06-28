@@ -6,6 +6,7 @@
   import { transformCodeBlocks } from '$lib/code-block'
   import { writable } from 'svelte/store'
   import TechIcon from '$lib/components/TechIcon.svelte'
+  import { pyodideStore, initializePyodide } from '$lib/pyodide-service'
 
   const { data } : { data : {post: PostWithContent }} = $props()
   const { post } = data
@@ -13,19 +14,61 @@
   const executionCounter = writable(1)
   setContext('executionCounter', executionCounter)
 
+  let showPyodideNotification = $state(false)
+
   onMount(() => {
     transformCodeBlocks()
+    
+    // Initialize pyodide and show notification when ready
+    initializePyodide().then(() => {
+      showPyodideNotification = true
+      // Auto-hide notification after 3 seconds
+      setTimeout(() => {
+        showPyodideNotification = false
+      }, 3000)
+    }).catch(error => {
+      console.error('Failed to initialize Pyodide:', error)
+    })
   })
 
-      const editUrl = $derived(post.type === 'markdown'
-      ? `https://github.com/Vokturz/vnavarro.dev/edit/main/posts/${post.slug}.md`
-      : `https://github.com/Vokturz/vnavarro.dev/blob/main/posts/${post.slug}.ipynb`)
+  const editUrl = $derived(post.type === 'markdown'
+    ? `https://github.com/Vokturz/vnavarro.dev/edit/main/posts/${post.slug}.md`
+    : `https://github.com/Vokturz/vnavarro.dev/blob/main/posts/${post.slug}.ipynb`)
 </script>
 
 <svelte:head>
   <title>{post.title}</title>
   <meta name="description" content={post.summary} />
 </svelte:head>
+
+<!-- Pyodide Ready Notification -->
+{#if showPyodideNotification}
+  <div class="fixed bottom-4 right-4 z-50 bg-green-500 text-white px-4 py-2 rounded-md shadow-lg transition-all duration-300">
+    <div class="flex items-center space-x-2">
+      <div class="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+      <span class="text-sm font-medium">Python environment ready!</span>
+    </div>
+  </div>
+{/if}
+
+<!-- Loading indicator for pyodide -->
+{#if $pyodideStore.loading}
+  <div class="fixed bottom-4 right-4 z-50 bg-blue-500 text-white px-4 py-2 rounded-md shadow-lg">
+    <div class="flex items-center space-x-2">
+      <div class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+      <span class="text-sm">Loading Python environment...</span>
+    </div>
+  </div>
+{/if}
+
+<!-- Error notification for pyodide -->
+{#if $pyodideStore.error}
+  <div class="fixed bottom-4 right-4 z-50 bg-red-500 text-white px-4 py-2 rounded-md shadow-lg">
+    <div class="flex items-center space-x-2">
+      <span class="text-sm">Failed to load Python: {$pyodideStore.error}</span>
+    </div>
+  </div>
+{/if}
 
 <article>
   <div class="mb-8 flex justify-between items-center">
@@ -36,18 +79,17 @@
       </Button>
     </a>
     
-    
-      <a href={editUrl} target="_blank" rel="noopener noreferrer" class="inline-flex items-center opacity-50 hover:opacity-100 transition-opacity">
-        <Button variant="ghost" size="sm" class="text-muted-foreground">
-          {#if post.type === 'markdown'}
-            <Edit class="mr-2 h-3 w-3" />
-            Edit on Github
-          {:else} <!-- Is a jupyter notebook-->
-           <TechIcon name="jupyter" class="h-3 w-3" />
-            View on GitHub
-          {/if}
-        </Button>
-      </a>
+    <a href={editUrl} target="_blank" rel="noopener noreferrer" class="inline-flex items-center opacity-50 hover:opacity-100 transition-opacity">
+      <Button variant="ghost" size="sm" class="text-muted-foreground">
+        {#if post.type === 'markdown'}
+          <Edit class="mr-2 h-3 w-3" />
+          Edit on Github
+        {:else} <!-- Is a jupyter notebook-->
+         <TechIcon name="jupyter" class="h-3 w-3" />
+          View on GitHub
+        {/if}
+      </Button>
+    </a>
   </div>
 
   <div class="mb-8 text-center">
