@@ -1,7 +1,8 @@
 <script lang="ts">
   import type { PostWithContent } from '$lib/types'
   import { Button } from '$lib/components/ui/button'
-  import { ArrowLeft, Edit } from 'lucide-svelte'
+  import * as Alert from "$lib/components/ui/alert/index.js"
+  import { ArrowLeft, Check, Edit, LoaderCircle, X } from 'lucide-svelte'
   import { onMount, setContext } from 'svelte'
   import { transformCodeBlocks } from '$lib/code-block'
   import { writable } from 'svelte/store'
@@ -45,31 +46,33 @@
 
 <!-- Pyodide Ready Notification -->
 {#if showPyodideNotification}
-  <div class="fixed bottom-4 right-4 z-50 bg-green-500 text-white px-4 py-2 rounded-md shadow-lg transition-all duration-300">
-    <div class="flex items-center space-x-2">
-      <div class="w-2 h-2 bg-white rounded-full animate-pulse"></div>
-      <span class="text-sm font-medium">Python environment ready!</span>
-    </div>
+<div class="fixed bottom-4 right-4 z-50">
+    <Alert.Root class="bg-green-500 text-white font-bold">
+      <Check class="h-5 w-5" />
+      <Alert.Title>Python environment ready!</Alert.Title>
+    </Alert.Root>
   </div>
 {/if}
 
 <!-- Loading indicator for pyodide -->
 {#if $pyodideStore.loading}
-  <div class="fixed bottom-4 right-4 z-50 bg-blue-500 text-white px-4 py-2 rounded-md shadow-lg">
-    <div class="flex items-center space-x-2">
-      <div class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-      <span class="text-sm">Loading Python environment...</span>
-    </div>
+  <div class="fixed bottom-4 right-4 z-50">
+    <Alert.Root class="bg-blue-500 text-white">
+      <LoaderCircle class="animate-spin h-5 w-5" />
+      <Alert.Title>Loading Python environment...</Alert.Title>
+    </Alert.Root>
   </div>
 {/if}
 
 <!-- Error notification for pyodide -->
 {#if $pyodideStore.error}
-  <div class="fixed bottom-4 right-4 z-50 bg-red-500 text-white px-4 py-2 rounded-md shadow-lg">
-    <div class="flex items-center space-x-2">
-      <span class="text-sm">Failed to load Python: {$pyodideStore.error}</span>
-    </div>
+  <div class="fixed bottom-4 right-4 z-50">
+    <Alert.Root class="bg-red-500">
+      <X class="h-5 w-5 text-white" />
+      <Alert.Title>Failed to load Python: {$pyodideStore.error}...</Alert.Title>
+    </Alert.Root>
   </div>
+
 {/if}
 
 <article>

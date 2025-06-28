@@ -23,6 +23,10 @@ self.onmessage = async function(e) {
         import sys
         from contextlib import redirect_stdout, redirect_stderr
         import time
+        import warnings
+        
+        # Suppress warnings
+        warnings.filterwarnings('ignore')
         
         class StreamingStdout:
             def __init__(self, callback):
@@ -76,21 +80,45 @@ import io
 from contextlib import redirect_stdout, redirect_stderr
 import matplotlib.pyplot as plt
 import base64
+import warnings
+
+# Suppress warnings
+warnings.filterwarnings('ignore')
 
 # Create streaming stdout
 streaming_stdout = StreamingStdout(streaming_callback)
 stderr_buffer = io.StringIO()
 result = None
 
+def filter_warnings(stderr_content):
+    """Filter out warning messages from stderr content"""
+    lines = stderr_content.split('\\n')
+    filtered_lines = []
+    
+    for line in lines:
+        line_lower = line.lower()
+        # Skip lines that contain common warning indicators
+        if any(warning_indicator in line_lower for warning_indicator in [
+            'warning:', 'userwarning:', 'deprecationwarning:', 
+            'futurewarning:', 'runtimewarning:', 'pendingdeprecationwarning:',
+            '/lib/python', 'warnings.warn'
+        ]):
+            continue
+        filtered_lines.append(line)
+    
+    return '\\n'.join(filtered_lines).strip()
+
 try:
     with redirect_stdout(streaming_stdout), redirect_stderr(stderr_buffer):
         exec("""${code.replace(/"/g, '\\"').replace(/\n/g, '\\n')}""")
         
         stderr_content = stderr_buffer.getvalue()
+        # Filter out warnings from stderr
+        filtered_stderr = filter_warnings(stderr_content)
         output_parts = []
         
-        if stderr_content.strip():
-            output_parts.append(f'<pre class="notebook-error-output">{stderr_content}</pre>')
+        if filtered_stderr:
+            output_parts.append(f'<pre class="notebook-error-output">{filtered_stderr}</pre>')
         
         # Handle matplotlib plots
         fig_nums = plt.get_fignums()
@@ -115,8 +143,9 @@ except KeyboardInterrupt:
     result = '<pre class="notebook-error-output">Execution interrupted by user</pre>'
 except Exception as e:
     stderr_content = stderr_buffer.getvalue()
-    if stderr_content.strip():
-        result = f'<pre class="notebook-error-output">{stderr_content}</pre>'
+    filtered_stderr = filter_warnings(stderr_content)
+    if filtered_stderr:
+        result = f'<pre class="notebook-error-output">{filtered_stderr}</pre>'
     else:
         result = f'<pre class="notebook-error-output">{str(e)}</pre>'
 

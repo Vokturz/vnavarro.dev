@@ -215,11 +215,8 @@
 }
 
 .notebook-error-output {
-  background-color: var(--destructive);
-  color: white;
-  margin: 0;
-  padding: 0.5rem;
-  border-radius: 0.375rem;
+  color: var(--destructive);
+  font-weight: 600;
   white-space: pre-wrap;
   word-wrap: break-word;
   font-family: inherit;
@@ -283,17 +280,3 @@
   border: 1px solid var(--border);
 }
 
-/* Dark mode adjustments */
-.dark .notebook-error-output {
-  background-color: var(--destructive);
-  color: var(--destructive-foreground);
-}
-
-.dark .notebook-html-output table th {
-  background-color: var(--muted);
-}
-
-.dark .notebook-json-output {
-  background-color: var(--card);
-  border-color: var(--border);
-}

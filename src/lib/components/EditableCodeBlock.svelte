@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount, getContext } from 'svelte'
   import { browser } from '$app/environment'
-  import { Check, Copy, Play, Square, StopCircle } from 'lucide-svelte'
+  import { Check, Copy, Loader, LoaderCircle, Play, Square, StopCircle } from 'lucide-svelte'
   import { Button } from '$lib/components/ui/button'
   import { pyodideStore, executePython } from '$lib/pyodide-service'
   import type { Writable } from 'svelte/store'
@@ -344,21 +344,21 @@
             {/if}
           </span>
         </div>
-        <Button
-          variant="ghost"
-          size="sm"
-          onclick={() => (showOutput = false)}
-          class="absolute top-2 right-2 h-6 w-6 p-0 select-none"
-        >
-          ×
-        </Button>
+         {#if !isRunning}
+          <Button
+            variant="ghost"
+            size="sm"
+            onclick={() => (showOutput = false)}
+            class="absolute top-2 right-2 h-6 w-6 p-0 select-none"
+          >
+            ×
+          </Button>
+          {/if}
       {/if}
       <div class="p-3">
         {#if isRunning}
           <div class="text-muted-foreground flex items-center gap-2 text-sm">
-            <div
-              class="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"
-            ></div>
+            <LoaderCircle class="h-4 w-4 animate-spin" />
             {isPython ? 'Running Python code...' : 'Running...'}
           </div>
         {:else if output.trim() === ''}
