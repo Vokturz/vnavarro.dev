@@ -5,6 +5,7 @@
   import { onMount, setContext } from 'svelte'
   import { transformCodeBlocks } from '$lib/code-block'
   import { writable } from 'svelte/store'
+  import TechIcon from '$lib/components/TechIcon.svelte'
 
   const { data } : { data : {post: PostWithContent }} = $props()
   const { post } = data
@@ -16,7 +17,9 @@
     transformCodeBlocks()
   })
 
-  const editUrl = $derived(`https://github.com/Vokturz/vnavarro.dev/edit/main/posts/${post.slug}.md`)
+      const editUrl = $derived(post.type === 'markdown'
+      ? `https://github.com/Vokturz/vnavarro.dev/edit/main/posts/${post.slug}.md`
+      : `https://github.com/Vokturz/vnavarro.dev/blob/main/posts/${post.slug}.ipynb`)
 </script>
 
 <svelte:head>
@@ -33,12 +36,18 @@
       </Button>
     </a>
     
-    <a href={editUrl} target="_blank" rel="noopener noreferrer" class="inline-flex items-center opacity-50 hover:opacity-100 transition-opacity">
-      <Button variant="ghost" size="sm" class="text-muted-foreground">
-        <Edit class="mr-2 h-3 w-3" />
-        Edit
-      </Button>
-    </a>
+    
+      <a href={editUrl} target="_blank" rel="noopener noreferrer" class="inline-flex items-center opacity-50 hover:opacity-100 transition-opacity">
+        <Button variant="ghost" size="sm" class="text-muted-foreground">
+          {#if post.type === 'markdown'}
+            <Edit class="mr-2 h-3 w-3" />
+            Edit on Github
+          {:else} <!-- Is a jupyter notebook-->
+           <TechIcon name="jupyter" class="h-3 w-3" />
+            View on GitHub
+          {/if}
+        </Button>
+      </a>
   </div>
 
   <div class="mb-8 text-center">
