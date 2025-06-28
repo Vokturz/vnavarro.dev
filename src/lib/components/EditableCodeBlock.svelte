@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount, getContext } from 'svelte'
   import { browser } from '$app/environment'
-  import { Check, Copy, Play } from 'lucide-svelte'
+  import { Check, Copy, Play, Square, StopCircle } from 'lucide-svelte'
   import { Button } from '$lib/components/ui/button'
   import { pyodideStore, executePython } from '$lib/pyodide-service'
   import type { Writable } from 'svelte/store'
@@ -27,7 +27,8 @@
   let code = $state(initialCode)
   let copied = $state(false)
   let editorRef: HTMLElement
-  let outputRef: HTMLElement
+  let outputRef: HTMLElement | null = $state(null)
+  let abortController: AbortController | null = $state(null)
   let jar: any
   let output = $state(initialOutput)
   let isRunning = $state(false)
@@ -113,6 +114,11 @@
   async function runCode() {
     if (isRunning || readonly) return
 
+    if (abortController) {
+      abortController.abort()
+    }
+
+    abortController = new AbortController()
     isRunning = true
     showOutput = true
     hasUserExecuted = true
@@ -134,8 +140,15 @@
         const result = await onRun(code)
         output = result
       } else if (isPython && $pyodideStore.ready) {
-        // Run Python code using pyodide
-        const result = await executePython(code)
+        // Run Python code using pyodide with streaming
+        const result = await executePython(
+          code, 
+          abortController,
+          (streamingOutput) => {
+            // Update output in real-time as streaming data comes in
+            output = formatPythonOutput({ output: streamingOutput, error: null })
+          }
+        )
         output = formatPythonOutput({ output: result, error: null })
       } else if (isPython && !$pyodideStore.ready) {
         // Python code but pyodide not ready
@@ -147,9 +160,14 @@
         output = generateFakeOutput()
       }
     } catch (error) {
-      output = `<pre class="notebook-error-output">Error: ${error instanceof Error ? error.message : 'Unknown error occurred'}</pre>`
+      if (error instanceof Error && error.message.includes('cancelled')) {
+        output = '<pre class="notebook-error-output">Execution cancelled by user</pre>'
+      } else {
+        output = `<pre class="notebook-error-output">Error: ${error instanceof Error ? error.message : 'Unknown error occurred'}</pre>`
+      } 
     } finally {
       isRunning = false
+      abortController = null
     }
   }
 
@@ -226,6 +244,12 @@
     copied = true
     setTimeout(() => (copied = false), 2000)
   }
+
+  function cancelExecution() {
+    if (abortController) {
+      abortController.abort()
+    }
+  }
 </script>
 
 <div class="group relative mt-4">
@@ -267,15 +291,20 @@
         <Button
           variant="ghost"
           size="sm"
-          onclick={runCode}
-          disabled={isRunning || (isPython && !$pyodideStore.ready)}
+          onclick={!isRunning ? runCode : cancelExecution}
+          disabled={isPython && !$pyodideStore.ready}
           title={isPython ? 'Run Python code (Ctrl+Enter)' : 'Run code (Ctrl+Enter)'}
           class={isPython && !$pyodideStore.ready ? 'opacity-50' : ''}
         >
-          <Play class="h-4 w-4" />
           {#if isPython && $pyodideStore.loading}
             <span class="ml-1 text-xs">Loading...</span>
           {/if}
+          {#if isRunning}
+            <Square class="h-4 w-4"/>
+          {:else}
+            <Play class="h-4 w-4" />
+          {/if}
+          
         </Button>
       </div>
     {:else}
