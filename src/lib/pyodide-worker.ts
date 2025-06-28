@@ -12,7 +12,7 @@ self.onmessage = async function(e) {
         indexURL: 'https://cdn.jsdelivr.net/pyodide/v0.27.7/full/'
       });
       
-      await pyodide.loadPackage(['numpy', 'matplotlib']);
+      await pyodide.loadPackage(['numpy', 'matplotlib', 'pandas'])
       
       pyodide.runPython(`
         import matplotlib
