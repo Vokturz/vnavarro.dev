@@ -24,6 +24,8 @@ self.onmessage = async function(e) {
         from contextlib import redirect_stdout, redirect_stderr
         import time
         import warnings
+        import ast
+        import html
         
         # Suppress warnings
         warnings.filterwarnings('ignore')
@@ -43,6 +45,57 @@ self.onmessage = async function(e) {
                 
             def getvalue(self):
                 return self.buffer
+
+        def should_display_result(code_str):
+            """Check if the last line is an expression that should be displayed"""
+            try:
+                tree = ast.parse(code_str.strip())
+                if not tree.body:
+                    return False
+                
+                last_node = tree.body[-1]
+                # Check if last statement is an expression (not assignment, import, etc.)
+                return isinstance(last_node, ast.Expr)
+            except:
+                return False
+
+        def get_last_expression(code_str):
+            """Extract the last expression from code"""
+            try:
+                tree = ast.parse(code_str.strip())
+                if not tree.body:
+                    return None
+                
+                last_node = tree.body[-1]
+                if isinstance(last_node, ast.Expr):
+                    return ast.unparse(last_node.value)
+                return None
+            except:
+                return None
+
+        def format_output(obj):
+            """Format object for display similar to Jupyter notebook"""
+            if obj is None:
+                return ""
+            
+            # Handle different types of objects
+            if hasattr(obj, '_repr_html_'):
+                return obj._repr_html_()
+            elif hasattr(obj, '__repr__'):
+                repr_str = repr(obj)
+                # For large outputs, truncate if needed
+                if len(repr_str) > 10000:
+                    repr_str = repr_str[:10000] + "... (output truncated)"
+                # HTML escape the content to prevent < > from being interpreted as HTML tags
+                escaped_repr = html.escape(repr_str)
+                return f'<pre class="notebook-output">{escaped_repr}</pre>'
+            else:
+                str_repr = str(obj)
+                if len(str_repr) > 10000:
+                    str_repr = str_repr[:10000] + "... (output truncated)"
+                # HTML escape the content to prevent < > from being interpreted as HTML tags
+                escaped_str = html.escape(str_repr)
+                return f'<pre class="notebook-output">{escaped_str}</pre>'
       `);
       
       self.postMessage({ type: 'init-complete', id });
@@ -81,6 +134,7 @@ from contextlib import redirect_stdout, redirect_stderr
 import matplotlib.pyplot as plt
 import base64
 import warnings
+import html
 
 # Suppress warnings
 warnings.filterwarnings('ignore')
@@ -89,6 +143,7 @@ warnings.filterwarnings('ignore')
 streaming_stdout = StreamingStdout(streaming_callback)
 stderr_buffer = io.StringIO()
 result = None
+last_expr_result = None
 
 def filter_warnings(stderr_content):
     """Filter out warning messages from stderr content"""
@@ -109,8 +164,25 @@ def filter_warnings(stderr_content):
     return '\\n'.join(filtered_lines).strip()
 
 try:
+    code_to_execute = """${code.replace(/"/g, '\\"').replace(/\n/g, '\\n')}"""
+    
     with redirect_stdout(streaming_stdout), redirect_stderr(stderr_buffer):
-        exec("""${code.replace(/"/g, '\\"').replace(/\n/g, '\\n')}""")
+        # Check if we should capture the last expression result
+        if should_display_result(code_to_execute):
+            last_expr = get_last_expression(code_to_execute)
+            if last_expr:
+                # Execute all but the last expression
+                lines = code_to_execute.strip().split('\\n')
+                if len(lines) > 1:
+                    code_without_last = '\\n'.join(lines[:-1])
+                    exec(code_without_last)
+                
+                # Evaluate the last expression
+                last_expr_result = eval(last_expr)
+            else:
+                exec(code_to_execute)
+        else:
+            exec(code_to_execute)
         
         stderr_content = stderr_buffer.getvalue()
         # Filter out warnings from stderr
@@ -118,7 +190,15 @@ try:
         output_parts = []
         
         if filtered_stderr:
-            output_parts.append(f'<pre class="notebook-error-output">{filtered_stderr}</pre>')
+            # HTML escape stderr content as well
+            escaped_stderr = html.escape(filtered_stderr)
+            output_parts.append(f'<pre class="notebook-error-output">{escaped_stderr}</pre>')
+        
+        # Add the result of the last expression if it exists
+        if last_expr_result is not None:
+            formatted_result = format_output(last_expr_result)
+            if formatted_result:
+                output_parts.append(formatted_result)
         
         # Handle matplotlib plots
         fig_nums = plt.get_fignums()
@@ -145,9 +225,11 @@ except Exception as e:
     stderr_content = stderr_buffer.getvalue()
     filtered_stderr = filter_warnings(stderr_content)
     if filtered_stderr:
-        result = f'<pre class="notebook-error-output">{filtered_stderr}</pre>'
+        escaped_stderr = html.escape(filtered_stderr)
+        result = f'<pre class="notebook-error-output">{escaped_stderr}</pre>'
     else:
-        result = f'<pre class="notebook-error-output">{str(e)}</pre>'
+        escaped_error = html.escape(str(e))
+        result = f'<pre class="notebook-error-output">{escaped_error}</pre>'
 
 result
       `);

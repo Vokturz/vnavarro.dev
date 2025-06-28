@@ -232,11 +232,8 @@
           onclick={!isRunning ? runCode : cancelExecution}
           disabled={isPython && !$pyodideStore.ready}
           title={isPython ? 'Run Python code (Ctrl+Enter)' : 'Run code (Ctrl+Enter)'}
-          class={isPython && !$pyodideStore.ready ? 'opacity-50' : ''}
+          class={isPython && !$pyodideStore.ready ? 'opacity-10' : ''}
         >
-          {#if isPython && $pyodideStore.loading}
-            <span class="ml-1 text-xs">Loading...</span>
-          {/if}
           {#if isRunning}
             <Square class="h-4 w-4" />
           {:else}
