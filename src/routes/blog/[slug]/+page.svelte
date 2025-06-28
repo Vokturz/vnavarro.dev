@@ -19,16 +19,18 @@
   onMount(() => {
     transformCodeBlocks()
     
-    // Initialize pyodide and show notification when ready
-    initializePyodide().then(() => {
-      showPyodideNotification = true
-      // Auto-hide notification after 3 seconds
-      setTimeout(() => {
-        showPyodideNotification = false
-      }, 3000)
-    }).catch(error => {
-      console.error('Failed to initialize Pyodide:', error)
-    })
+    if (post.type === 'notebook') {
+      // Initialize pyodide and show notification when ready
+      initializePyodide().then(() => {
+        showPyodideNotification = true
+        // Auto-hide notification after 3 seconds
+        setTimeout(() => {
+          showPyodideNotification = false
+        }, 3000)
+      }).catch(error => {
+        console.error('Failed to initialize Pyodide:', error)
+      })
+    }
   })
 
   const editUrl = $derived(post.type === 'markdown'

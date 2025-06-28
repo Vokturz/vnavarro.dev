@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount, getContext } from 'svelte'
   import { browser } from '$app/environment'
-  import { Play } from 'lucide-svelte'
+  import { Check, Copy, Play } from 'lucide-svelte'
   import { Button } from '$lib/components/ui/button'
   import { pyodideStore, executePython } from '$lib/pyodide-service'
   import type { Writable } from 'svelte/store'
@@ -12,7 +12,8 @@
     initialOutput = '',
     onSave,
     onRun,
-    executionNumber = null
+    executionNumber = null,
+    readonly = true
   }: {
     code: string
     language?: string
@@ -20,9 +21,11 @@
     onSave?: (newCode: string) => void
     onRun?: (code: string) => Promise<string> | string
     executionNumber?: number | null
+    readonly?: boolean
   } = $props()
 
   let code = $state(initialCode)
+  let copied = $state(false)
   let editorRef: HTMLElement
   let outputRef: HTMLElement
   let jar: any
@@ -61,44 +64,54 @@
         tab: '  ', // 2 spaces for tab
         indentOn: /[(\[{]$/,
         spellcheck: false,
-        catchTab: true,
+        catchTab: readonly ? false : true,
         preserveIdent: true,
         addClosing: true,
-        history: true
+        history: readonly ? false : true
       })
 
       // Set initial code
       jar.updateCode(code)
 
-      // Listen for changes
-      jar.onUpdate((newCode: string) => {
-        code = newCode
-        onSave?.(newCode)
-      })
+      // Listen for changes only if not readonly
+      if (!readonly) {
+        jar.onUpdate((newCode: string) => {
+          code = newCode
+          onSave?.(newCode)
+        })
+      }
 
-      // Add keyboard event listener for Ctrl+Enter
-      editorRef.addEventListener('keydown', handleKeyDown)
+      // Add keyboard event listener for Ctrl+Enter only if not readonly
+      if (!readonly) {
+        editorRef.addEventListener('keydown', handleKeyDown)
+      } else {
+        editorRef.setAttribute('contenteditable', 'false')
+        editorRef.style.cursor = 'default'
+        // editorRef.style.userSelect = 'none'
+      }
     }
 
     return () => {
       if (jar) {
         jar.destroy()
       }
-      if (editorRef) {
+      if (editorRef && !readonly) {
         editorRef.removeEventListener('keydown', handleKeyDown)
       }
     }
   })
 
   function handleKeyDown(event: KeyboardEvent) {
-    if (event.ctrlKey && event.key === 'Enter') {
+    if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
       event.preventDefault()
+      event.stopPropagation()
       runCode()
+      return false
     }
   }
 
   async function runCode() {
-    if (isRunning) return
+    if (isRunning || readonly) return
 
     isRunning = true
     showOutput = true
@@ -207,26 +220,39 @@
       })
     }
   })
+
+  async function copyCode() {
+    await navigator.clipboard.writeText(code)
+    copied = true
+    setTimeout(() => (copied = false), 2000)
+  }
 </script>
 
 <div class="group relative mt-4">
   <div class="relative rounded-md border">
-    <div class="absolute top-0 bottom-0 left-[-3.5rem] flex w-14 items-start justify-center pt-3">
-      <span class="text-muted-foreground font-mono text-xs">
-        {#if isRunning}
-          In [*]:
-        {:else if currentExecutionNumber !== null}
-          In [{currentExecutionNumber}]:
-        {:else}
-          In [ ]:
-        {/if}
-      </span>
-    </div>
+    {#if !readonly}
+      <div
+        class="absolute top-0 bottom-0 left-[-3.5rem] flex w-14 items-start justify-center pt-3 select-none"
+      >
+        <span class="text-muted-foreground font-mono text-xs">
+          {#if isRunning}
+            In [*]:
+          {:else if currentExecutionNumber !== null}
+            In [{currentExecutionNumber}]:
+          {:else}
+            In [ ]:
+          {/if}
+        </span>
+      </div>
+    {/if}
 
     <div
       bind:this={editorRef}
-      class="codejar-editor bg-background focus:ring-ring min-h-4 overflow-auto p-3 font-mono text-sm focus:ring-2 focus:outline-none"
+      class="codejar-editor bg-background focus:ring-ring min-h-4 overflow-auto p-3 font-mono text-sm focus:ring-2 focus:outline-none {readonly
+        ? 'cursor-default'
+        : ''}"
       style="white-space: pre; tab-size: 2;"
+      contenteditable={!readonly}
     >
       {#if !browser}
         <!-- Fallback content for SSR -->
@@ -234,44 +260,71 @@
       {/if}
     </div>
 
-    <div
-      class="absolute top-2 right-2 flex gap-1 opacity-0 transition-opacity group-hover:opacity-100"
-    >
+    {#if !readonly}
+      <div
+        class="absolute top-2 right-2 flex gap-1 opacity-0 transition-opacity group-hover:opacity-100"
+      >
+        <Button
+          variant="ghost"
+          size="sm"
+          onclick={runCode}
+          disabled={isRunning || (isPython && !$pyodideStore.ready)}
+          title={isPython ? 'Run Python code (Ctrl+Enter)' : 'Run code (Ctrl+Enter)'}
+          class={isPython && !$pyodideStore.ready ? 'opacity-50' : ''}
+        >
+          <Play class="h-4 w-4" />
+          {#if isPython && $pyodideStore.loading}
+            <span class="ml-1 text-xs">Loading...</span>
+          {/if}
+        </Button>
+      </div>
+    {:else}
       <Button
         variant="ghost"
         size="sm"
-        onclick={runCode}
-        disabled={isRunning || (isPython && !$pyodideStore.ready)}
-        title={isPython ? 'Run Python code (Ctrl+Enter)' : 'Run code (Ctrl+Enter)'}
-        class={isPython && !$pyodideStore.ready ? 'opacity-50' : ''}
+        class="absolute top-2 right-2 opacity-0 transition-opacity group-hover:opacity-100"
+        onclick={copyCode}
       >
-        <Play class="h-4 w-4" />
-        {#if isPython && $pyodideStore.loading}
-          <span class="ml-1 text-xs">Loading...</span>
+        {#if copied}
+          <Check class="h-4 w-4" />
+        {:else}
+          <Copy class="h-4 w-4" />
         {/if}
       </Button>
-    </div>
+      <div
+        class="bg-muted text-muted-foreground pointer-events-none absolute right-0 bottom-0 rounded-tl rounded-br px-2 py-1 text-xs"
+      >
+        {language}
+      </div>
+    {/if}
   </div>
 
   {#if showOutput}
-    <div class="relative bg-muted/50 mt-2 rounded-md border">
-      
-    <div class="absolute top-0 bottom-0 left-[-4rem] flex w-17 items-start justify-center pt-3">
-      <span class="text-muted-foreground font-mono text-xs">
-        {#if isRunning}
-          Out [*]:
-        {:else if currentExecutionNumber !== null}
-          Out [{currentExecutionNumber}]:
-        {:else}
-          Out [ ]:
-        {/if}
-      </span>
-    </div>
-        <Button variant="ghost" size="sm" onclick={() => (showOutput = false)} class="absolute right-2 top-2 h-6 w-6 p-0">
+    <div class="bg-muted/50 relative mt-2 rounded-md border">
+      {#if !readonly}
+        <div
+          class="absolute top-0 bottom-0 left-[-4rem] flex w-17 items-start justify-center pt-3 select-none"
+        >
+          <span class="text-muted-foreground font-mono text-xs">
+            {#if isRunning}
+              Out [*]:
+            {:else if currentExecutionNumber !== null}
+              Out [{currentExecutionNumber}]:
+            {:else}
+              Out [ ]:
+            {/if}
+          </span>
+        </div>
+        <Button
+          variant="ghost"
+          size="sm"
+          onclick={() => (showOutput = false)}
+          class="absolute top-2 right-2 h-6 w-6 p-0 select-none"
+        >
           ×
         </Button>
+      {/if}
       <div class="p-3">
-
         {#if isRunning}
           <div class="text-muted-foreground flex items-center gap-2 text-sm">
             <div

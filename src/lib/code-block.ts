@@ -1,6 +1,5 @@
 import { mount } from 'svelte'
 // @ts-ignore - Svelte component import
-import CodeBlock from '$lib/components/CodeBlock.svelte'
 import EditableCodeBlock from './components/EditableCodeBlock.svelte'
 
 export function transformCodeBlocks() {
@@ -10,9 +9,9 @@ export function transformCodeBlocks() {
     const lang = htmlEl.dataset.lang || 'plaintext'
 
     if (el.parentNode instanceof Element) {
-      mount(CodeBlock, {
+      mount(EditableCodeBlock, {
         target: el.parentNode,
-        props: { code, language: lang }
+        props: { code, language: lang, readonly: true }
       })
       el.remove()
     }
@@ -27,7 +26,7 @@ export function transformCodeBlocks() {
     if (el.parentNode instanceof Element) {
       mount(EditableCodeBlock, {
         target: el.parentNode,
-        props: { code, language: lang, initialOutput: output }
+        props: { code, language: lang, initialOutput: output, readonly: false }
       })
       el.remove()
     }
