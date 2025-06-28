@@ -172,3 +172,27 @@
   animation: fadeInUp 0.5s ease-out forwards;
   opacity: 0;
 }
+
+
+@layer base {
+  h1 {
+    font-size: var(--text-2xl);
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+  }
+  h2 {
+    font-size: var(--text-xl);
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+  }
+  h3 {
+    font-size: var(--text-lg);
+    font-weight: 400;
+    margin-bottom: 0.5rem;
+  }
+  h4 {
+    font-size: var(--text-base);
+    font-weight: 300;
+    margin-bottom: 0.5rem;
+  }
+}

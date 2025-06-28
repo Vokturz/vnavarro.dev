@@ -55,6 +55,7 @@
   },
   "dependencies": {
     "@types/highlight.js": "^10.1.0",
+    "codejar": "^4.2.0",
     "gray-matter": "^4.0.3",
     "highlight.js": "^11.11.1",
     "lucide-svelte": "^0.516.0",
