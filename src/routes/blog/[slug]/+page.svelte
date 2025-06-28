@@ -3,11 +3,11 @@
   import { Button } from '$lib/components/ui/button'
   import * as Alert from "$lib/components/ui/alert/index.js"
   import { ArrowLeft, Check, Edit, LoaderCircle, X } from 'lucide-svelte'
-  import { onMount, setContext } from 'svelte'
+  import { onDestroy, onMount, setContext } from 'svelte'
   import { transformCodeBlocks } from '$lib/code-block'
   import { writable } from 'svelte/store'
   import TechIcon from '$lib/components/TechIcon.svelte'
-  import { pyodideStore, initializePyodide } from '$lib/pyodide-service'
+  import { pyodideStore, initializePyodide, resetPyodide } from '$lib/pyodide-service'
 
   const { data } : { data : {post: PostWithContent }} = $props()
   const { post } = data
@@ -18,9 +18,9 @@
   let showPyodideNotification = $state(false)
 
   onMount(() => {
-    transformCodeBlocks()
+    transformCodeBlocks(data.post.runnable)
     
-    if (post.type === 'notebook') {
+    if (post.runnable) {
       // Initialize pyodide and show notification when ready
       initializePyodide().then(() => {
         showPyodideNotification = true
@@ -32,6 +32,12 @@
         console.error('Failed to initialize Pyodide:', error)
       })
     }
+
+    onDestroy(() => {
+      if (post.runnable) {
+        resetPyodide()
+      }
+    })
   })
 
   const editUrl = $derived(post.type === 'markdown'

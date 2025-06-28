@@ -244,11 +244,18 @@
           {/if}
         </Button>
       </div>
-    {:else}
-      <Button
+      {:else}
+            <div
+        class="bg-muted text-muted-foreground pointer-events-none select-none absolute right-0 bottom-0 rounded-tl rounded-br px-2 py-1 text-xs"
+      >
+        {language}
+      </div>
+    {/if}
+
+          <Button
         variant="ghost"
         size="sm"
-        class="absolute top-2 right-2 opacity-0 transition-opacity group-hover:opacity-100"
+        class="absolute top-2 {readonly ? 'right-2' : 'right-12'} opacity-0 transition-opacity group-hover:opacity-100"
         onclick={copyCode}
       >
         {#if copied}
@@ -257,12 +264,6 @@
           <Copy class="h-4 w-4" />
         {/if}
       </Button>
-      <div
-        class="bg-muted text-muted-foreground pointer-events-none absolute right-0 bottom-0 rounded-tl rounded-br px-2 py-1 text-xs"
-      >
-        {language}
-      </div>
-    {/if}
   </div>
 
   {#if showOutput}

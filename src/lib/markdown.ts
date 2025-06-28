@@ -1,15 +1,10 @@
-import { Marked } from 'marked'
+import { Marked, Renderer } from 'marked'
 import hljs from 'highlight.js'
-import { markedHighlight } from 'marked-highlight'
 
-export const marked = new Marked(
-  markedHighlight({
-    async: false,
-    emptyLangClass: 'hljs',
-    langPrefix: 'hljs language-',
-    highlight(code, lang, info) {
-      const language = hljs.getLanguage(lang) ? lang : 'plaintext'
-      return `<code-block data-code="${encodeURIComponent(code)}" data-lang="${language}"></code-block>`
-    }
-  })
-)
+const renderer = new Renderer()
+renderer.code = function(token) {
+  const language = token.lang ? hljs.getLanguage(token.lang) ? token.lang : 'plaintext' : 'plaintext'
+  return `<code-block data-code="${encodeURIComponent(token.text)}" data-lang="${language}"></code-block>`
+}
+
+export const marked = new Marked({ renderer })

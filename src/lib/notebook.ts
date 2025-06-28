@@ -20,11 +20,11 @@ export class NotebookRenderer {
       const outputs = cell.outputs || []
       const renderedOutputs = this.renderOutputs(outputs)
       
-      return `<editable-code-block 
+      return `<code-block 
         data-code="${encodeURIComponent(source)}" 
         data-lang="python"
         data-output="${encodeURIComponent(renderedOutputs)}"
-      ></editable-code-block>`
+      ></code-block>`
     }
     
     return ''

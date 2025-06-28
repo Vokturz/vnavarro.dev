@@ -22,6 +22,16 @@ let initPromise: Promise<void> | null = null
 let executionId = 0
 let interruptBuffer: Uint8Array | null = null
 
+export function resetPyodide() {
+  if (worker) {
+    worker.terminate()
+    worker = null
+  }
+  initPromise = null
+  interruptBuffer = null
+  pyodideStore.set(initialState) // Reset the store to clear UI indicators
+}
+
 export async function initializePyodide(): Promise<void> {
   if (worker) return
   if (initPromise) return initPromise

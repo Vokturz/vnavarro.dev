@@ -4,6 +4,7 @@ export type Post = {
   summary: string
   slug: string
   image?: string
+  runnable?: boolean
   type?: 'markdown' | 'notebook'
 }
 
