@@ -38,15 +38,19 @@
   let CodeJar: any
   let hljs: any
 
-  // Get the global execution counter from context
   const executionCounter = getContext<Writable<number>>('executionCounter')
-
-  // Check if this is a Python code block
   const isPython = $derived(language === 'python' || language === 'py')
+
+  function handleKeyDown(event: KeyboardEvent) {
+    if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
+      event.preventDefault()
+      event.stopPropagation()
+      runCode()
+    }
+  }
 
   onMount(async () => {
     if (browser && editorRef) {
-      // Dynamically import CodeJar and hljs only on the client
       const [{ CodeJar: CJ }, hljsModule] = await Promise.all([
         import('codejar'),
         import('highlight.js')
@@ -55,40 +59,32 @@
       CodeJar = CJ
       hljs = hljsModule.default
 
-      // Highlight function for CodeJar
       const highlight = (editor: HTMLElement) => {
         const code = editor.textContent || ''
         editor.innerHTML = hljs.highlight(code, { language }).value
       }
 
       jar = CodeJar(editorRef, highlight, {
-        tab: '  ', // 2 spaces for tab
+        tab: '  ',
         indentOn: /[(\[{]$/,
         spellcheck: false,
-        catchTab: readonly ? false : true,
+        catchTab: !readonly,
         preserveIdent: true,
         addClosing: true,
-        history: readonly ? false : true
+        history: !readonly
       })
 
-      // Set initial code
       jar.updateCode(code)
 
-      // Listen for changes only if not readonly
       if (!readonly) {
         jar.onUpdate((newCode: string) => {
           code = newCode
           onSave?.(newCode)
         })
-      }
-
-      // Add keyboard event listener for Ctrl+Enter only if not readonly
-      if (!readonly) {
-        editorRef.addEventListener('keydown', handleKeyDown)
+        editorRef.addEventListener('keydown', handleKeyDown, { capture: true })
       } else {
         editorRef.setAttribute('contenteditable', 'false')
         editorRef.style.cursor = 'default'
-        // editorRef.style.userSelect = 'none'
       }
     }
 
@@ -97,19 +93,10 @@
         jar.destroy()
       }
       if (editorRef && !readonly) {
-        editorRef.removeEventListener('keydown', handleKeyDown)
+        editorRef.removeEventListener('keydown', handleKeyDown, { capture: true })
       }
     }
   })
-
-  function handleKeyDown(event: KeyboardEvent) {
-    if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
-      event.preventDefault()
-      event.stopPropagation()
-      runCode()
-      return false
-    }
-  }
 
   async function runCode() {
     if (isRunning || readonly) return
@@ -122,11 +109,8 @@
     isRunning = true
     showOutput = true
     hasUserExecuted = true
-
-    // Clear previous output immediately
     output = ''
 
-    // Get and increment the global execution counter
     if (executionCounter) {
       executionCounter.update((n) => {
         currentExecutionNumber = n
@@ -136,7 +120,6 @@
 
     try {
       if (onRun) {
-        // Use custom onRun function if provided
         const result = await onRun(code)
         output = result
       } else if (isPython && $pyodideStore.ready) {
@@ -151,12 +134,10 @@
         )
         output = formatPythonOutput({ output: result, error: null })
       } else if (isPython && !$pyodideStore.ready) {
-        // Python code but pyodide not ready
         output =
           '<pre class="notebook-error-output">Python environment is not ready yet. Please wait for initialization to complete.</pre>'
       } else {
-        // Fake output for non-Python code
-        await new Promise((resolve) => setTimeout(resolve, 1000)) // Simulate execution time
+        await new Promise((resolve) => setTimeout(resolve, 1000))
         output = generateFakeOutput()
       }
     } catch (error) {
@@ -164,7 +145,7 @@
         output = '<pre class="notebook-error-output">Execution cancelled by user</pre>'
       } else {
         output = `<pre class="notebook-error-output">Error: ${error instanceof Error ? error.message : 'Unknown error occurred'}</pre>`
-      } 
+      }
     } finally {
       isRunning = false
       abortController = null
@@ -174,28 +155,24 @@
   function formatPythonOutput(result: { output: string; error: string | null }) {
     if (result.error) {
       return `<pre class="notebook-error-output">${result.error}</pre>`
-    }
+    } // Handle completely empty or whitespace-only output
 
-    // Handle completely empty or whitespace-only output
     if (!result.output || result.output.trim() === '') {
       return '<div class="text-sm text-muted-foreground italic">No output</div>'
-    }
+    } // Check if output is already formatted HTML from pyodide service
 
-    // Check if output is already formatted HTML from pyodide service
     if (
       result.output.includes('<pre class="notebook-') ||
       result.output.includes('<div class="notebook-') ||
       result.output.includes('<div class="text-sm text-muted-foreground italic">')
     ) {
       return result.output
-    }
+    } // Check if output looks like HTML (but not our formatted output)
 
-    // Check if output looks like HTML (but not our formatted output)
     if (result.output.includes('<') && result.output.includes('>')) {
       return `<div class="notebook-html-output">${result.output}</div>`
-    }
+    } // Default to plain text output
 
-    // Default to plain text output
     return `<pre class="notebook-stream-output">${result.output}</pre>`
   }
 
@@ -210,7 +187,6 @@
     return outputs[Math.floor(Math.random() * outputs.length)]
   }
 
-  // Update CodeJar when initialCode changes
   $effect(() => {
     if (jar && initialCode !== code) {
       code = initialCode
@@ -218,7 +194,6 @@
     }
   })
 
-  // Update output when initialOutput changes (only if user hasn't executed)
   $effect(() => {
     if (!hasUserExecuted) {
       output = initialOutput
@@ -226,7 +201,6 @@
     }
   })
 
-  // Render output when it changes - improved version with proper checks
   $effect(() => {
     if (browser && showOutput && output && outputRef) {
       // Use requestAnimationFrame to ensure DOM is ready
@@ -300,11 +274,10 @@
             <span class="ml-1 text-xs">Loading...</span>
           {/if}
           {#if isRunning}
-            <Square class="h-4 w-4"/>
+            <Square class="h-4 w-4" />
           {:else}
             <Play class="h-4 w-4" />
           {/if}
-          
         </Button>
       </div>
     {:else}
@@ -344,7 +317,7 @@
             {/if}
           </span>
         </div>
-         {#if !isRunning}
+        {#if !isRunning}
           <Button
             variant="ghost"
             size="sm"
@@ -353,7 +326,7 @@
           >
             ×
           </Button>
-          {/if}
+        {/if}
       {/if}
       <div class="p-3">
         {#if isRunning}
