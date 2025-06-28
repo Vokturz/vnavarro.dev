@@ -2,11 +2,15 @@
   import type { PostWithContent } from '$lib/types'
   import { Button } from '$lib/components/ui/button'
   import { ArrowLeft, Edit } from 'lucide-svelte'
-  import { onMount } from 'svelte'
+  import { onMount, setContext } from 'svelte'
   import { transformCodeBlocks } from '$lib/code-block'
+  import { writable } from 'svelte/store'
 
   const { data } : { data : {post: PostWithContent }} = $props()
   const { post } = data
+
+  const executionCounter = writable(1)
+  setContext('executionCounter', executionCounter)
 
   onMount(() => {
     transformCodeBlocks()

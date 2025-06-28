@@ -1,22 +1,24 @@
 <script lang="ts">
-  import { onMount } from 'svelte'
+  import { onMount, getContext } from 'svelte'
   import { browser } from '$app/environment'
   import { Play } from 'lucide-svelte'
   import { Button } from '$lib/components/ui/button'
-  
+  import type { Writable } from 'svelte/store'
 
   const { 
     code: initialCode, 
     language = 'plaintext',
     initialOutput = '',
     onSave,
-    onRun
+    onRun,
+    executionNumber = null
   } : { 
     code: string, 
     language?: string,
     initialOutput?: string,
     onSave?: (newCode: string) => void,
-    onRun?: (code: string) => Promise<string> | string
+    onRun?: (code: string) => Promise<string> | string,
+    executionNumber?: number | null
   } = $props()
 
   let code = $state(initialCode)
@@ -27,8 +29,12 @@
   let isRunning = $state(false)
   let showOutput = $state(initialOutput.length > 0)
   let hasUserExecuted = $state(false)
+  let currentExecutionNumber = $state(executionNumber)
   let CodeJar: any
   let hljs: any
+
+  // Get the global execution counter from context
+  const executionCounter = getContext<Writable<number>>('executionCounter')
 
   onMount(async () => {
     if (browser && editorRef) {
@@ -94,6 +100,14 @@
     showOutput = true
     hasUserExecuted = true
     
+    // Get and increment the global execution counter
+    if (executionCounter) {
+      executionCounter.update(n => {
+        currentExecutionNumber = n
+        return n + 1
+      })
+    }
+    
     try {
       if (onRun) {
         const result = await onRun(code)
@@ -152,8 +166,20 @@
   })
 </script>
 
-<div class="group relative overflow-hidden mt-4">
+<div class="group relative mt-4">
   <div class="relative rounded-md border">
+    <div class="absolute left-[-2.5rem] top-0 bottom-0 w-10 flex items-start justify-center pt-3">
+      <span class="text-xs font-mono text-muted-foreground">
+        {#if isRunning}
+          [*]
+        {:else if currentExecutionNumber !== null}
+          [{currentExecutionNumber}]
+        {:else}
+          [ ]
+        {/if}
+      </span>
+    </div>
+
     <div
       bind:this={editorRef}
       class="codejar-editor min-h-4 p-3 font-mono text-sm bg-background focus:outline-none focus:ring-2 focus:ring-ring overflow-auto"
@@ -182,7 +208,9 @@
     <div class="mt-2 rounded-md border bg-muted/50">
       <div class="flex items-center justify-between px-3 py-2 border-b bg-muted/30">
         <div class="flex items-center gap-2">
-          <span class="text-sm font-medium text-muted-foreground">Output</span>
+          <span class="text-sm font-medium text-muted-foreground">
+            Output {currentExecutionNumber !== null ? `[${currentExecutionNumber}]` : ''}
+          </span>
         </div>
         <Button
           variant="ghost"
