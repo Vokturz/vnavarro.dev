@@ -46,6 +46,23 @@
       event.preventDefault()
       event.stopPropagation()
       runCode()
+    } else if (event.shiftKey && event.key === 'Enter') {
+      event.preventDefault()
+      event.stopPropagation()
+      runCode()
+      // Scroll the code block out of view after execution starts
+      setTimeout(() => {
+        editorRef?.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'start' 
+        })
+        setTimeout(() => {
+          window.scrollBy({ 
+            top: (editorRef?.offsetHeight || 200), 
+            behavior: 'smooth' 
+          })
+        }, 100)
+      }, 100)
     }
   }
 
