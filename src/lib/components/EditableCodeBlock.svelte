@@ -186,7 +186,7 @@
   }
 </script>
 
-<div class="group relative mt-4 {!readonly ? 'pl-4' : 'pl-0'} md:pl-0">
+<div class="group relative mt-4 {!readonly ? 'pl-4' : 'pl-0'} lg:pl-0">
   <div class="relative rounded-md border">
     {#if !readonly}
       <div

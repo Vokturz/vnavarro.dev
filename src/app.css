@@ -333,3 +333,22 @@
 .overflow-y-auto::-webkit-scrollbar-corner {
   background: transparent;
 }
+
+.katex-display {
+  overflow-x: auto;
+  overflow-y: hidden;
+  max-width: 100%;
+  padding: 8px 0;
+}
+
+.katex {
+  font-size: 1em;
+}
+
+/* For mobile devices */
+@media (max-width: 768px) {
+  .katex-display {
+    font-size: 0.9em;
+    padding: 4px 0;
+  }
+}
