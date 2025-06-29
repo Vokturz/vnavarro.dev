@@ -280,3 +280,56 @@
   border: 1px solid var(--border);
 }
 
+/* Custom scrollbar for EditableCodeBlock */
+.notebook-output-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.notebook-output-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.notebook-output-container::-webkit-scrollbar-thumb {
+  background: var(--muted-foreground);
+  border-radius: 4px;
+  opacity: 0.5;
+}
+
+.notebook-output-container::-webkit-scrollbar-thumb:hover {
+  background: var(--foreground);
+  opacity: 0.8;
+}
+
+.notebook-output-container::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* Firefox scrollbar */
+.notebook-output-container {
+  scrollbar-width: thin;
+  scrollbar-color: var(--muted-foreground) transparent;
+}
+
+/* For the parent container with max-h-150 */
+.overflow-y-auto::-webkit-scrollbar {
+  width: 6px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb {
+  background: var(--muted-foreground);
+  border-radius: 4px;
+  opacity: 0.5;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb:hover {
+  background: var(--foreground);
+  opacity: 0.8;
+}
+
+.overflow-y-auto::-webkit-scrollbar-corner {
+  background: transparent;
+}

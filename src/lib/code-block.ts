@@ -1,6 +1,6 @@
 import { mount } from 'svelte'
 // @ts-ignore - Svelte component import
-import EditableCodeBlock from './components/EditableCodeBlock/EditableCodeBlock.svelte'
+import EditableCodeBlock from './components/EditableCodeBlock.svelte'
 
 export function transformCodeBlocks(runnable: boolean = false) {
   document.querySelectorAll('code-block').forEach((el) => {

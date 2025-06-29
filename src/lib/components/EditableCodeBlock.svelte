@@ -5,7 +5,6 @@
   import { Button } from '$lib/components/ui/button'
   import { pyodideStore, executePython } from '$lib/pyodide-service'
   import type { Writable } from 'svelte/store'
-  import { formatPythonOutput, generateFakeOutput } from './utils'
 
   const {
     code: initialCode,
@@ -111,6 +110,7 @@
     showOutput = true
     hasUserExecuted = true
     output = ''
+    if (outputRef) outputRef.innerHTML = ''
 
     if (executionCounter) {
       executionCounter.update((n) => {
@@ -124,24 +124,20 @@
         const result = await onRun(code)
         output = result
       } else if (isPython && $pyodideStore.ready) {
-        const result = await executePython(
-          code, 
-          abortController,
-          (streamingOutput) => {
-            output = formatPythonOutput({ output: streamingOutput, error: null })
-          }
-        )
-        output = formatPythonOutput({ output: result, error: null })
+        const result = await executePython(code, abortController, (streamingOutput) => {
+          output = streamingOutput
+        })
+        output = result
       } else if (isPython && !$pyodideStore.ready) {
         output =
           '<pre class="notebook-error-output">Python environment is not ready yet. Please wait for initialization to complete.</pre>'
       } else {
         await new Promise((resolve) => setTimeout(resolve, 1000))
-        output = generateFakeOutput()
+        output = `<pre class="notebook-output">Simulated output for ${language} code</pre>`
       }
     } catch (error) {
       if (error instanceof Error && error.message.includes('cancelled')) {
-        output = '<pre class="notebook-error-output">Execution cancelled by user</pre>'
+        output += '\n<pre class="notebook-error-output">Execution cancelled by user</pre>'
       } else {
         output = `<pre class="notebook-error-output">Error: ${error instanceof Error ? error.message : 'Unknown error occurred'}</pre>`
       }
@@ -241,30 +237,32 @@
           {/if}
         </Button>
       </div>
-      {:else}
-            <div
-        class="bg-muted text-muted-foreground pointer-events-none select-none absolute right-0 bottom-0 rounded-tl rounded-br px-2 py-1 text-xs"
+    {:else}
+      <div
+        class="bg-muted text-muted-foreground pointer-events-none absolute right-0 bottom-0 rounded-tl rounded-br px-2 py-1 text-xs select-none"
       >
         {language}
       </div>
     {/if}
 
-          <Button
-        variant="ghost"
-        size="sm"
-        class="absolute top-2 {readonly ? 'right-2' : 'right-12'} opacity-0 transition-opacity group-hover:opacity-100"
-        onclick={copyCode}
-      >
-        {#if copied}
-          <Check class="h-4 w-4" />
-        {:else}
-          <Copy class="h-4 w-4" />
-        {/if}
-      </Button>
+    <Button
+      variant="ghost"
+      size="sm"
+      class="absolute top-2 {readonly
+        ? 'right-2'
+        : 'right-12'} opacity-0 transition-opacity group-hover:opacity-100"
+      onclick={copyCode}
+    >
+      {#if copied}
+        <Check class="h-4 w-4" />
+      {:else}
+        <Copy class="h-4 w-4" />
+      {/if}
+    </Button>
   </div>
 
   {#if showOutput}
-    <div class="bg-muted/50 relative mt-2 rounded-md border">
+    <div class="bg-muted/50 relative mt-2 max-h-150 rounded-md border">
       {#if !readonly}
         <div
           class="absolute top-0 bottom-0 left-[-4rem] flex w-17 items-start justify-center pt-3 select-none"
@@ -290,16 +288,13 @@
           </Button>
         {/if}
       {/if}
-      <div class="p-3">
+      <div class="p-3 overflow-y-auto max-h-150">
+        <div bind:this={outputRef} class="notebook-output-container"></div>
         {#if isRunning}
           <div class="text-muted-foreground flex items-center gap-2 text-sm">
             <LoaderCircle class="h-4 w-4 animate-spin" />
-            {isPython ? 'Running Python code...' : 'Running...'}
+            Running...
           </div>
-        {:else if output.trim() === ''}
-          <div class="text-muted-foreground text-sm italic">No output</div>
-        {:else}
-          <div bind:this={outputRef} class="notebook-output-container"></div>
         {/if}
       </div>
     </div>

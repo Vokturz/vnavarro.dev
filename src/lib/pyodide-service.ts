@@ -103,6 +103,7 @@ export async function executePython(
     const id = ++executionId
     let isAborted = false
     let streamingOutput = ''
+    let tqdmOutput = '' // Separate buffer for tqdm output
 
     // Clear interrupt buffer before execution
     if (interruptBuffer) {
@@ -110,23 +111,31 @@ export async function executePython(
     }
 
     const handleMessage = (e: MessageEvent) => {
-      const { type, result, error, output, id: responseId } = e.data
+      const { type, result, error, output, id: responseId, priority } = e.data
 
       if (responseId !== id) return // Ignore messages for other executions
 
       if (isAborted) return // Don't process if already aborted
 
       if (type === 'streaming-output') {
-        // Accumulate streaming output and trigger callback
-        streamingOutput += output
+        if (priority === 'high') {
+          // This is tqdm output - show at beginning
+          tqdmOutput = output
+        } else {
+          // Regular streaming output
+          streamingOutput += output
+        }
+        
         if (onStreamingOutput) {
-          onStreamingOutput(streamingOutput)
+          // Combine tqdm output at the beginning with regular output
+          const combinedOutput = tqdmOutput + streamingOutput
+          onStreamingOutput(combinedOutput)
         }
         return // Don't remove listener yet
       } else if (type === 'result') {
         worker!.removeEventListener('message', handleMessage)
-        // Combine streaming output with final result
-        const finalOutput = streamingOutput + (result || '')
+        // Combine all outputs with final result
+        const finalOutput = tqdmOutput + streamingOutput + (result || '')
         resolve(finalOutput || '<div class="text-sm text-muted-foreground italic">No output</div>')
       } else if (type === 'error') {
         worker!.removeEventListener('message', handleMessage)

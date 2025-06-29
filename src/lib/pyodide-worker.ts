@@ -26,6 +26,7 @@ self.onmessage = async function (e) {
         import warnings
         import ast
         import html
+        from tqdm import tqdm
         
         # Suppress warnings
         warnings.filterwarnings('ignore')
@@ -34,10 +35,20 @@ self.onmessage = async function (e) {
             def __init__(self, callback):
                 self.callback = callback
                 self.buffer = ""
+                self.tqdm_buffer = ""
                 
             def write(self, text):
-                self.buffer += text
-                self.callback(text)
+                # Check if this is tqdm output (contains progress bar characters)
+                if '\\r' in text or any(char in text for char in ['█', '▏', '▎', '▍', '▌', '▋', '▊', '▉', '%|']):
+                    # This is likely tqdm output - handle specially
+                    self.tqdm_buffer = text.replace('\\r', '').strip()
+                    if self.tqdm_buffer:
+                        # Send tqdm output with special marker to show at beginning
+                        self.callback(f"TQDM_PROGRESS:{self.tqdm_buffer}")
+                else:
+                    # Regular output
+                    self.buffer += text
+                    self.callback(text)
                 return len(text)
                 
             def flush(self):
@@ -45,6 +56,31 @@ self.onmessage = async function (e) {
                 
             def getvalue(self):
                 return self.buffer
+
+        # Configure tqdm to work better in web environment
+        class WebTqdm(tqdm):
+            def __init__(self, *args, **kwargs):
+                # Force tqdm to use newlines instead of carriage returns
+                kwargs['file'] = sys.stdout
+                kwargs['dynamic_ncols'] = False
+                kwargs['ncols'] = 80
+                super().__init__(*args, **kwargs)
+            
+            def display(self, msg=None, pos=None):
+                # Override display to ensure output goes to our streaming stdout
+                if msg is None:
+                    msg = self.__str__()
+                # Add newline to ensure each update is on a new line
+                sys.stdout.write(f"\\r{msg}\\n")
+                sys.stdout.flush()
+        
+        # Replace tqdm with our web-friendly version
+        import builtins
+        builtins.tqdm = WebTqdm
+        
+        # Also patch tqdm module
+        import tqdm as tqdm_module
+        tqdm_module.tqdm = WebTqdm
 
         def should_display_result(code_str):
             """Check if the last line is an expression that should be displayed"""
@@ -116,14 +152,25 @@ self.onmessage = async function (e) {
     }
 
     try {
-      // Set up streaming stdout callback
+      // Set up streaming stdout callback with tqdm handling
       pyodide.globals.set('streaming_callback', (text: string) => {
         if (currentExecutionId === id) {
-          self.postMessage({
-            type: 'streaming-output',
-            output: `<pre class="notebook-stream-output">${text}</pre>`,
-            id
-          })
+          // Check if this is tqdm progress output
+          if (text.startsWith('TQDM_PROGRESS:')) {
+            const progressText = text.replace('TQDM_PROGRESS:', '')
+            self.postMessage({
+              type: 'streaming-output',
+              output: `<pre class="notebook-tqdm-output">${progressText}</pre>`,
+              id,
+              priority: 'high' // Mark as high priority to show at beginning
+            })
+          } else {
+            self.postMessage({
+              type: 'streaming-output',
+              output: `<pre class="notebook-stream-output">${text}</pre>`,
+              id
+            })
+          }
         }
       })
 
