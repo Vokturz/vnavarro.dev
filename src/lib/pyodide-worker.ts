@@ -1,19 +1,19 @@
-let pyodide: any = null;
-let currentExecutionId: number | null = null;
-let interruptBuffer: Uint8Array | null = null;
+let pyodide: any = null
+let currentExecutionId: number | null = null
+let interruptBuffer: Uint8Array | null = null
 
-self.onmessage = async function(e) {
-  const { type, code, id, interruptBuffer: buffer } = e.data;
-  
+self.onmessage = async function (e) {
+  const { type, code, id, interruptBuffer: buffer } = e.data
+
   if (type === 'init') {
     try {
-      const { loadPyodide } = await import('pyodide');
+      const { loadPyodide } = await import('pyodide')
       pyodide = await loadPyodide({
-        indexURL: 'https://cdn.jsdelivr.net/pyodide/v0.27.7/full/'
-      });
-      
-      await pyodide.loadPackage(['numpy', 'matplotlib', 'pandas'])
-      
+        indexURL: '/api/pyodide/'
+      })
+
+      await pyodide.loadPackage(['numpy', 'matplotlib', 'pandas', 'tqdm'])
+
       pyodide.runPython(`
         import matplotlib
         matplotlib.use('Agg')
@@ -96,37 +96,37 @@ self.onmessage = async function(e) {
                 # HTML escape the content to prevent < > from being interpreted as HTML tags
                 escaped_str = html.escape(str_repr)
                 return f'<pre class="notebook-output">{escaped_str}</pre>'
-      `);
-      
-      self.postMessage({ type: 'init-complete', id });
+      `)
+
+      self.postMessage({ type: 'init-complete', id })
     } catch (error: any) {
-      self.postMessage({ type: 'error', error: error.message, id });
+      self.postMessage({ type: 'error', error: error.message, id })
     }
   } else if (type === 'set-interrupt-buffer') {
-    interruptBuffer = buffer;
+    interruptBuffer = buffer
     if (pyodide) {
-      pyodide.setInterruptBuffer(interruptBuffer);
+      pyodide.setInterruptBuffer(interruptBuffer)
     }
   } else if (type === 'execute') {
-    currentExecutionId = id;
-    
+    currentExecutionId = id
+
     // Clear interrupt buffer before execution
     if (interruptBuffer) {
-      interruptBuffer[0] = 0;
+      interruptBuffer[0] = 0
     }
-    
+
     try {
       // Set up streaming stdout callback
       pyodide.globals.set('streaming_callback', (text: string) => {
         if (currentExecutionId === id) {
-          self.postMessage({ 
-            type: 'streaming-output', 
-            output: `<pre class="notebook-stream-output">${text}</pre>`, 
-            id 
-          });
+          self.postMessage({
+            type: 'streaming-output',
+            output: `<pre class="notebook-stream-output">${text}</pre>`,
+            id
+          })
         }
-      });
-      
+      })
+
       const result = pyodide.runPython(`
 import sys
 import io
@@ -232,27 +232,21 @@ except Exception as e:
         result = f'<pre class="notebook-error-output">{escaped_error}</pre>'
 
 result
-      `);
-      
-      self.postMessage({ type: 'result', result, id });
+      `)
+
+      self.postMessage({ type: 'result', result, id })
     } catch (error: any) {
       if (error.name === 'PythonError' && error.message.includes('KeyboardInterrupt')) {
-        self.postMessage({ 
-          type: 'result', 
-          result: '<pre class="notebook-error-output">Execution interrupted by user</pre>', 
-          id 
-        });
+        self.postMessage({
+          type: 'result',
+          result: '<pre class="notebook-error-output">Execution interrupted by user</pre>',
+          id
+        })
       } else {
-        self.postMessage({ type: 'error', error: error.message, id });
+        self.postMessage({ type: 'error', error: error.message, id })
       }
     } finally {
-      currentExecutionId = null;
+      currentExecutionId = null
     }
-  } else if (type === 'abort') {
-    if (interruptBuffer && currentExecutionId !== null) {
-      // Signal interrupt (2 = SIGINT)
-      interruptBuffer[0] = 2;
-    }
-    currentExecutionId = null;
   }
-};
+}

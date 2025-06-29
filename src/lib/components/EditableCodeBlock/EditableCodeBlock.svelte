@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount, getContext } from 'svelte'
   import { browser } from '$app/environment'
-  import { Check, Copy, Loader, LoaderCircle, Play, Square, StopCircle } from 'lucide-svelte'
+  import { Check, Copy, LoaderCircle, Play, Square } from 'lucide-svelte'
   import { Button } from '$lib/components/ui/button'
   import { pyodideStore, executePython } from '$lib/pyodide-service'
   import type { Writable } from 'svelte/store'
@@ -67,7 +67,7 @@
 
       jar = CodeJar(editorRef, highlight, {
         tab: '  ',
-        indentOn: /[(\[{]$/,
+        indentOn: /[(\[{:]$/,
         spellcheck: false,
         catchTab: !readonly,
         preserveIdent: true,
