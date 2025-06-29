@@ -6,7 +6,16 @@ const ensureMathBlockNewlines = {
   async: false,
   hooks: {
     preprocess(markdown: string) {
-      return markdown.replace(/([^\n])\n\s*(\$\$)/g, '$1\n\n$2')
+      return markdown
+        .replace(/\$\-/g, '$ -')
+        .replace(/\$\)/g, '$ )')
+        .replace(/\(\$/g, '( $')
+        .replace(/([^\n])\n\s*(\$\$)/g, '$1\n\n$2')
+        .replace(/(\$\$)\n([^\n])/g, '$1\n\n$2')
+        .replace(/\$\$([\s\S]*?)\$\$/g, (match, mathContent) => {
+          const cleanedContent = mathContent.replace(/\n\s*/g, ' ').trim()
+          return `$$${cleanedContent}$$`
+        })
     }
   }
 }
@@ -39,7 +48,9 @@ const marked = new Marked()
 marked.use(
   ensureMathBlockNewlines,
   markedKatex({
-    // throwOnError: false // Set to true to see KaTeX errors
+    throwOnError: false,
+    displayMode: true,
+    output: 'html'
   }),
   {
     renderer,

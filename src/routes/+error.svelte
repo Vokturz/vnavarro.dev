@@ -26,7 +26,7 @@
       <div class="mt-12">
         <a
           href="/"
-          class="bg-primary hover:bg-primary/90 inline-flex items-center rounded-md px-6 py-3 text-base font-medium text-white transition-colors"
+          class="bg-muted hover:bg-purple-500 inline-flex items-center rounded-md px-6 py-3 text-base font-medium text-primary transition-colors"
         >
           ← Back to Home
         </a>

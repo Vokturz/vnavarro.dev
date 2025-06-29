@@ -174,6 +174,15 @@ self.onmessage = async function (e) {
         }
       })
 
+      // Properly escape the code to handle quotes and special characters
+      const escapedCode = code
+        .replace(/\\/g, '\\\\')  // Escape backslashes first
+        .replace(/"/g, '\\"')    // Escape double quotes
+        .replace(/'/g, "\\'")    // Escape single quotes
+        .replace(/\n/g, '\\n')   // Escape newlines
+        .replace(/\r/g, '\\r')   // Escape carriage returns
+        .replace(/\t/g, '\\t')   // Escape tabs
+
       const result = pyodide.runPython(`
 import sys
 import io
@@ -211,7 +220,7 @@ def filter_warnings(stderr_content):
     return '\\n'.join(filtered_lines).strip()
 
 try:
-    code_to_execute = """${code.replace(/"/g, '\\"').replace(/\n/g, '\\n')}"""
+    code_to_execute = """${escapedCode}"""
     
     with redirect_stdout(streaming_stdout), redirect_stderr(stderr_buffer):
         # Check if we should capture the last expression result
