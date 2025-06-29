@@ -186,7 +186,7 @@
   }
 </script>
 
-<div class="group relative mt-4">
+<div class="group relative mt-4 {!readonly ? 'pl-4' : 'pl-0'} md:pl-0">
   <div class="relative rounded-md border">
     {#if !readonly}
       <div
@@ -220,7 +220,7 @@
 
     {#if !readonly}
       <div
-        class="absolute top-2 right-2 flex gap-1 opacity-0 transition-opacity group-hover:opacity-100"
+        class="absolute top-2 right-2 flex gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity"
       >
         <Button
           variant="ghost"
@@ -250,7 +250,7 @@
       size="sm"
       class="absolute top-2 {readonly
         ? 'right-2'
-        : 'right-12'} opacity-0 transition-opacity group-hover:opacity-100"
+        : 'right-12'} opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity"
       onclick={copyCode}
     >
       {#if copied}
@@ -265,7 +265,7 @@
     <div class="relative bg-muted/50 relative mt-2 min-h-8 max-h-150 rounded-md border">
       {#if !readonly}
         <div
-          class="absolute top-0 bottom-0 left-[-4rem] flex w-17 items-start justify-center pt-3 select-none"
+          class="absolute top-0 bottom-0 left-[-4rem] flex w-17 items-start justify-center pt-3 select-none "
         >
           <span class="text-muted-foreground font-mono text-xs">
             {#if isRunning}
