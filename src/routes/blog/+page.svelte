@@ -3,7 +3,6 @@
   import { getPostGradient } from '$lib/utils/images'
 
   const { data } : { data : {posts: Post[] }} = $props()
-  console.log(data.posts)
 </script>
 
 <div class="container mx-auto px-4 py-8">

@@ -206,7 +206,7 @@
 
     <div
       bind:this={editorRef}
-      class="codejar-editor bg-background focus:ring-ring min-h-4 overflow-auto p-3 font-mono text-sm focus:ring-2 focus:outline-none {readonly
+      class="codejar-editor bg-muted/20 focus:ring-ring min-h-4 overflow-auto p-3 font-mono text-sm focus:ring-2 focus:outline-none {readonly
         ? 'cursor-default'
         : ''}"
       style="white-space: pre; tab-size: 2;"
@@ -214,7 +214,7 @@
     >
       {#if !browser}
         <!-- Fallback content for SSR -->
-        <pre class="m-0 whitespace-pre-wrap">{code}</pre>
+        <pre class="m-0 bg-mutedwhitespace-pre-wrap">{code}</pre>
       {/if}
     </div>
 
@@ -262,7 +262,7 @@
   </div>
 
   {#if showOutput}
-    <div class="bg-muted/50 relative mt-2 max-h-150 rounded-md border">
+    <div class="relative bg-muted/50 relative mt-2 min-h-8 max-h-150 rounded-md border">
       {#if !readonly}
         <div
           class="absolute top-0 bottom-0 left-[-4rem] flex w-17 items-start justify-center pt-3 select-none"
@@ -291,7 +291,7 @@
       <div class="p-3 overflow-y-auto max-h-150">
         <div bind:this={outputRef} class="notebook-output-container"></div>
         {#if isRunning}
-          <div class="text-muted-foreground flex items-center gap-2 text-sm">
+          <div class="absolute bottom-1 right-4 text-muted-foreground flex items-center gap-2 text-sm">
             <LoaderCircle class="h-4 w-4 animate-spin" />
             Running...
           </div>
