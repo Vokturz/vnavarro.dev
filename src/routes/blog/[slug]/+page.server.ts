@@ -11,8 +11,8 @@ export const load: PageServerLoad = async ({ params }) => {
   const { slug } = params
 
   // Check for both .md and .ipynb files
-  const markdownPath = path.resolve(process.cwd(), `posts/${slug}.md`)
-  const notebookPath = path.resolve(process.cwd(), `posts/${slug}.ipynb`)
+  const markdownPath = path.resolve(`posts/${slug}.md`)
+  const notebookPath = path.resolve(`posts/${slug}.ipynb`)
 
   let post: PostWithContent
 
