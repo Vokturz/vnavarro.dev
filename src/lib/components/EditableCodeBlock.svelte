@@ -1,4 +1,5 @@
 <script lang="ts">
+  /* eslint-disable @typescript-eslint/no-explicit-any */
   import { onMount, getContext } from 'svelte'
   import { browser } from '$app/environment'
   import { Check, Copy, LoaderCircle, Play, Square } from 'lucide-svelte'
@@ -12,7 +13,9 @@
     initialOutput = '',
     onSave,
     onRun,
-    executionNumber = null
+    executionNumber = null,
+    blockId,
+    onNavigateNext
   }: {
     code: string
     language?: string
@@ -20,6 +23,8 @@
     onSave?: (newCode: string) => void
     onRun?: (code: string) => Promise<string> | string
     executionNumber?: number | null
+    blockId?: string
+    onNavigateNext?: () => void
   } = $props()
 
   let code = $state(initialCode)
@@ -49,8 +54,9 @@
       event.preventDefault()
       event.stopPropagation()
       runCode()
-      // Scroll the code block out of view after execution starts
+      // Navigate to next code block and scroll
       setTimeout(() => {
+        onNavigateNext?.()
         editorRef?.scrollIntoView({
           behavior: 'smooth',
           block: 'start'
@@ -65,51 +71,57 @@
     }
   }
 
-  onMount(async () => {
+  onMount(() => {
     if (browser && editorRef) {
-      const [{ CodeJar: CJ }, hljsModule] = await Promise.all([
-        import('codejar'),
-        import('highlight.js')
-      ])
+      Promise.all([import('codejar'), import('highlight.js')]).then(
+        ([{ CodeJar: CJ }, hljsModule]) => {
+          CodeJar = CJ
+          hljs = hljsModule.default
 
-      CodeJar = CJ
-      hljs = hljsModule.default
+          const highlight = (editor: HTMLElement) => {
+            const code = editor.textContent || ''
+            editor.innerHTML = hljs.highlight(code, { language }).value
+          }
 
-      const highlight = (editor: HTMLElement) => {
-        const code = editor.textContent || ''
-        editor.innerHTML = hljs.highlight(code, { language }).value
-      }
+          jar = CodeJar(editorRef, highlight, {
+            tab: '  ',
+            indentOn: /[(\\[{:]$/,
+            spellcheck: false,
+            catchTab: !isReadOnly,
+            preserveIdent: true,
+            addClosing: true,
+            history: !isReadOnly
+          })
 
-      jar = CodeJar(editorRef, highlight, {
-        tab: '  ',
-        indentOn: /[(\[{:]$/,
-        spellcheck: false,
-        catchTab: !isReadOnly,
-        preserveIdent: true,
-        addClosing: true,
-        history: !isReadOnly
-      })
-
-      jar.updateCode(code)
-
-      if (!isReadOnly) {
-        jar.onUpdate((newCode: string) => {
-          code = newCode
-          onSave?.(newCode)
-        })
-        editorRef.addEventListener('keydown', handleKeyDown, { capture: true })
-      } else {
-        editorRef.setAttribute('contenteditable', 'false')
-        editorRef.style.cursor = 'default'
-      }
+          jar.updateCode(code)
+          jar.onUpdate((newCode: string) => {
+            code = newCode
+            onSave?.(newCode)
+          })
+          editorRef.removeEventListener('keydown', handleKeyDown, { capture: true })
+          editorRef.setAttribute('contenteditable', 'false')
+          editorRef.style.cursor = ''
+        }
+      )
     }
 
+    // Cleanup function
     return () => {
       if (jar) {
         jar.destroy()
       }
       if (editorRef && !isReadOnly) {
         editorRef.removeEventListener('keydown', handleKeyDown, { capture: true })
+      }
+    }
+  })
+
+  // Reactive effect to handle editor behavior based on isReadOnly
+  $effect(() => {
+    if (editorRef) {
+      if (!isReadOnly) {
+        editorRef.addEventListener('keydown', handleKeyDown, { capture: true })
+        editorRef.setAttribute('contenteditable', 'true')
       }
     }
   })
@@ -200,9 +212,26 @@
       abortController.abort()
     }
   }
+
+  // Expose focus method for navigation
+  export function focus() {
+    if (editorRef && !isReadOnly) {
+      editorRef.focus()
+      // Place cursor at the end of the content
+      const range = document.createRange()
+      const selection = window.getSelection()
+      range.selectNodeContents(editorRef)
+      range.collapse(false)
+      selection?.removeAllRanges()
+      selection?.addRange(range)
+    }
+  }
 </script>
 
-<div class="group relative mt-4 {!isReadOnly ? 'pl-4' : 'pl-0'} lg:pl-0">
+<div
+  class="group relative mt-4 {!isReadOnly ? 'pl-4' : 'pl-0'} transition-all duration-200 lg:pl-0"
+  data-block-id={blockId}
+>
   <div class="relative rounded-md border">
     {#if !isReadOnly}
       <div
@@ -222,7 +251,7 @@
 
     <div
       bind:this={editorRef}
-      class="codejar-editor bg-muted/20 focus:ring-ring min-h-4 overflow-auto p-3 font-mono text-sm focus:ring-2 focus:outline-none {isReadOnly
+      class="codejar-editor bg-muted/20 focus:ring-ring min-h-4 overflow-auto p-3 font-mono text-sm transition-all duration-200 focus:ring-2 focus:ring-blue-500/50 focus:outline-none {isReadOnly
         ? 'cursor-default'
         : ''}"
       style="white-space: pre; tab-size: 2;"

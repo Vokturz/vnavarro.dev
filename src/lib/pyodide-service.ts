@@ -2,7 +2,7 @@ import { writable } from 'svelte/store'
 import { browser } from '$app/environment'
 
 interface PyodideService {
-  pyodide: any | null
+  pyodide: boolean | null
   loading: boolean
   ready: boolean
   error: string | null

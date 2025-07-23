@@ -12,6 +12,7 @@
   import { pyodideStore, initializePyodide, resetPyodide } from '$lib/pyodide-service'
   import TableOfContents from '$lib/components/TableOfContents.svelte'
   import { extractHeadings, addIdsToHeadings, type TocItem } from '$lib/toc'
+  import { clearCodeBlockRefs } from '$lib/code-block'
 
   const { data }: { data: { post: PostWithContent } } = $props()
   const { post } = data
@@ -27,7 +28,7 @@
   onMount(() => {
     // Process content to add IDs to headings and extract TOC
     tocItems = extractHeadings(post.content)
-    transformCodeBlocks(data.post.runnable)
+    transformCodeBlocks()
     addIdsToHeadings()
 
     if (post.runnable) {
@@ -38,6 +39,7 @@
       if (post.runnable) {
         resetPyodide()
       }
+      clearCodeBlockRefs()
     })
   })
 
@@ -195,13 +197,15 @@
   </div>
 
   <div class="mb-8 text-center">
-    <p class="text-muted-foreground mb-2 text-sm">
-      {new Date(post.date).toLocaleDateString('en-IE', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-      })}
-    </p>
+    {#if post.type === 'markdown'}
+      <p class="text-muted-foreground mb-2 text-sm">
+        {new Date(post.date).toLocaleDateString('en-IE', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric'
+        })}
+      </p>
+    {/if}
     <h1 class="text-3xl font-extrabold tracking-tight lg:text-5xl">
       {post.title.replace(/_/g, ' ')}
     </h1>
