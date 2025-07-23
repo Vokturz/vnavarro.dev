@@ -35,7 +35,7 @@ export async function load() {
           try {
             const { data } = matter(cellSource)
             metadata = { ...metadata, ...data }
-          } catch (e) {
+          } catch {
             // Ignore frontmatter parsing errors
           }
         }

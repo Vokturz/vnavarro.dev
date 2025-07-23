@@ -2,7 +2,7 @@ import { mount } from 'svelte'
 import EditableCodeBlock from './components/EditableCodeBlock.svelte'
 
 // Store references to all code block components for navigation
-const codeBlockRefs = new Map<string, any>()
+const codeBlockRefs = new Map<string, EditableCodeBlock>()
 
 export function transformCodeBlocks() {
   let blockIndex = 0

@@ -1,5 +1,6 @@
 <script lang="ts">
   /* eslint-disable @typescript-eslint/no-explicit-any */
+  /* eslint svelte/no-at-html-tags: "off" */
   import { onMount, getContext } from 'svelte'
   import { browser } from '$app/environment'
   import { Check, Copy, LoaderCircle, Play, Square } from 'lucide-svelte'
@@ -30,7 +31,6 @@
   let code = $state(initialCode)
   let copied = $state(false)
   let editorRef: HTMLElement
-  let outputRef: HTMLElement | null = $state(null)
   let abortController: AbortController | null = $state(null)
   let jar: any
   let output = $state(initialOutput)
@@ -138,7 +138,6 @@
     showOutput = true
     hasUserExecuted = true
     output = ''
-    if (outputRef) outputRef.innerHTML = ''
 
     if ($executionCounter) {
       executionCounter.update((n) => {
@@ -186,18 +185,6 @@
     if (!hasUserExecuted) {
       output = initialOutput
       showOutput = initialOutput.length > 0
-    }
-  })
-
-  $effect(() => {
-    if (browser && showOutput && output && outputRef) {
-      // Use requestAnimationFrame to ensure DOM is ready
-      requestAnimationFrame(() => {
-        // Double-check that outputRef still exists and is connected to DOM
-        if (outputRef && outputRef.isConnected) {
-          outputRef.innerHTML = output
-        }
-      })
     }
   })
 
@@ -251,7 +238,7 @@
 
     <div
       bind:this={editorRef}
-      class="codejar-editor bg-muted/20 focus:ring-ring min-h-4 overflow-auto p-3 font-mono text-sm transition-all duration-200 focus:ring-2 focus:ring-blue-500/50 focus:outline-none {isReadOnly
+      class="codejar-editor bg-muted/20 focus:ring-ring min-h-4 overflow-auto p-3 font-mono text-sm transition-all duration-200 focus:ring-2 focus:outline-none {isReadOnly
         ? 'cursor-default'
         : ''}"
       style="white-space: pre; tab-size: 2;"
@@ -334,7 +321,9 @@
         {/if}
       {/if}
       <div class="max-h-150 overflow-y-auto p-3">
-        <div bind:this={outputRef} class="notebook-output-container"></div>
+        <div class="notebook-output-container">
+          {@html output}
+        </div>
         {#if isRunning}
           <div
             class="text-muted-foreground absolute right-4 bottom-1 flex items-center gap-2 text-sm"

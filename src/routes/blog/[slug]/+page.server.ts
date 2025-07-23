@@ -9,45 +9,45 @@ import { NotebookRenderer } from '$lib/notebook'
 
 export const load: PageServerLoad = async ({ params }) => {
   const { slug } = params
-  
+
   // Check for both .md and .ipynb files
   const markdownPath = path.resolve(process.cwd(), `posts/${slug}.md`)
   const notebookPath = path.resolve(process.cwd(), `posts/${slug}.ipynb`)
-  
+
   let post: PostWithContent
-  
+
   if (fs.existsSync(notebookPath)) {
     // Handle Jupyter notebook
     const notebookContent = fs.readFileSync(notebookPath, 'utf8')
     const notebook: JupyterNotebook = JSON.parse(notebookContent)
-    
+
     // Extract metadata from first markdown cell or use defaults
-    const firstMarkdownCell = notebook.cells.find(cell => cell.cell_type === 'markdown')
+    const firstMarkdownCell = notebook.cells.find((cell) => cell.cell_type === 'markdown')
     let metadata = {
-      title: slug.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
+      title: slug.replace(/-/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase()),
       date: new Date().toISOString().split('T')[0],
       summary: 'Jupyter notebook post',
       image: undefined
     }
-    
+
     // Try to parse frontmatter from first markdown cell
     if (firstMarkdownCell) {
-      const cellSource = Array.isArray(firstMarkdownCell.source) 
-        ? firstMarkdownCell.source.join('') 
+      const cellSource = Array.isArray(firstMarkdownCell.source)
+        ? firstMarkdownCell.source.join('')
         : firstMarkdownCell.source
-      
+
       if (cellSource.startsWith('---')) {
         try {
           const { data } = matter(cellSource)
           metadata = { ...metadata, ...data }
-        } catch (e) {
+        } catch {
           // Ignore frontmatter parsing errors
         }
       }
     }
-    
+
     const content = await NotebookRenderer.renderNotebook(notebook)
-    
+
     post = {
       title: metadata.title,
       date: metadata.date,
