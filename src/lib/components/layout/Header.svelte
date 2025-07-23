@@ -7,7 +7,7 @@
   import { Button } from '$lib/components/ui/button'
   import TechIcon from '../TechIcon.svelte'
 
-  let isDarkMode = $state(false)
+  let isDarkMode = $derived($theme === 'terminal')
   let isMobileMenuOpen = $state(false)
 
 

@@ -22,20 +22,20 @@
       { name: 'Typescript', iconName: 'typescript', color: 'text-blue-600' },
       { name: 'Javascript', iconName: 'javascript', color: 'text-yellow-500' },
       { name: 'C', iconName: 'c', color: 'text-blue-700' },
-      { name: 'Go', iconName: 'go', color: 'text-cyan-400' },
+      // { name: 'Go', iconName: 'go', color: 'text-cyan-400' },
       { name: 'bash', iconName: 'gnubash' },
       { name: 'SQL', iconName: 'postgresql', color: 'text-blue-500' },
-      { name: 'C#', iconName: 'sharp', color: 'text-purple-600' },
-      { name: 'R', iconName: 'r', color: 'text-blue-400' }
+      { name: 'R', iconName: 'r', color: 'text-blue-400' },
+      { name: 'C#', iconName: 'sharp', color: 'text-purple-600' }
     ],
     'Web Technologies': [
       { name: 'Next.js', iconName: 'nextdotjs' },
       { name: 'Svelte', iconName: 'svelte', color: 'text-orange-500' }
     ],
     'Data Science & Machine Learning': [
+      { name: 'PyTorch', iconName: 'pytorch', color: 'text-red-500' },
       { name: 'Google BigQuery', iconName: 'Googlebigquery', color: 'text-blue-500' },
-      { name: 'Spark', iconName: 'apachespark', color: 'text-orange-600' },
-      { name: 'PyTorch', iconName: 'pytorch', color: 'text-red-500' }
+      { name: 'Spark', iconName: 'apachespark', color: 'text-orange-600' }
     ],
     'Cloud Technologies': [
       { name: 'AWS', iconName: 'aws', color: 'text-orange-400' },
@@ -187,11 +187,11 @@
     <section class="mb-16" use:scrollIntoView>
       <h2 class="border-primary gradient-text mb-6 border-b-2 pb-2 text-3xl font-bold">Skills</h2>
       <div class="space-y-6">
-        {#each Object.entries(skillsData) as [category, skills]}
+        {#each Object.entries(skillsData) as [category, skills] (category)}
           <div>
             <h3 class="text-2xl font-semibold">{category}</h3>
             <div class="mt-2 flex flex-wrap gap-4">
-              {#each skills as skill}
+              {#each skills as skill (skill.name)}
                 <SkillCard {skill} />
               {/each}
             </div>
@@ -243,7 +243,8 @@
           <span class="text-primary mr-4 font-bold">[1]</span>
           <div>
             <p class="text-lg">
-              E. Elejalde, L. Ferres, <strong class="text-purple-500">V. Navarro</strong>, L. Bravo and E. Zagheni. (2024).
+              E. Elejalde, L. Ferres, <strong class="text-purple-500">V. Navarro</strong>, L. Bravo
+              and E. Zagheni. (2024).
               <a
                 href="https://doi.org/10.1038/s41598-024-63098-5"
                 target="_blank"
@@ -262,8 +263,8 @@
           <span class="text-primary mr-4 font-bold">[2]</span>
           <div>
             <p class="text-lg">
-              L. Pappalardo, G. Cornacchia, <strong class="text-purple-500">V. Navarro</strong>, L. Bravo and L. Ferres.
-              (2023).
+              L. Pappalardo, G. Cornacchia, <strong class="text-purple-500">V. Navarro</strong>, L.
+              Bravo and L. Ferres. (2023).
               <a
                 href="https://doi.org/10.1038/s41597-022-01893-3"
                 target="_blank"
@@ -283,9 +284,9 @@
             <p class="text-lg">
               P. Goldoni, S. Pita, C. Boisson, W. Max-Moerbeck, E. Kasai, D. A. Williams, F.
               D'Ammando,
-              <strong class="text-purple-500">V. Navarro-Aranguiz</strong>, M. Backes, U. Barres de Almeida, J.
-              Becerra-Gonzalez, G. Cotter, O. Hervet, J.-P. Lenain, E. Lindfors, H. Sol and S.
-              Wagner. (2021).
+              <strong class="text-purple-500">V. Navarro-Aranguiz</strong>, M. Backes, U. Barres de
+              Almeida, J. Becerra-Gonzalez, G. Cotter, O. Hervet, J.-P. Lenain, E. Lindfors, H. Sol
+              and S. Wagner. (2021).
               <a
                 href="https://doi.org/10.1051/0004-6361/202040134"
                 target="_blank"
@@ -303,9 +304,9 @@
           <span class="text-primary mr-4 font-bold">[4]</span>
           <div>
             <p class="text-lg">
-              S. Casassus, H. Avenhaus, S. Perez, <strong class="text-purple-500">V. Navarro</strong>, M. Carcamo, S.
-              Marino, L. Cieza, S. P. Quanz, F. Alarcon, A. Zurlo, A. Osses, F. R. Rannou, P. E.
-              Roman and M. Barraza. (2018).
+              S. Casassus, H. Avenhaus, S. Perez, <strong class="text-purple-500">V. Navarro</strong
+              >, M. Carcamo, S. Marino, L. Cieza, S. P. Quanz, F. Alarcon, A. Zurlo, A. Osses, F. R.
+              Rannou, P. E. Roman and M. Barraza. (2018).
               <a
                 href="https://doi.org/10.1093/mnras/sty894"
                 target="_blank"

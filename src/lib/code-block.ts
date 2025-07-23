@@ -14,8 +14,8 @@ export function transformCodeBlocks(runnable: boolean = false) {
       mount(EditableCodeBlock, {
         target: el.parentNode,
         anchor: el,
-        props: { code, language: lang, initialOutput: output, readonly: isPython ? !runnable : true }
-      }) 
+        props: { code, language: lang, initialOutput: output }
+      })
       el.remove()
     }
   })

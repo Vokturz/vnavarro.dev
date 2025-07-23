@@ -12,8 +12,7 @@
     initialOutput = '',
     onSave,
     onRun,
-    executionNumber = null,
-    readonly = true
+    executionNumber = null
   }: {
     code: string
     language?: string
@@ -21,7 +20,6 @@
     onSave?: (newCode: string) => void
     onRun?: (code: string) => Promise<string> | string
     executionNumber?: number | null
-    readonly?: boolean
   } = $props()
 
   let code = $state(initialCode)
@@ -35,6 +33,7 @@
   let showOutput = $state(initialOutput.length > 0)
   let hasUserExecuted = $state(false)
   let currentExecutionNumber = $state(executionNumber)
+  let isReadOnly = $derived(!$pyodideStore.ready)
   let CodeJar: any
   let hljs: any
 
@@ -52,14 +51,14 @@
       runCode()
       // Scroll the code block out of view after execution starts
       setTimeout(() => {
-        editorRef?.scrollIntoView({ 
-          behavior: 'smooth', 
-          block: 'start' 
+        editorRef?.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start'
         })
         setTimeout(() => {
-          window.scrollBy({ 
-            top: (editorRef?.offsetHeight || 200), 
-            behavior: 'smooth' 
+          window.scrollBy({
+            top: editorRef?.offsetHeight || 200,
+            behavior: 'smooth'
           })
         }, 100)
       }, 100)
@@ -85,15 +84,15 @@
         tab: '  ',
         indentOn: /[(\[{:]$/,
         spellcheck: false,
-        catchTab: !readonly,
+        catchTab: !isReadOnly,
         preserveIdent: true,
         addClosing: true,
-        history: !readonly
+        history: !isReadOnly
       })
 
       jar.updateCode(code)
 
-      if (!readonly) {
+      if (!isReadOnly) {
         jar.onUpdate((newCode: string) => {
           code = newCode
           onSave?.(newCode)
@@ -109,14 +108,14 @@
       if (jar) {
         jar.destroy()
       }
-      if (editorRef && !readonly) {
+      if (editorRef && !isReadOnly) {
         editorRef.removeEventListener('keydown', handleKeyDown, { capture: true })
       }
     }
   })
 
   async function runCode() {
-    if (isRunning || readonly) return
+    if (isRunning || isReadOnly) return
 
     if (abortController) {
       abortController.abort()
@@ -129,7 +128,7 @@
     output = ''
     if (outputRef) outputRef.innerHTML = ''
 
-    if (executionCounter) {
+    if ($executionCounter) {
       executionCounter.update((n) => {
         currentExecutionNumber = n
         return n + 1
@@ -203,9 +202,9 @@
   }
 </script>
 
-<div class="group relative mt-4 {!readonly ? 'pl-4' : 'pl-0'} lg:pl-0">
+<div class="group relative mt-4 {!isReadOnly ? 'pl-4' : 'pl-0'} lg:pl-0">
   <div class="relative rounded-md border">
-    {#if !readonly}
+    {#if !isReadOnly}
       <div
         class="absolute top-0 bottom-0 left-[-3.5rem] flex w-14 items-start justify-center pt-3 select-none"
       >
@@ -223,29 +222,29 @@
 
     <div
       bind:this={editorRef}
-      class="codejar-editor bg-muted/20 focus:ring-ring min-h-4 overflow-auto p-3 font-mono text-sm focus:ring-2 focus:outline-none {readonly
+      class="codejar-editor bg-muted/20 focus:ring-ring min-h-4 overflow-auto p-3 font-mono text-sm focus:ring-2 focus:outline-none {isReadOnly
         ? 'cursor-default'
         : ''}"
       style="white-space: pre; tab-size: 2;"
-      contenteditable={!readonly}
+      contenteditable={!isReadOnly}
     >
       {#if !browser}
         <!-- Fallback content for SSR -->
-        <pre class="m-0 bg-mutedwhitespace-pre-wrap">{code}</pre>
+        <pre class="bg-mutedwhitespace-pre-wrap m-0">{code}</pre>
       {/if}
     </div>
 
-    {#if !readonly}
+    {#if !isReadOnly || $pyodideStore.loading}
       <div
-        class="absolute top-2 right-2 flex gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity"
+        class="absolute top-2 right-2 flex gap-1 opacity-100 transition-opacity sm:opacity-0 sm:group-hover:opacity-100"
       >
         <Button
           variant="ghost"
           size="sm"
           onclick={!isRunning ? runCode : cancelExecution}
-          disabled={isPython && !$pyodideStore.ready}
+          disabled={isPython && $pyodideStore.loading}
           title={isPython ? 'Run Python code (Ctrl+Enter)' : 'Run code (Ctrl+Enter)'}
-          class={isPython && !$pyodideStore.ready ? 'opacity-10' : ''}
+          class={isPython && $pyodideStore.loading ? 'opacity-10' : ''}
         >
           {#if isRunning}
             <Square class="h-4 w-4" />
@@ -265,9 +264,9 @@
     <Button
       variant="ghost"
       size="sm"
-      class="absolute top-2 {readonly
-        ? 'right-2'
-        : 'right-12'} opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity"
+      class="absolute top-2 {!isReadOnly || $pyodideStore.loading
+        ? 'right-12'
+        : 'right-2'} opacity-100 transition-opacity sm:opacity-0 sm:group-hover:opacity-100"
       onclick={copyCode}
     >
       {#if copied}
@@ -279,10 +278,10 @@
   </div>
 
   {#if showOutput}
-    <div class="relative bg-muted/50 relative mt-2 min-h-8 max-h-150 rounded-md border">
-      {#if !readonly}
+    <div class="bg-muted/50 relative mt-2 max-h-150 min-h-8 rounded-md border">
+      {#if !isReadOnly}
         <div
-          class="absolute top-0 bottom-0 left-[-4rem] flex w-17 items-start justify-center pt-3 select-none "
+          class="absolute top-0 bottom-0 left-[-4rem] flex w-17 items-start justify-center pt-3 select-none"
         >
           <span class="text-muted-foreground font-mono text-xs">
             {#if isRunning}
@@ -294,7 +293,7 @@
             {/if}
           </span>
         </div>
-        {#if !isRunning}
+        {#if !isRunning && $pyodideStore.ready}
           <Button
             variant="ghost"
             size="sm"
@@ -305,10 +304,12 @@
           </Button>
         {/if}
       {/if}
-      <div class="p-3 overflow-y-auto max-h-150">
+      <div class="max-h-150 overflow-y-auto p-3">
         <div bind:this={outputRef} class="notebook-output-container"></div>
         {#if isRunning}
-          <div class="absolute bottom-1 right-4 text-muted-foreground flex items-center gap-2 text-sm">
+          <div
+            class="text-muted-foreground absolute right-4 bottom-1 flex items-center gap-2 text-sm"
+          >
             <LoaderCircle class="h-4 w-4 animate-spin" />
             Running...
           </div>

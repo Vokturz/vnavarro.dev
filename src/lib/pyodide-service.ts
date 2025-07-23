@@ -29,15 +29,14 @@ export function resetPyodide() {
   }
   initPromise = null
   interruptBuffer = null
-  pyodideStore.set(initialState) // Reset the store to clear UI indicators
+  pyodideStore.set(initialState)
 }
 
 export async function initializePyodide(): Promise<void> {
-  if (worker) return
-  if (initPromise) return initPromise
+  if (worker && initPromise) return initPromise
   if (!browser) return
 
-  pyodideStore.update(state => ({ ...state, loading: true, error: null }))
+  pyodideStore.update((state) => ({ ...state, loading: true, error: null }))
 
   initPromise = new Promise((resolve, reject) => {
     worker = new Worker(new URL('./pyodide-worker.ts', import.meta.url), {
@@ -57,30 +56,30 @@ export async function initializePyodide(): Promise<void> {
 
     worker.onmessage = (e) => {
       const { type, error } = e.data
-      
+
       if (type === 'init-complete') {
-        pyodideStore.update(state => ({ 
-          ...state, 
-          loading: false, 
+        pyodideStore.update((state) => ({
+          ...state,
+          loading: false,
           ready: true,
           pyodide: true
         }))
         resolve()
       } else if (type === 'error') {
-        pyodideStore.update(state => ({ 
-          ...state, 
-          loading: false, 
-          error 
+        pyodideStore.update((state) => ({
+          ...state,
+          loading: false,
+          error
         }))
         reject(new Error(error))
       }
     }
 
     worker.onerror = (error) => {
-      pyodideStore.update(state => ({ 
-        ...state, 
-        loading: false, 
-        error: 'Failed to initialize Python worker' 
+      pyodideStore.update((state) => ({
+        ...state,
+        loading: false,
+        error: 'Failed to initialize Python worker'
       }))
       reject(error)
     }
@@ -92,7 +91,7 @@ export async function initializePyodide(): Promise<void> {
 }
 
 export async function executePython(
-  code: string, 
+  code: string,
   abortController?: AbortController,
   onStreamingOutput?: (output: string) => void
 ): Promise<string> {
@@ -125,7 +124,7 @@ export async function executePython(
           // Regular streaming output
           streamingOutput += output
         }
-        
+
         if (onStreamingOutput) {
           // Combine tqdm output at the beginning with regular output
           const combinedOutput = tqdmOutput + streamingOutput
@@ -150,14 +149,14 @@ export async function executePython(
     const handleAbort = () => {
       if (isAborted) return
       isAborted = true
-      
+
       worker!.removeEventListener('message', handleMessage)
-      
+
       // Use SharedArrayBuffer interrupt if available
       if (interruptBuffer) {
         interruptBuffer[0] = 2 // Signal SIGINT
       }
-      
+
       // Also send abort message as fallback
       worker!.postMessage({ type: 'abort', id })
       reject(new Error('Python execution cancelled'))
