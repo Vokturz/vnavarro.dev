@@ -38,7 +38,7 @@
   let showOutput = $state(initialOutput.length > 0)
   let hasUserExecuted = $state(false)
   let currentExecutionNumber = $state(executionNumber)
-  let isReadOnly = $derived($pyodideStore.ready)
+  let isReadOnly = $derived(!$pyodideStore.ready)
   let CodeJar: any
   let hljs: any
 
