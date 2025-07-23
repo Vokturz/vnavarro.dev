@@ -10,9 +10,12 @@ import { NotebookRenderer } from '$lib/notebook'
 export const load: PageServerLoad = async ({ params }) => {
   const { slug } = params
 
+  const isDev = process.env.NODE_ENV === 'development' || import.meta.env.MODE === 'development'
+  const postsDir = isDev ? path.resolve('posts') : path.resolve('static', 'posts')
+
   // Check for both .md and .ipynb files
-  const markdownPath = path.resolve(`posts/${slug}.md`)
-  const notebookPath = path.resolve(`posts/${slug}.ipynb`)
+  const markdownPath = path.resolve(postsDir, `${slug}.md`)
+  const notebookPath = path.resolve(postsDir, `${slug}.ipynb`)
 
   let post: PostWithContent
 

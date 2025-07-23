@@ -4,7 +4,8 @@ import matter from 'gray-matter'
 import type { Post, JupyterNotebook } from '$lib/types'
 
 export async function load() {
-  const postsDir = path.resolve('posts')
+  const isDev = process.env.NODE_ENV === 'development' || import.meta.env.MODE === 'development'
+  const postsDir = isDev ? path.resolve('posts') : path.resolve('static', 'posts')
   const files = fs.readdirSync(postsDir)
 
   const posts: Post[] = files.map((filename) => {
