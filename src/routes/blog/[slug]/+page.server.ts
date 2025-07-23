@@ -1,5 +1,3 @@
-import fs from 'fs'
-import path from 'path'
 import matter from 'gray-matter'
 import { error } from '@sveltejs/kit'
 import type { PostWithContent, JupyterNotebook } from '$lib/types'
@@ -7,22 +5,24 @@ import type { PageServerLoad } from './$types'
 import { marked } from '$lib/markdown'
 import { NotebookRenderer } from '$lib/notebook'
 
+const markdownFiles = import.meta.glob('/static/posts/*.md', { query: '?raw', import: 'default' })
+const notebookFiles = import.meta.glob('/static/posts/*.ipynb', {
+  query: '?raw',
+  import: 'default'
+})
+
 export const load: PageServerLoad = async ({ params }) => {
   const { slug } = params
 
-  const isDev = process.env.NODE_ENV === 'development' || import.meta.env.MODE === 'development'
-  const postsDir = isDev ? path.resolve('posts') : path.resolve('static', 'posts')
-
-  // Check for both .md and .ipynb files
-  const markdownPath = path.resolve(postsDir, `${slug}.md`)
-  const notebookPath = path.resolve(postsDir, `${slug}.ipynb`)
+  const markdownPath = `/static/posts/${slug}.md`
+  const notebookPath = `/static/posts/${slug}.ipynb`
 
   let post: PostWithContent
 
-  if (fs.existsSync(notebookPath)) {
+  if (notebookFiles[notebookPath]) {
     // Handle Jupyter notebook
-    const notebookContent = fs.readFileSync(notebookPath, 'utf8')
-    const notebook: JupyterNotebook = JSON.parse(notebookContent)
+    const notebookContent = await notebookFiles[notebookPath]()
+    const notebook: JupyterNotebook = JSON.parse(notebookContent as string)
 
     // Extract metadata from first markdown cell or use defaults
     const firstMarkdownCell = notebook.cells.find((cell) => cell.cell_type === 'markdown')
@@ -61,10 +61,10 @@ export const load: PageServerLoad = async ({ params }) => {
       type: 'notebook',
       content
     }
-  } else if (fs.existsSync(markdownPath)) {
-    // Handle Markdown file (existing logic)
-    const fileContent = fs.readFileSync(markdownPath, 'utf8')
-    const { data, content } = matter(fileContent)
+  } else if (markdownFiles[markdownPath]) {
+    // Handle Markdown file
+    const fileContent = await markdownFiles[markdownPath]()
+    const { data, content } = matter(fileContent as string)
 
     post = {
       title: data.title,
