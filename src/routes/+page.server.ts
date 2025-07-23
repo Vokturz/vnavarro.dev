@@ -31,7 +31,9 @@ export async function load() {
           try {
             const { data } = matter(cellSource)
             metadata = { ...metadata, ...data }
-          } catch (e) {}
+          } catch {
+            // Ignore frontmatter parsing errors
+          }
         }
       }
       posts.push({
@@ -42,7 +44,7 @@ export async function load() {
         image: metadata.image
       })
     } else {
-      const { data } = matter(fileContent)
+      const { data } = matter(fileContent as string)
       posts.push({
         slug,
         title: data.title,

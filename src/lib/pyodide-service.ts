@@ -43,15 +43,6 @@ export async function initializePyodide(): Promise<void> {
       type: 'module'
     })
 
-    // Create SharedArrayBuffer for interrupts
-    try {
-      interruptBuffer = new Uint8Array(new SharedArrayBuffer(1))
-      // Send interrupt buffer to worker
-      worker.postMessage({ type: 'set-interrupt-buffer', interruptBuffer })
-    } catch (error) {
-      console.warn('SharedArrayBuffer not available, interrupts will not work properly:', error)
-    }
-
     const id = ++executionId
 
     worker.onmessage = (e) => {
@@ -85,6 +76,15 @@ export async function initializePyodide(): Promise<void> {
     }
 
     worker.postMessage({ type: 'init', id })
+
+    // Create SharedArrayBuffer for interrupts
+    try {
+      interruptBuffer = new Uint8Array(new SharedArrayBuffer(1))
+      // Send interrupt buffer to worker
+      worker.postMessage({ type: 'set-interrupt-buffer', interruptBuffer })
+    } catch (error) {
+      console.warn('SharedArrayBuffer not available, interrupts will not work properly:', error)
+    }
   })
 
   return initPromise

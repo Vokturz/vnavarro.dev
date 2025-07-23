@@ -12,6 +12,10 @@ self.onmessage = async function (e) {
         indexURL: '/api/pyodide/'
       })
 
+      if (interruptBuffer) {
+        pyodide.setInterruptBuffer(interruptBuffer)
+      }
+
       await pyodide.loadPackage(['numpy', 'matplotlib', 'pandas', 'tqdm'])
 
       pyodide.runPython(`
@@ -27,16 +31,16 @@ self.onmessage = async function (e) {
         import ast
         import html
         from tqdm import tqdm
-        
+
         # Suppress warnings
         warnings.filterwarnings('ignore')
-        
+
         class StreamingStdout:
             def __init__(self, callback):
                 self.callback = callback
                 self.buffer = ""
                 self.tqdm_buffer = ""
-                
+
             def write(self, text):
                 # Check if this is tqdm output (contains progress bar characters)
                 if '\\r' in text or any(char in text for char in ['█', '▏', '▎', '▍', '▌', '▋', '▊', '▉', '%|']):
@@ -50,10 +54,10 @@ self.onmessage = async function (e) {
                     self.buffer += text
                     self.callback(text)
                 return len(text)
-                
+
             def flush(self):
                 pass
-                
+
             def getvalue(self):
                 return self.buffer
 
@@ -65,7 +69,7 @@ self.onmessage = async function (e) {
                 kwargs['dynamic_ncols'] = False
                 kwargs['ncols'] = 80
                 super().__init__(*args, **kwargs)
-            
+
             def display(self, msg=None, pos=None):
                 # Override display to ensure output goes to our streaming stdout
                 if msg is None:
@@ -73,11 +77,11 @@ self.onmessage = async function (e) {
                 # Add newline to ensure each update is on a new line
                 sys.stdout.write(f"\\r{msg}\\n")
                 sys.stdout.flush()
-        
+
         # Replace tqdm with our web-friendly version
         import builtins
         builtins.tqdm = WebTqdm
-        
+
         # Also patch tqdm module
         import tqdm as tqdm_module
         tqdm_module.tqdm = WebTqdm
@@ -88,7 +92,7 @@ self.onmessage = async function (e) {
                 tree = ast.parse(code_str.strip())
                 if not tree.body:
                     return False
-                
+
                 last_node = tree.body[-1]
                 # Check if last statement is an expression (not assignment, import, etc.)
                 return isinstance(last_node, ast.Expr)
@@ -101,7 +105,7 @@ self.onmessage = async function (e) {
                 tree = ast.parse(code_str.strip())
                 if not tree.body:
                     return None
-                
+
                 last_node = tree.body[-1]
                 if isinstance(last_node, ast.Expr):
                     return ast.unparse(last_node.value)
@@ -113,7 +117,7 @@ self.onmessage = async function (e) {
             """Format object for display similar to Jupyter notebook"""
             if obj is None:
                 return ""
-            
+
             # Handle different types of objects
             if hasattr(obj, '_repr_html_'):
                 return obj._repr_html_()
@@ -176,12 +180,12 @@ self.onmessage = async function (e) {
 
       // Properly escape the code to handle quotes and special characters
       const escapedCode = code
-        .replace(/\\/g, '\\\\')  // Escape backslashes first
-        .replace(/"/g, '\\"')    // Escape double quotes
-        .replace(/'/g, "\\'")    // Escape single quotes
-        .replace(/\n/g, '\\n')   // Escape newlines
-        .replace(/\r/g, '\\r')   // Escape carriage returns
-        .replace(/\t/g, '\\t')   // Escape tabs
+        .replace(/\\/g, '\\\\') // Escape backslashes first
+        .replace(/"/g, '\\"') // Escape double quotes
+        .replace(/'/g, "\\'") // Escape single quotes
+        .replace(/\n/g, '\\n') // Escape newlines
+        .replace(/\r/g, '\\r') // Escape carriage returns
+        .replace(/\t/g, '\\t') // Escape tabs
 
       const result = pyodide.runPython(`
 import sys
@@ -205,23 +209,23 @@ def filter_warnings(stderr_content):
     """Filter out warning messages from stderr content"""
     lines = stderr_content.split('\\n')
     filtered_lines = []
-    
+
     for line in lines:
         line_lower = line.lower()
         # Skip lines that contain common warning indicators
         if any(warning_indicator in line_lower for warning_indicator in [
-            'warning:', 'userwarning:', 'deprecationwarning:', 
+            'warning:', 'userwarning:', 'deprecationwarning:',
             'futurewarning:', 'runtimewarning:', 'pendingdeprecationwarning:',
             '/lib/python', 'warnings.warn'
         ]):
             continue
         filtered_lines.append(line)
-    
+
     return '\\n'.join(filtered_lines).strip()
 
 try:
     code_to_execute = """${escapedCode}"""
-    
+
     with redirect_stdout(streaming_stdout), redirect_stderr(stderr_buffer):
         # Check if we should capture the last expression result
         if should_display_result(code_to_execute):
@@ -232,33 +236,33 @@ try:
                 if len(lines) > 1:
                     code_without_last = '\\n'.join(lines[:-1])
                     exec(code_without_last)
-                
+
                 # Evaluate the last expression
                 last_expr_result = eval(last_expr)
             else:
                 exec(code_to_execute)
         else:
             exec(code_to_execute)
-        
+
         stderr_content = stderr_buffer.getvalue()
         # Filter out warnings from stderr
         filtered_stderr = filter_warnings(stderr_content)
         output_parts = []
-        
+
         if filtered_stderr:
             # HTML escape stderr content as well
             escaped_stderr = html.escape(filtered_stderr)
             output_parts.append(f'<pre class="notebook-error-output">{escaped_stderr}</pre>')
-        
+
         # Add the result of the last expression if it exists
         if last_expr_result is not None:
             formatted_result = format_output(last_expr_result)
             if formatted_result:
                 output_parts.append(formatted_result)
-        
+
         # Handle matplotlib plots
         fig_nums = plt.get_fignums()
-        
+
         if fig_nums:
             for fig_num in fig_nums:
                 fig = plt.figure(fig_num)
@@ -267,14 +271,14 @@ try:
                 img_buffer.seek(0)
                 img_base64 = base64.b64encode(img_buffer.getvalue()).decode()
                 output_parts.append(f'<div class="notebook-image-output"><img src="data:image/png;base64,{img_base64}" alt="Plot output" style="max-width: 100%; height: auto;" /></div>')
-            
+
             plt.close('all')
-        
+
         if output_parts:
             result = ''.join(output_parts)
         else:
             result = ''
-                
+
 except KeyboardInterrupt:
     result = '<pre class="notebook-error-output">Execution interrupted by user</pre>'
 except Exception as e:

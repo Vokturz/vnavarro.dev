@@ -38,7 +38,7 @@
   let showOutput = $state(initialOutput.length > 0)
   let hasUserExecuted = $state(false)
   let currentExecutionNumber = $state(executionNumber)
-  let isReadOnly = $derived(!$pyodideStore.ready)
+  let isReadOnly = $derived($pyodideStore.ready)
   let CodeJar: any
   let hljs: any
 
@@ -222,15 +222,15 @@
   <div class="relative rounded-md border">
     {#if !isReadOnly}
       <div
-        class="absolute top-0 bottom-0 left-[-3.5rem] flex w-14 items-start justify-center pt-3 select-none"
+        class="absolute top-0 bottom-0 left-[-3.8rem] flex w-17 items-start justify-center pt-3 select-none"
       >
         <span class="text-muted-foreground font-mono text-xs">
           {#if isRunning}
-            In [*]:
+            In [*]
           {:else if currentExecutionNumber !== null}
-            In [{currentExecutionNumber}]:
+            In [{currentExecutionNumber}]
           {:else}
-            In [ ]:
+            In []
           {/if}
         </span>
       </div>
@@ -297,15 +297,15 @@
     <div class="bg-muted/50 relative mt-2 max-h-150 min-h-8 rounded-md border">
       {#if !isReadOnly}
         <div
-          class="absolute top-0 bottom-0 left-[-4rem] flex w-17 items-start justify-center pt-3 select-none"
+          class="absolute top-0 bottom-0 left-[-4.3rem] flex w-19 items-start justify-center pt-3 select-none"
         >
           <span class="text-muted-foreground font-mono text-xs">
             {#if isRunning}
-              Out [*]:
+              Out [*]
             {:else if currentExecutionNumber !== null}
-              Out [{currentExecutionNumber}]:
+              Out [{currentExecutionNumber}]
             {:else}
-              Out [ ]:
+              Out []
             {/if}
           </span>
         </div>

@@ -53,7 +53,7 @@ export async function load() {
       })
     } else {
       // Handle Markdown file
-      const { data } = matter(fileContent)
+      const { data } = matter(fileContent as string)
 
       posts.push({
         slug,
