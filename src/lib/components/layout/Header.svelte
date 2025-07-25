@@ -10,7 +10,6 @@
   let isDarkMode = $derived($theme === 'terminal')
   let isMobileMenuOpen = $state(false)
 
-
   function toggleMobileMenu() {
     isMobileMenuOpen = !isMobileMenuOpen
   }
@@ -31,25 +30,24 @@
     document.head.appendChild(link)
   }
 
-onMount(() => {
-  theme.init()
-  
-  // Subscribe to theme changes
-  const unsubscribe = theme.subscribe((currentTheme: string) => {
-    if (currentTheme === 'terminal') {
-      document.body.classList.add('terminal')
-      localStorage.setItem('theme', 'terminal')
-      updateHighlightTheme('sunburst')
-    } else {
-      document.body.classList.remove('terminal')
-      localStorage.setItem('theme', 'light')
-      updateHighlightTheme('github')
-    }
+  onMount(() => {
+    theme.init()
+
+    // Subscribe to theme changes
+    const unsubscribe = theme.subscribe((currentTheme: string) => {
+      if (currentTheme === 'terminal') {
+        document.body.classList.add('terminal')
+        localStorage.setItem('theme', 'terminal')
+        updateHighlightTheme('sunburst')
+      } else {
+        document.body.classList.remove('terminal')
+        localStorage.setItem('theme', 'light')
+        updateHighlightTheme('github')
+      }
+    })
+
+    return unsubscribe
   })
-
-  return unsubscribe
-})
-
 </script>
 
 <nav class="bg-card/90 sticky top-0 z-50 backdrop-blur-sm">
@@ -69,7 +67,7 @@ onMount(() => {
         <div class="hidden items-center space-x-2 md:flex">
           <Button variant="outline" size="icon">
             <a href="https://github.com/Vokturz" target="_blank" rel="noopener noreferrer">
-              <TechIcon name='github' class="h-5 w-5" />
+              <TechIcon name="github" class="h-5 w-5" />
             </a>
           </Button>
           <Button variant="outline" size="icon">
@@ -82,12 +80,8 @@ onMount(() => {
             </a>
           </Button>
           <Button variant="outline" size="icon">
-            <a
-              href="https://huggingface.co/Vokturz"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <TechIcon name='huggingface' class="h-5 w-5" />
+            <a href="https://huggingface.co/Vokturz" target="_blank" rel="noopener noreferrer">
+              <TechIcon name="huggingface" class="h-5 w-5" />
             </a>
           </Button>
         </div>
@@ -109,7 +103,7 @@ onMount(() => {
           onclick={toggleMobileMenu}
           variant="outline"
           size="icon"
-          class="h-10 w-10 flex-shrink-0 md:hidden cursor-pointer"
+          class="h-10 w-10 flex-shrink-0 cursor-pointer md:hidden"
         >
           {#if isMobileMenuOpen}
             <X class="h-5 w-5" />
@@ -155,7 +149,7 @@ onMount(() => {
         >
           <Button variant="outline" size="icon">
             <a href="https://github.com/Vokturz" target="_blank" rel="noopener noreferrer">
-              <TechIcon name='github' class="h-5 w-5" />
+              <TechIcon name="github" class="h-5 w-5" />
             </a>
           </Button>
           <Button variant="outline" size="icon">
@@ -168,12 +162,8 @@ onMount(() => {
             </a>
           </Button>
           <Button variant="outline" size="icon">
-            <a
-              href="https://huggingface.co/Vokturz"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <TechIcon name='huggingface' class="h-5 w-5" />
+            <a href="https://huggingface.co/Vokturz" target="_blank" rel="noopener noreferrer">
+              <TechIcon name="huggingface" class="h-5 w-5" />
             </a>
           </Button>
         </div>
