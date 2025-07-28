@@ -55,8 +55,7 @@
     ]
   },
   "dependencies": {
-    "@types/highlight.js": "^10.1.0",
-    "codejar": "^4.2.0",
+    "codejar": "file:codejar-4.2.0.tgz",
     "gray-matter": "^4.0.3",
     "highlight.js": "^11.11.1",
     "katex": "^0.16.22",

@@ -87,10 +87,10 @@
             tab: '  ',
             indentOn: /[(\\[{:]$/,
             spellcheck: false,
-            catchTab: !isReadOnly,
+            catchTab: false,
             preserveIdent: true,
             addClosing: true,
-            history: !isReadOnly
+            history: true
           })
 
           jar.updateCode(code)
@@ -238,10 +238,9 @@
 
     <div
       bind:this={editorRef}
-      class="codejar-editor bg-muted/20 focus:ring-ring min-h-4 overflow-auto p-3 font-mono text-sm transition-all duration-200 focus:ring-2 focus:outline-none {isReadOnly
+      class="codejar-editor bg-muted/20 focus:ring-ring min-h-4 overflow-auto p-3 font-mono text-sm whitespace-pre transition-all duration-200 focus:ring-2 focus:outline-none {isReadOnly
         ? 'cursor-default'
         : ''}"
-      style="white-space: pre; tab-size: 2;"
       contenteditable={!isReadOnly}
     >
       {#if !browser}
