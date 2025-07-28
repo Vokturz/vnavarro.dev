@@ -39,9 +39,21 @@ export async function initializePyodide(): Promise<void> {
   pyodideStore.update((state) => ({ ...state, loading: true, error: null }))
 
   initPromise = new Promise((resolve, reject) => {
-    worker = new Worker(new URL('./pyodide-worker.ts', import.meta.url), {
-      type: 'module'
-    })
+    try {
+      worker = new Worker(new URL('./pyodide-worker.ts', import.meta.url), {
+        type: 'module'
+      })
+    } catch (error) {
+      console.error('Failed to create worker:', error)
+      pyodideStore.update((state) => ({
+        ...state,
+        loading: false,
+        error:
+          'Failed to create Python worker. Your browser may not support the required security features.'
+      }))
+      reject(error)
+      return
+    }
 
     const id = ++executionId
 
@@ -67,10 +79,11 @@ export async function initializePyodide(): Promise<void> {
     }
 
     worker.onerror = (error) => {
+      console.error('Worker error:', error)
       pyodideStore.update((state) => ({
         ...state,
         loading: false,
-        error: 'Failed to initialize Python worker'
+        error: 'Failed to initialize Python worker. Check console for details.'
       }))
       reject(error)
     }
@@ -79,9 +92,13 @@ export async function initializePyodide(): Promise<void> {
 
     // Create SharedArrayBuffer for interrupts
     try {
-      interruptBuffer = new Uint8Array(new SharedArrayBuffer(1))
-      // Send interrupt buffer to worker
-      worker.postMessage({ type: 'set-interrupt-buffer', interruptBuffer })
+      if (typeof SharedArrayBuffer !== 'undefined') {
+        interruptBuffer = new Uint8Array(new SharedArrayBuffer(1))
+        // Send interrupt buffer to worker
+        worker.postMessage({ type: 'set-interrupt-buffer', interruptBuffer })
+      } else {
+        console.warn('SharedArrayBuffer not available, interrupts will not work properly')
+      }
     } catch (error) {
       console.warn('SharedArrayBuffer not available, interrupts will not work properly:', error)
     }
