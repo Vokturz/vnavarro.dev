@@ -28,7 +28,11 @@ export const GET: RequestHandler = async ({ params, fetch }) => {
     const newResponse = new Response(response.body, {
       status: 200,
       headers: {
-        'Content-Type': contentType
+        'Content-Type': contentType,
+        'Cross-Origin-Opener-Policy': 'same-origin',
+        'Cross-Origin-Embedder-Policy': 'require-corp',
+        'Cross-Origin-Resource-Policy': 'cross-origin',
+        'Cache-Control': 'public, max-age=31536000, immutable'
       }
     })
 
