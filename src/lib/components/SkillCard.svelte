@@ -9,7 +9,7 @@
       iconName: string
       color?: string
       description?: string
-      level?: number
+      // level?: number
     }
   }
 

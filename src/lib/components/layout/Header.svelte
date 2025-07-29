@@ -59,12 +59,13 @@
           <div class="ml-10 flex items-baseline space-x-8">
             <a href="/" class="nav-link">Home</a>
             <a href="/blog" class="nav-link">Blog</a>
-            <a href="/resume" class="nav-link">Resume</a>
+            <a href="/projects" class="nav-link">Projects</a>
           </div>
         </div>
       </div>
       <div class="flex items-center space-x-2">
         <div class="hidden items-center space-x-2 md:flex">
+          <a href="/resume" class="nav-link text-sm">Resume</a>
           <Button variant="outline" size="icon">
             <a href="https://github.com/Vokturz" target="_blank" rel="noopener noreferrer">
               <TechIcon name="github" class="h-5 w-5" />
@@ -120,7 +121,7 @@
     <div class="md:hidden" transition:slide={{ duration: 300 }}>
       <div class="bg-card/95 space-y-1 border-t px-2 pt-2 pb-3 backdrop-blur-sm sm:px-3">
         <a
-          href="/Home"
+          href="/"
           class="nav-link block px-3 py-2 text-base font-medium"
           onclick={closeMobileMenu}
           in:fade={{ delay: 100, duration: 200 }}
@@ -134,6 +135,14 @@
           in:fade={{ delay: 150, duration: 200 }}
         >
           Blog
+        </a>
+        <a
+          href="/projects"
+          class="nav-link block px-3 py-2 text-base font-medium"
+          onclick={closeMobileMenu}
+          in:fade={{ delay: 200, duration: 200 }}
+        >
+          Projects
         </a>
         <a
           href="/resume"

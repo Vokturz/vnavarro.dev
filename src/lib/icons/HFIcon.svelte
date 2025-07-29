@@ -1,11 +1,12 @@
 <script lang="ts">
-  let { class: className = 'h-4 w-4' }: { class?: string } = $props()
+  let { class: className = 'h-4 w-4', oneColor = false }: { class?: string; oneColor?: boolean } =
+    $props()
 </script>
 
 <svg class={className} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
   <path
     d="M2.25 11.535c0-3.407 1.847-6.554 4.844-8.258a9.822 9.822 0 019.687 0c2.997 1.704 4.844 4.851 4.844 8.258 0 5.266-4.337 9.535-9.687 9.535S2.25 16.8 2.25 11.535z"
-    fill="#FF9D0B"
+    fill={oneColor ? '' : '#FF9D0B'}
   />
   <path
     d="M11.938 20.086c4.797 0 8.687-3.829 8.687-8.551 0-4.722-3.89-8.55-8.687-8.55-4.798 0-8.688 3.828-8.688 8.55 0 4.722 3.89 8.55 8.688 8.55z"

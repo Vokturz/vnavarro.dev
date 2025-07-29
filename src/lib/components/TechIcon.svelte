@@ -12,7 +12,13 @@
   }
 
   const iconName = `si${name.charAt(0).toUpperCase() + name.slice(1)}`
-  let iconData = icons[iconName as keyof typeof icons] as icons.SimpleIcon | undefined
+  let iconData = $derived(icons[iconName as keyof typeof icons] as icons.SimpleIcon | undefined)
+  if (name === 'transformers') {
+    iconData = icons['siHuggingface' as keyof typeof icons] as icons.SimpleIcon | undefined
+  }
+  if (name === 'sveltekit') {
+    iconData = icons['siSvelte' as keyof typeof icons] as icons.SimpleIcon | undefined
+  }
   let CustomIcon = customIcons[name as keyof typeof customIcons]
 </script>
 

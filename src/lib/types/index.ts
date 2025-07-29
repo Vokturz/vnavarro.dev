@@ -37,3 +37,14 @@ export type JupyterNotebook = {
   nbformat: number
   nbformat_minor: number
 }
+
+export type Project = {
+  title: string
+  description: string
+  technologies: string[]
+  githubUrl?: string
+  hfUrl?: string
+  liveUrl?: string
+  image?: string
+  featured?: boolean
+}
