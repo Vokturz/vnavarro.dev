@@ -1,7 +1,12 @@
 import matter from 'gray-matter'
-import type { Post, JupyterNotebook } from '$lib/types'
+import type { Post, JupyterNotebook, Project } from '$lib/types'
 
-const postFiles = import.meta.glob('/posts/*.{md,ipynb}', {
+const postFiles = import.meta.glob('/data/posts/*.{md,ipynb}', {
+  query: '?raw',
+  import: 'default'
+})
+
+const projectFile = import.meta.glob('/data/projects.json', {
   query: '?raw',
   import: 'default'
 })
@@ -57,7 +62,15 @@ export async function load() {
 
   const sortedPosts = posts.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
 
+  const projectFiles = Object.values(projectFile)
+
+  if (projectFiles.length === 0) throw new Error('No project files found')
+  const projectsRaw = await projectFiles[0]()
+  const projects: Project[] = JSON.parse(projectsRaw as string)
+  const featuredProjects = projects.filter((project) => project.featured)
+
   return {
-    posts: sortedPosts.slice(0, 6)
+    posts: sortedPosts.slice(0, 6),
+    projects: featuredProjects
   }
 }

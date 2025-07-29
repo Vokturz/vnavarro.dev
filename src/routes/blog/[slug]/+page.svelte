@@ -45,8 +45,8 @@
 
   const editUrl = $derived(
     post.type === 'markdown'
-      ? `https://github.com/Vokturz/vnavarro.dev/edit/main/posts/${post.slug}.md`
-      : `https://github.com/Vokturz/vnavarro.dev/blob/main/posts/${post.slug}.ipynb`
+      ? `https://github.com/Vokturz/vnavarro.dev/edit/main/data/posts/${post.slug}.md`
+      : `https://github.com/Vokturz/vnavarro.dev/blob/main/data/posts/${post.slug}.ipynb`
   )
 
   function toggleMobileToc() {

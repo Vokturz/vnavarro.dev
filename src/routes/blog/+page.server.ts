@@ -2,8 +2,8 @@ import matter from 'gray-matter'
 import type { Post, JupyterNotebook } from '$lib/types'
 
 export async function load() {
-  // Use static/posts for both dev and prod for consistency
-  const postFiles = import.meta.glob('/posts/*.{md,ipynb}', {
+  // Use static/data/posts for both dev and prod for consistency
+  const postFiles = import.meta.glob('/data/posts/*.{md,ipynb}', {
     query: '?raw',
     import: 'default'
   })

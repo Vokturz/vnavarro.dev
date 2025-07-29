@@ -5,8 +5,8 @@ import type { PageServerLoad } from './$types'
 import { marked } from '$lib/markdown'
 import { NotebookRenderer } from '$lib/notebook'
 
-const markdownFiles = import.meta.glob('/posts/*.md', { query: '?raw', import: 'default' })
-const notebookFiles = import.meta.glob('/posts/*.ipynb', {
+const markdownFiles = import.meta.glob('/data/posts/*.md', { query: '?raw', import: 'default' })
+const notebookFiles = import.meta.glob('/data/posts/*.ipynb', {
   query: '?raw',
   import: 'default'
 })
@@ -14,8 +14,8 @@ const notebookFiles = import.meta.glob('/posts/*.ipynb', {
 export const load: PageServerLoad = async ({ params }) => {
   const { slug } = params
 
-  const markdownPath = `/posts/${slug}.md`
-  const notebookPath = `/posts/${slug}.ipynb`
+  const markdownPath = `/data/posts/${slug}.md`
+  const notebookPath = `/data/posts/${slug}.ipynb`
 
   let post: PostWithContent
 
