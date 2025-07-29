@@ -24,3 +24,5 @@ vite.config.ts.timestamp-*
 
 # static/posts
 static/posts
+
+.vscode/
