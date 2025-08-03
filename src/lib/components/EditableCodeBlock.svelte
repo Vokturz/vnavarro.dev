@@ -38,12 +38,12 @@
   let showOutput = $state(initialOutput.length > 0)
   let hasUserExecuted = $state(false)
   let currentExecutionNumber = $state(executionNumber)
-  let isReadOnly = $derived(!$pyodideStore.ready)
+  const isPython = $derived(language === 'python' || language === 'py')
+  let isReadOnly = $derived(!$pyodideStore.ready || !isPython)
   let CodeJar: any
   let hljs: any
 
   const executionCounter = getContext<Writable<number>>('executionCounter')
-  const isPython = $derived(language === 'python' || language === 'py')
 
   function handleKeyDown(event: KeyboardEvent) {
     if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
@@ -249,7 +249,7 @@
       {/if}
     </div>
 
-    {#if !isReadOnly || $pyodideStore.loading}
+    {#if ($pyodideStore.loading || $pyodideStore.ready) && isPython}
       <div
         class="absolute top-2 right-2 flex gap-1 opacity-100 transition-opacity sm:opacity-0 sm:group-hover:opacity-100"
       >
@@ -279,7 +279,7 @@
     <Button
       variant="ghost"
       size="sm"
-      class="absolute top-2 {!isReadOnly || $pyodideStore.loading
+      class="absolute top-2 {($pyodideStore.loading || $pyodideStore.ready) && isPython
         ? 'right-12'
         : 'right-2'} opacity-100 transition-opacity sm:opacity-0 sm:group-hover:opacity-100"
       onclick={copyCode}
