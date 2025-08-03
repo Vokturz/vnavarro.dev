@@ -46,7 +46,8 @@ export async function load() {
         title: metadata.title,
         date: metadata.date,
         summary: metadata.summary,
-        image: metadata.image
+        image: metadata.image,
+        icon: 'jupyter'
       })
     } else {
       const { data } = matter(fileContent as string)
@@ -55,7 +56,8 @@ export async function load() {
         title: data.title,
         date: data.date,
         summary: data.summary,
-        image: data.image
+        image: data.image,
+        icon: data.icon
       })
     }
   }

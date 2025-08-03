@@ -3,7 +3,7 @@
   import type { PostWithContent } from '$lib/types'
   import { Button } from '$lib/components/ui/button'
   import * as Alert from '$lib/components/ui/alert/index.js'
-  import { ArrowLeft, Check, Edit, LoaderCircle, X, List } from 'lucide-svelte'
+  import { ArrowLeft, Check, Edit, LoaderCircle, ChevronsRight, X, List } from 'lucide-svelte'
   import { onDestroy, onMount, setContext } from 'svelte'
   import { transformCodeBlocks } from '$lib/code-block'
   import { writable } from 'svelte/store'
@@ -13,6 +13,7 @@
   import TableOfContents from '$lib/components/TableOfContents.svelte'
   import { extractHeadings, addIdsToHeadings, type TocItem } from '$lib/toc'
   import { clearCodeBlockRefs } from '$lib/code-block'
+  import { slide } from 'svelte/transition'
 
   const { data }: { data: { post: PostWithContent } } = $props()
   const { post } = data
@@ -24,6 +25,7 @@
   let showPyodidePrompt = $state(false)
   let tocItems: TocItem[] = $state([])
   let showMobileToc = $state(false)
+  let loadingEnvironment = $state(false)
 
   onMount(() => {
     // Process content to add IDs to headings and extract TOC
@@ -55,6 +57,7 @@
 
   function initPyodide() {
     showPyodidePrompt = false
+    loadingEnvironment = true
     initializePyodide()
       .then(() => {
         showPyodideNotification = true
@@ -71,8 +74,8 @@
       })
   }
 
-  function dismissPyodidePrompt() {
-    showPyodidePrompt = false
+  function togglePyodidePrompt() {
+    showPyodidePrompt = !showPyodidePrompt
   }
 </script>
 
@@ -83,7 +86,7 @@
 
 <!-- Pyodide Initialization Prompt -->
 {#if showPyodidePrompt}
-  <div class="fixed right-4 bottom-4 z-50">
+  <div class="fixed right-2 bottom-2 z-50" transition:slide>
     <Alert.Root class="bg-yellow-400 text-black">
       <Alert.Title>
         <div class="flex flex-row items-center justify-between">
@@ -92,8 +95,8 @@
             <Button variant="secondary" onclick={initPyodide} class="h-6 w-6">
               <Check class="h-3 w-3" />
             </Button>
-            <Button variant="ghost" onclick={dismissPyodidePrompt} class="h-6 w-6">
-              <X class="h-4 w-4" />
+            <Button variant="ghost" onclick={togglePyodidePrompt} class="h-6 w-6">
+              <ChevronsRight class="h-4 w-4" />
             </Button>
           </div>
         </div></Alert.Title
@@ -103,11 +106,23 @@
       </Alert.Description>
     </Alert.Root>
   </div>
+{:else if !loadingEnvironment}
+  <div class="fixed right-2 bottom-2 z-50 p-2" transition:slide={{ delay: 200 }}>
+    <Alert.Root class="bg-yellow-400 text-black">
+      <Alert.Description class="text-sm text-black">
+        <div class="flex flex-row">
+          <Button variant="no-background" onclick={togglePyodidePrompt} class="h-6 w-6">
+            <TechIcon name="python" />
+          </Button>
+        </div>
+      </Alert.Description>
+    </Alert.Root>
+  </div>
 {/if}
 
 <!-- Pyodide Ready Notification -->
 {#if showPyodideNotification}
-  <div class="fixed right-4 bottom-4 z-50">
+  <div class="fixed right-2 bottom-2 z-50" transition:slide>
     <Alert.Root class="bg-green-500 font-bold text-white">
       <Check class="h-5 w-5" />
       <Alert.Title>Python environment ready!</Alert.Title>
@@ -117,7 +132,7 @@
 
 <!-- Loading indicator for pyodide -->
 {#if $pyodideStore.loading}
-  <div class="fixed right-4 bottom-4 z-50">
+  <div class="fixed right-2 bottom-2 z-50" transition:slide>
     <Alert.Root class="bg-blue-500 text-white">
       <LoaderCircle class="h-5 w-5 animate-spin" />
       <Alert.Title>Loading Python environment...</Alert.Title>
@@ -127,7 +142,7 @@
 
 <!-- Error notification for pyodide -->
 {#if $pyodideStore.error}
-  <div class="fixed right-4 bottom-4 z-50">
+  <div class="fixed right-2 bottom-2 z-50" transition:slide>
     <Alert.Root class="bg-red-500">
       <X class="h-5 w-5 text-white" />
       <Alert.Title>Failed to load Python: See console for details</Alert.Title>

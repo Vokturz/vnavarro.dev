@@ -49,7 +49,9 @@ export async function load() {
         title: metadata.title,
         date: metadata.date,
         summary: metadata.summary,
-        image: metadata.image
+        image: metadata.image,
+        icon: 'jupyter',
+        tags: ['notebook']
       })
     } else {
       // Handle Markdown file
@@ -60,7 +62,9 @@ export async function load() {
         title: data.title,
         date: data.date,
         summary: data.summary,
-        image: data.image
+        image: data.image,
+        icon: data.icon,
+        tags: data.tags
       })
     }
   }

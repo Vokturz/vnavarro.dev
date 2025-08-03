@@ -1,4 +1,6 @@
 <script lang="ts">
+  import TechIcon from '$lib/components/TechIcon.svelte'
+  import Badge from '$lib/components/ui/badge/badge.svelte'
   import type { Post } from '$lib/types'
   import { getPostGradient } from '$lib/utils/images'
 
@@ -16,12 +18,30 @@
         {#if post.image}
           <img src={post.image} alt={post.title} class="w-32 object-cover" loading="lazy" />
         {:else}
-          <div class="h-full w-32" style="background: {getPostGradient(post.image)}"></div>
+          <div class="h-full min-w-32" style="background: {getPostGradient(post.image)}"></div>
         {/if}
         <div class="p-6">
-          <h2 class="mb-2 text-2xl font-semibold">{post.title}</h2>
-          <p class="mb-2 text-gray-500">{new Date(post.date).toLocaleDateString()}</p>
+          <div class="flex flex-row items-center">
+            {#if post.icon}
+              <TechIcon name={post.icon} class="mr-1 h-4 w-4" />
+            {/if}
+            <h2 class="mb-2 text-2xl font-semibold">{post.title}</h2>
+          </div>
+          <p class="mb-2 text-gray-500">{new Date(post.date).toDateString()}</p>
           <p>{post.summary}</p>
+          {#if post.tags}
+            <div class="mt-1 flex flex-row items-center space-x-4">
+              {#each post.tags as tag (tag)}
+                <Badge
+                  variant="secondary"
+                  class="mr-1 flex items-center gap-2 transition-transform hover:scale-105"
+                >
+                  <!-- <TechIcon name={tag} class="h-3 w-3" /> -->
+                  {tag}
+                </Badge>
+              {/each}
+            </div>
+          {/if}
         </div>
       </a>
     {/each}

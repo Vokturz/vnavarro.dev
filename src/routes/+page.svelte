@@ -74,9 +74,7 @@
         <div class="mb-16 text-center">
           <h2 class="gradient-text text-3xl font-extrabold sm:text-4xl">Latest Blog Posts</h2>
           <div class="bg-primary mx-auto mt-4 h-1 w-20 rounded-full"></div>
-          <p class="text-muted-foreground mx-auto mt-4 max-w-2xl text-xl">
-            Sharing my thoughts on development, technology, and more.
-          </p>
+          <p class="text-muted-foreground mx-auto mt-4 max-w-2xl text-xl">Sharing my thoughts.</p>
         </div>
 
         {#if data.posts.length > 0}

@@ -8,6 +8,8 @@ export type Post = {
   image?: string
   runnable?: boolean
   type?: 'markdown' | 'notebook'
+  icon?: string
+  tags?: string[]
 }
 
 export type PostWithContent = Post & {
