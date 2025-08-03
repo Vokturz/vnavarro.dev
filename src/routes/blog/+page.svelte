@@ -23,7 +23,7 @@
         <div class="p-6">
           <div class="flex flex-row items-center">
             {#if post.icon}
-              <TechIcon name={post.icon} class="mr-1 h-4 w-4" />
+              <TechIcon name={post.icon} class="mt-2 mr-1 h-4 w-4 " />
             {/if}
             <h2 class="mb-2 text-2xl font-semibold">{post.title}</h2>
           </div>
