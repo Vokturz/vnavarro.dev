@@ -216,7 +216,7 @@
 </script>
 
 <div
-  class="group relative mt-4 {!isReadOnly ? 'pl-4' : 'pl-0'} transition-all duration-200 lg:pl-0"
+  class="group relative my-2 {!isReadOnly ? 'pl-4' : 'pl-0'} transition-all duration-200 lg:pl-0"
   data-block-id={blockId}
 >
   <div class="relative rounded-md border">

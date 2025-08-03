@@ -125,7 +125,6 @@
   }
 }
 
-
 .gradient-text {
   background: linear-gradient(90deg, #3b82f6, #8b5cf6, #ec4899);
   -webkit-background-clip: text;
@@ -139,7 +138,6 @@
 
 .card-hover:hover {
   transform: translateY(-5px) scale(1.02);
-
 }
 
 .typewriter {
@@ -173,27 +171,26 @@
   opacity: 0;
 }
 
-
 @layer base {
   h1 {
     font-size: var(--text-2xl);
     font-weight: 700;
-    margin: 0.5rem 0;
+    margin: 1rem 0;
   }
   h2 {
     font-size: var(--text-xl);
     font-weight: 500;
-    margin: 0.5rem 0;
+    margin: 1rem 0;
   }
   h3 {
     font-size: var(--text-lg);
     font-weight: 400;
-    margin: 0.5rem 0;
+    margin: 1rem 0;
   }
   h4 {
     font-size: var(--text-base);
     font-weight: 400;
-    margin: 0.5rem 0;
+    margin: 1rem 0;
   }
 }
 
@@ -265,7 +262,9 @@
   max-width: 100%;
   height: auto;
   border-radius: 0.375rem;
-  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  box-shadow:
+    0 1px 3px 0 rgb(0 0 0 / 0.1),
+    0 1px 2px -1px rgb(0 0 0 / 0.1);
 }
 
 .notebook-json-output {
@@ -308,6 +307,35 @@
 .notebook-output-container {
   scrollbar-width: thin;
   scrollbar-color: var(--muted-foreground) transparent;
+}
+
+.notebook-table-container {
+  overflow-x: auto;
+  margin: 10px 0;
+  border-radius: 4px;
+  border: 1px solid #e1e5e9;
+  display: inline-block;
+  max-width: 100%;
+}
+
+.notebook-dataframe-output {
+  border-collapse: collapse;
+  margin: 0;
+  font-size: 12px;
+  width: auto; /* Changed from 100% to auto */
+}
+
+.notebook-dataframe-output th,
+.notebook-dataframe-output td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+  white-space: nowrap; /* Prevents text wrapping in cells */
+}
+
+.notebook-dataframe-output th {
+  background-color: #f8f9fa;
+  font-weight: bold;
 }
 
 /* For the parent container with max-h-150 */

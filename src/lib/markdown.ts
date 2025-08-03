@@ -43,6 +43,30 @@ renderer.link = function (token) {
   return `<a class="underline hover:text-purple-500" href="${href}"${title}${security}>${text}</a>`
 }
 
+renderer.list = function (token) {
+  const type = token.ordered ? 'ol' : 'ul'
+  const className = token.ordered
+    ? 'list-decimal list-inside space-y-1'
+    : 'list-disc list-inside space-y-1'
+  const body = token.items.map((item) => this.listitem(item)).join('\n')
+  return `<${type} class="${className}">\n${body}</${type}>\n`
+}
+
+renderer.listitem = function (token) {
+  let itemBody = ''
+  if (token.task) {
+    const checkbox = token.checked ? 'checked="" ' : ''
+    itemBody += `<input ${checkbox}disabled="" type="checkbox"> `
+  }
+  itemBody += this.parser.parseInline(token.tokens)
+  return `<li class="ml-4">${itemBody}</li>`
+}
+
+renderer.blockquote = function (token) {
+  const body = this.parser.parse(token.tokens)
+  return `<blockquote class="border-l-4 border-gray-300 pl-4 py-2 my-4 italic text-gray-700">${body}</blockquote>\n`
+}
+
 const marked = new Marked()
 
 marked.use(

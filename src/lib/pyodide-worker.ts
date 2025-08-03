@@ -118,6 +118,23 @@ self.onmessage = async function (e) {
             if obj is None:
                 return ""
 
+            # Handle pandas DataFrames specifically
+            if hasattr(obj, 'to_html') and hasattr(obj, 'dtypes'):
+                # This is likely a pandas DataFrame
+                try:
+                    # Use pandas' built-in HTML representation with some styling
+                    html_table = obj.to_html(
+                        classes='notebook-dataframe-output',
+                        table_id=None,
+                        escape=False,
+                        max_rows=20,  # Limit rows for performance
+                        max_cols=20    # Limit columns for readability
+                    )
+                    return f'<div class="notebook-table-container">{html_table}</div>'
+                except:
+                    # Fallback if to_html fails
+                    pass
+
             # Handle different types of objects
             if hasattr(obj, '_repr_html_'):
                 return obj._repr_html_()
