@@ -89,7 +89,7 @@
       <div class="space-y-8">
         <div>
           <h3 class="text-2xl font-semibold">AI Engineer</h3>
-          <p class="text-muted-foreground">Judini Inc. (CodeGPT) | Dic 2023 - Present</p>
+          <p class="text-muted-foreground">Judini Inc. (CodeGPT) | Dic 2023 - Jul 2025</p>
           <ul class="mt-2 list-inside list-disc space-y-1 text-lg">
             <li>Designed and implemented knowledge-graph algorithm for codebase understanding</li>
             <li>Deployed and managed production AI models on cloud providers</li>
