@@ -19,10 +19,7 @@
 <Tooltip.Provider>
   <Tooltip.Root>
     <Tooltip.Trigger>
-      <Badge
-        variant="secondary"
-        class="flex items-center gap-2 transition-transform hover:scale-105"
-      >
+      <Badge variant="outline" class="flex items-center gap-2 transition-transform hover:scale-105">
         <TechIcon name={skill.iconName} class={`${skill.color} h-4 w-4`} />
         {skill.name}
       </Badge>

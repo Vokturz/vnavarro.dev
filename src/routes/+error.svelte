@@ -9,7 +9,7 @@
     <section class="mx-auto max-w-4xl px-4 py-20 text-center sm:px-6 lg:px-8">
       <h1 class="gradient-text text-6xl font-extrabold sm:text-8xl">{status}</h1>
       <div class="bg-primary mx-auto my-4 h-1 w-20 rounded-full"></div>
-      <Badge variant="secondary" class="px-4 py-2 text-lg">
+      <Badge variant="outline" class="px-4 py-2 text-lg">
         {status === 404 ? 'Page Not Found' : 'Error'}
       </Badge>
       <p class="text-muted-foreground mx-auto mt-8 max-w-2xl text-xl">
@@ -26,7 +26,7 @@
       <div class="mt-12">
         <a
           href="/"
-          class="bg-muted hover:bg-purple-500 inline-flex items-center rounded-md px-6 py-3 text-base font-medium text-primary transition-colors"
+          class="bg-muted text-primary inline-flex items-center rounded-md px-6 py-3 text-base font-medium transition-colors hover:bg-purple-500"
         >
           ← Back to Home
         </a>

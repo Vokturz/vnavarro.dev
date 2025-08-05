@@ -13,19 +13,19 @@
       // Prevent FOUC by applying theme immediately
       ;(function () {
         function applyTheme(themeValue) {
-          if (themeValue === 'terminal') {
-            document.body.classList.add('terminal')
+          if (themeValue === 'dark') {
+            document.documentElement.classList.add('dark')
             // Remove existing highlight.js stylesheets
             const existingLinks = document.querySelectorAll('link[href*="highlight.js/styles"]')
             existingLinks.forEach((link) => link.remove())
-            // Add terminal theme
+            // Add dark theme
             const link = document.createElement('link')
             link.rel = 'stylesheet'
             link.href =
-              'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/sunburst.min.css'
+              'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
             document.head.appendChild(link)
           } else {
-            document.body.classList.remove('terminal')
+            document.documentElement.classList.remove('dark')
             // Remove existing highlight.js stylesheets
             const existingLinks = document.querySelectorAll('link[href*="highlight.js/styles"]')
             existingLinks.forEach((link) => link.remove())
@@ -38,9 +38,19 @@
           }
         }
 
-        // Apply initial theme from localStorage
-        const savedTheme = localStorage.getItem('theme') || 'light'
-        applyTheme(savedTheme)
+        // Apply initial theme from localStorage or system preference
+        const savedTheme = localStorage.getItem('theme')
+        let initialTheme = 'light'
+
+        if (savedTheme && (savedTheme === 'light' || savedTheme === 'dark')) {
+          initialTheme = savedTheme
+        } else {
+          // Check system preference
+          const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+          initialTheme = prefersDark ? 'dark' : 'light'
+        }
+
+        applyTheme(initialTheme)
 
         // Make the function globally available for your Svelte component
         window.applyThemeGlobally = applyTheme

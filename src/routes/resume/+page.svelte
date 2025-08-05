@@ -243,7 +243,7 @@
           <span class="text-primary mr-4 font-bold">[1]</span>
           <div>
             <p class="text-lg">
-              E. Elejalde, L. Ferres, <strong class="text-purple-500">V. Navarro</strong>, L. Bravo
+              E. Elejalde, L. Ferres, <strong class="text-secondary">V. Navarro</strong>, L. Bravo
               and E. Zagheni. (2024).
               <a
                 href="https://doi.org/10.1038/s41598-024-63098-5"
@@ -263,7 +263,7 @@
           <span class="text-primary mr-4 font-bold">[2]</span>
           <div>
             <p class="text-lg">
-              L. Pappalardo, G. Cornacchia, <strong class="text-purple-500">V. Navarro</strong>, L.
+              L. Pappalardo, G. Cornacchia, <strong class="text-secondary">V. Navarro</strong>, L.
               Bravo and L. Ferres. (2023).
               <a
                 href="https://doi.org/10.1038/s41597-022-01893-3"
@@ -284,7 +284,7 @@
             <p class="text-lg">
               P. Goldoni, S. Pita, C. Boisson, W. Max-Moerbeck, E. Kasai, D. A. Williams, F.
               D'Ammando,
-              <strong class="text-purple-500">V. Navarro-Aranguiz</strong>, M. Backes, U. Barres de
+              <strong class="text-secondary">V. Navarro-Aranguiz</strong>, M. Backes, U. Barres de
               Almeida, J. Becerra-Gonzalez, G. Cotter, O. Hervet, J.-P. Lenain, E. Lindfors, H. Sol
               and S. Wagner. (2021).
               <a
@@ -304,7 +304,7 @@
           <span class="text-primary mr-4 font-bold">[4]</span>
           <div>
             <p class="text-lg">
-              S. Casassus, H. Avenhaus, S. Perez, <strong class="text-purple-500">V. Navarro</strong
+              S. Casassus, H. Avenhaus, S. Perez, <strong class="text-secondary">V. Navarro</strong
               >, M. Carcamo, S. Marino, L. Cieza, S. P. Quanz, F. Alarcon, A. Zurlo, A. Osses, F. R.
               Rannou, P. E. Roman and M. Barraza. (2018).
               <a

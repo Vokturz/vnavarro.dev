@@ -3,7 +3,16 @@
   import type { PostWithContent } from '$lib/types'
   import { Button } from '$lib/components/ui/button'
   import * as Alert from '$lib/components/ui/alert/index.js'
-  import { ArrowLeft, Check, Edit, LoaderCircle, ChevronsRight, X, List } from 'lucide-svelte'
+  import {
+    ArrowLeft,
+    Check,
+    Edit,
+    LoaderCircle,
+    ChevronsRight,
+    X,
+    List,
+    ChevronsDown
+  } from 'lucide-svelte'
   import { onDestroy, onMount, setContext } from 'svelte'
   import { transformCodeBlocks } from '$lib/code-block'
   import { writable } from 'svelte/store'
@@ -29,7 +38,7 @@
 
   onMount(() => {
     // Process content to add IDs to headings and extract TOC
-    tocItems = extractHeadings(post.content)
+    tocItems = extractHeadings(post.title, post.content)
     transformCodeBlocks()
     addIdsToHeadings()
 
@@ -92,11 +101,11 @@
         <div class="flex flex-row items-center justify-between">
           Initialize Python Environment?
           <div class="flex flex-row gap-2">
-            <Button variant="secondary" onclick={initPyodide} class="h-6 w-6">
+            <Button variant="ghost" onclick={initPyodide} class="h-6 w-6">
               <Check class="h-3 w-3" />
             </Button>
             <Button variant="ghost" onclick={togglePyodidePrompt} class="h-6 w-6">
-              <ChevronsRight class="h-4 w-4" />
+              <ChevronsDown class="h-4 w-4" />
             </Button>
           </div>
         </div></Alert.Title

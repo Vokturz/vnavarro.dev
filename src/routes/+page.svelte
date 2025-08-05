@@ -15,7 +15,7 @@
     <ConstellationBackground useWindowMouse={true} />
   </div>
 
-  <div class="relative z-10 mt-[-50px] pb-32">
+  <div class="relative z-20 mt-[-50px] pb-32">
     <Hero />
   </div>
 
@@ -74,7 +74,9 @@
         <div class="mb-16 text-center">
           <h2 class="gradient-text text-3xl font-extrabold sm:text-4xl">Latest Blog Posts</h2>
           <div class="bg-primary mx-auto mt-4 h-1 w-20 rounded-full"></div>
-          <p class="text-muted-foreground mx-auto mt-4 max-w-2xl text-xl">Sharing my thoughts.</p>
+          <p class="text-muted-foreground mx-auto mt-4 max-w-2xl text-xl">
+            Sharing my thoughts and experiences
+          </p>
         </div>
 
         {#if data.posts.length > 0}
@@ -82,6 +84,14 @@
             {#each data.posts as post (post.slug)}
               <PostCard {post} />
             {/each}
+          </div>
+          <div class="mt-12 text-center">
+            <Button variant="outline" class="group">
+              <a href="/blog" class="flex items-center">
+                View All Blog Posts
+                <ExternalLink class="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+              </a>
+            </Button>
           </div>
         {:else}
           <p class="text-muted-foreground text-center">No posts yet. Check back soon!</p>

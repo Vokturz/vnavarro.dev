@@ -12,6 +12,7 @@
   import { ExternalLink, Github } from 'lucide-svelte'
   import TechIcon from './TechIcon.svelte'
   import HfIcon from '$lib/icons/HFIcon.svelte'
+  import Badge from './ui/badge/badge.svelte'
 
   interface Props {
     project: Project
@@ -34,10 +35,10 @@
     {/if}
     <CardDescription class="mt-2 flex flex-wrap gap-2">
       {#each project.technologies as tech (tech)}
-        <div class="bg-muted flex items-center gap-1 rounded-full px-2 py-1 text-xs">
+        <Badge variant="outline" class="mr-2">
           <TechIcon name={tech.toLowerCase()} class="h-3 w-3" />
           <span>{tech}</span>
-        </div>
+        </Badge>
       {/each}
     </CardDescription>
   </CardHeader>

@@ -13,27 +13,32 @@
     {#each data.posts as post (post.slug)}
       <a
         href={`/blog/${post.slug}`}
-        class="flex flex-row overflow-hidden rounded-lg border transition hover:scale-102"
+        class="flex flex-col overflow-hidden rounded-lg border transition hover:scale-102 md:flex-row"
       >
         {#if post.image}
           <img src={post.image} alt={post.title} class="w-32 object-cover" loading="lazy" />
         {:else}
-          <div class="h-full min-w-32" style="background: {getPostGradient(post.image)}"></div>
+          <div
+            class="h-4 md:h-full md:min-w-32"
+            style="background: {getPostGradient(post.image)}"
+          ></div>
         {/if}
         <div class="p-6">
           <div class="flex flex-row items-center">
             {#if post.icon}
-              <TechIcon name={post.icon} class="mt-2 mr-1 h-4 w-4 " />
+              <TechIcon name={post.icon} class="mt-2 mr-1 h-8 w-8 lg:h-4 lg:w-4" />
             {/if}
-            <h2 class="mb-2 text-2xl font-semibold">{post.title}</h2>
+            <h2 class="mb-2 text-xl font-semibold lg:text-2xl">{post.title}</h2>
           </div>
-          <p class="mb-2 text-gray-500">{new Date(post.date).toDateString()}</p>
-          <p>{post.summary}</p>
+          <p class="mb-2 text-sm text-gray-500 lg:text-base">
+            {new Date(post.date).toDateString()}
+          </p>
+          <p class="text-sm lg:text-base">{post.summary}</p>
           {#if post.tags}
             <div class="mt-1 flex flex-row items-center space-x-4">
               {#each post.tags as tag (tag)}
                 <Badge
-                  variant="secondary"
+                  variant="outline"
                   class="mr-1 flex items-center gap-2 transition-transform hover:scale-105"
                 >
                   <!-- <TechIcon name={tag} class="h-3 w-3" /> -->

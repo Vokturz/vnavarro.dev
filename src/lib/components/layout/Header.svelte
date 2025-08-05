@@ -7,7 +7,7 @@
   import { Button } from '$lib/components/ui/button'
   import TechIcon from '../TechIcon.svelte'
 
-  let isDarkMode = $derived($theme === 'terminal')
+  let isDarkMode = $derived($theme === 'dark')
   let isMobileMenuOpen = $state(false)
 
   function toggleMobileMenu() {
@@ -35,12 +35,12 @@
 
     // Subscribe to theme changes
     const unsubscribe = theme.subscribe((currentTheme: string) => {
-      if (currentTheme === 'terminal') {
-        document.body.classList.add('terminal')
-        localStorage.setItem('theme', 'terminal')
-        updateHighlightTheme('sunburst')
+      if (currentTheme === 'dark') {
+        document.documentElement.classList.add('dark')
+        localStorage.setItem('theme', 'dark')
+        updateHighlightTheme('atom-one-dark')
       } else {
-        document.body.classList.remove('terminal')
+        document.documentElement.classList.remove('dark')
         localStorage.setItem('theme', 'light')
         updateHighlightTheme('github')
       }
@@ -50,7 +50,7 @@
   })
 </script>
 
-<nav class="bg-card/90 sticky top-0 z-50 backdrop-blur-sm">
+<nav class="bg-card/90 border-primary/10 sticky top-0 z-50 border-b-1 backdrop-blur-sm">
   <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
     <div class="flex h-16 items-center justify-between">
       <div class="flex items-center space-x-2">
@@ -86,7 +86,7 @@
             </a>
           </Button>
         </div>
-        <div class="bg-border hidden h-6 w-px md:block"></div>
+        <div class="bg-primary/40 hidden h-6 w-px md:block"></div>
         <Button
           onclick={theme.toggle}
           variant="outline"
