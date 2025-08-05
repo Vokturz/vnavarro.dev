@@ -4,13 +4,15 @@
     "description": "My personal website built with SvelteKit, featuring a blog and projects showcase. Blog entries can be written in Markdown or Jupyter Notebooks, with support to run Python code using Pyodide.",
     "technologies": ["SvelteKit", "TypeScript", "Python", "TailwindCSS"],
     "githubUrl": "https://github.com/vokturz/vnavarro.dev",
-    "featured": true
+    "featured": true,
+    "showImage": true
   },
   {
     "title": "Transformers.js Playground",
     "description": "A playground for experimenting with the Transformers.js library, showcasing the capabilities of the library and how it can be used in web applications.",
     "technologies": ["React", "TypeScript", "TailwindCSS", "Transformers"],
     "hfUrl": "https://huggingface.co/spaces/Vokturz/transformers-js-playground",
-    "featured": true
+    "featured": true,
+    "showImage": true
   }
 ]

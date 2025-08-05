@@ -47,6 +47,6 @@ export type Project = {
   githubUrl?: string
   hfUrl?: string
   liveUrl?: string
-  image?: string
+  showImage?: boolean
   featured?: boolean
 }

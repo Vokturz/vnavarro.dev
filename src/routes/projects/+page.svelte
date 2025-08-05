@@ -15,7 +15,7 @@
     <div class="grid gap-8 md:grid-cols-2">
       {#each data.projects as project (project.title)}
         <div class="flex flex-col gap-4">
-          <ProjectCard {project} includeImage={false} />
+          <ProjectCard {project} />
         </div>
       {/each}
     </div>

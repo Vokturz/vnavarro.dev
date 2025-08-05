@@ -66,24 +66,26 @@
       <div class="flex items-center space-x-2">
         <div class="hidden items-center space-x-2 md:flex">
           <a href="/resume" class="nav-link text-sm">Resume</a>
-          <Button variant="outline" size="icon">
-            <a href="https://github.com/Vokturz" target="_blank" rel="noopener noreferrer">
-              <TechIcon name="github" class="h-5 w-5" />
-            </a>
+          <Button
+            variant="outline"
+            size="icon"
+            onclick={() => window.open('https://github.com/Vokturz', '_blank')}
+          >
+            <TechIcon name="github" class="h-5 w-5" />
           </Button>
-          <Button variant="outline" size="icon">
-            <a
-              href="https://linkedin.com/in/vnavarroaranguiz"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <Linkedin class="h-5 w-5" />
-            </a>
+          <Button
+            variant="outline"
+            size="icon"
+            onclick={() => window.open('https://linkedin.com/in/vnavarroaranguiz', '_blank')}
+          >
+            <Linkedin class="h-5 w-5" />
           </Button>
-          <Button variant="outline" size="icon">
-            <a href="https://huggingface.co/Vokturz" target="_blank" rel="noopener noreferrer">
-              <TechIcon name="huggingface" class="h-5 w-5" />
-            </a>
+          <Button
+            variant="outline"
+            size="icon"
+            onclick={() => window.open('https://huggingface.co/Vokturz', '_blank')}
+          >
+            <TechIcon name="huggingface" class="h-5 w-5" />
           </Button>
         </div>
         <div class="bg-primary/40 hidden h-6 w-px md:block"></div>
@@ -156,24 +158,26 @@
           class="absolute top-0 right-0 flex items-center space-x-2 px-3 py-2"
           in:fade={{ delay: 100, duration: 200 }}
         >
-          <Button variant="outline" size="icon">
-            <a href="https://github.com/Vokturz" target="_blank" rel="noopener noreferrer">
-              <TechIcon name="github" class="h-5 w-5" />
-            </a>
+          <Button
+            variant="outline"
+            size="icon"
+            onclick={() => window.open('https://github.com/Vokturz', '_blank')}
+          >
+            <TechIcon name="github" class="h-5 w-5" />
           </Button>
-          <Button variant="outline" size="icon">
-            <a
-              href="https://linkedin.com/in/vnavarroaranguiz"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <Linkedin class="h-5 w-5" />
-            </a>
+          <Button
+            variant="outline"
+            size="icon"
+            onclick={() => window.open('https://linkedin.com/in/vnavarroaranguiz', '_blank')}
+          >
+            <Linkedin class="h-5 w-5" />
           </Button>
-          <Button variant="outline" size="icon">
-            <a href="https://huggingface.co/Vokturz" target="_blank" rel="noopener noreferrer">
-              <TechIcon name="huggingface" class="h-5 w-5" />
-            </a>
+          <Button
+            variant="outline"
+            size="icon"
+            onclick={() => window.open('https://huggingface.co/Vokturz', '_blank')}
+          >
+            <TechIcon name="huggingface" class="h-5 w-5" />
           </Button>
         </div>
       </div>

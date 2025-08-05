@@ -14,28 +14,44 @@
   import HfIcon from '$lib/icons/HFIcon.svelte'
   import Badge from './ui/badge/badge.svelte'
 
-  interface Props {
-    project: Project
-    includeImage?: boolean
+  function slugify(str: string): string {
+    return str
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '')
+      .trim()
   }
 
-  let { project, includeImage = false }: Props = $props()
+  interface Props {
+    project: Project
+  }
+
+  let { project }: Props = $props()
 </script>
 
 <Card class="card-hover flex h-full flex-col">
   <CardHeader>
     <CardTitle>{project.title}</CardTitle>
-    {#if project.liveUrl && includeImage}
-      <img
-        src="https://mini.s-shot.ru/1024x768/PNG/?{project.liveUrl}"
-        alt={project.title + ' screenshot'}
-        class="h-48 w-full rounded-lg border object-cover"
-        loading="lazy"
-      />
+    {#if project.showImage}
+      <a
+        href={slugify(project.title) === 'personal-website'
+          ? '/blog/python-in-browser'
+          : (project.liveUrl ?? project.hfUrl)}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="flex items-center gap-2"
+      >
+        <img
+          src="/projects/{slugify(project.title)}.png"
+          alt={project.title + ' screenshot'}
+          class="xs:h-32 h-48 w-full rounded-lg border object-cover object-top"
+          loading="lazy"
+        />
+      </a>
     {/if}
     <CardDescription class="mt-2 flex flex-wrap gap-2">
       {#each project.technologies as tech (tech)}
-        <Badge variant="outline" class="mr-2">
+        <Badge variant="outline">
           <TechIcon name={tech.toLowerCase()} class="h-3 w-3" />
           <span>{tech}</span>
         </Badge>
