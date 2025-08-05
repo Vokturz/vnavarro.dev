@@ -1,38 +1,56 @@
-# sv
+# vnavarro.dev
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+My personal website built with SvelteKit, featuring a blog and projects showcase.
 
-## Creating a project
+## Features
 
-If you're seeing this, you've probably already done this step. Congrats!
+- **Personal Portfolio**: About me section with profile and introduction
+- **Blog System**: Markdown-based blog posts with support for interactive content
+- **Projects Showcase**: Featured projects with descriptions and technology stacks
+- **Interactive Python Execution**: Run Python code directly in the browser using Pyodide
+- **Responsive Design**: Built with TailwindCSS for a modern, mobile-friendly interface
+- **TypeScript**: Full type safety throughout the application
 
+## Tech Stack
+
+- **Framework**: SvelteKit
+- **Language**: TypeScript
+- **Styling**: TailwindCSS
+- **Python Runtime**: Pyodide for in-browser Python execution
+- **Deployment**: Vercel
+
+## Getting Started
+
+1. Clone the repository:
 ```bash
-# create a new project in the current directory
-npx sv create
-
-# create a new project in my-app
-npx sv create my-app
+git clone https://github.com/vokturz/vnavarro.dev.git
+cd vnavarro.dev
 ```
 
-## Developing
-
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
+2. Install dependencies:
 ```bash
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
+pnpm install
 ```
 
-## Building
-
-To create a production version of your app:
-
+3. Start the development server:
 ```bash
-npm run build
+pnpm dev
 ```
 
-You can preview the production build with `npm run preview`.
+4. Build for production:
+```bash
+pnpm build
+```
 
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+## Project Structure
+
+```
+src/
+├── lib/           # Components and utilities
+├── routes/        # SvelteKit routes
+└── app.html       # Main app template
+
+data/
+├── posts/         # Blog posts in Markdown
+└── projects.json  # Projects data
+```
