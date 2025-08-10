@@ -3,16 +3,7 @@
   import type { PostWithContent } from '$lib/types'
   import { Button } from '$lib/components/ui/button'
   import * as Alert from '$lib/components/ui/alert/index.js'
-  import {
-    ArrowLeft,
-    Check,
-    Edit,
-    LoaderCircle,
-    ChevronsRight,
-    X,
-    List,
-    ChevronsDown
-  } from 'lucide-svelte'
+  import { ArrowLeft, Check, Edit, LoaderCircle, X, List, ChevronsDown } from 'lucide-svelte'
   import { onDestroy, onMount, setContext } from 'svelte'
   import { transformCodeBlocks } from '$lib/code-block'
   import { writable } from 'svelte/store'
@@ -23,6 +14,7 @@
   import { extractHeadings, addIdsToHeadings, type TocItem } from '$lib/toc'
   import { clearCodeBlockRefs } from '$lib/code-block'
   import { slide } from 'svelte/transition'
+  import * as Tooltip from '$lib/components/ui/tooltip/index.js'
 
   const { data }: { data: { post: PostWithContent } } = $props()
   const { post } = data
@@ -116,13 +108,23 @@
     </Alert.Root>
   </div>
 {:else if !loadingEnvironment}
-  <div class="fixed right-2 bottom-2 z-50 p-2" transition:slide={{ delay: 200 }}>
-    <Alert.Root class="bg-yellow-400 text-black">
+  <div class="fixed right-3 bottom-3 z-50" transition:slide={{ delay: 50 }}>
+    <Alert.Root class="h-10 bg-yellow-400 p-2 text-black">
       <Alert.Description class="text-sm text-black">
         <div class="flex flex-row">
-          <Button variant="no-background" onclick={togglePyodidePrompt} class="h-6 w-6">
-            <TechIcon name="python" />
-          </Button>
+          <Tooltip.Provider>
+            <Tooltip.Root>
+              <Tooltip.Trigger>
+                <Button variant="no-background" onclick={togglePyodidePrompt} class="h-6 w-6">
+                  <TechIcon name="python" />
+                </Button>
+              </Tooltip.Trigger>
+
+              <Tooltip.Content class="max-w-xs">
+                <p class="mt-1">Open Python prompt</p>
+              </Tooltip.Content>
+            </Tooltip.Root>
+          </Tooltip.Provider>
         </div>
       </Alert.Description>
     </Alert.Root>
