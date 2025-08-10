@@ -40,9 +40,7 @@ class WebTqdm(tqdm):
     def display(self, msg=None, pos=None):
         if not msg:
             msg = self.__str__()
-        # The "\\r" lets us identify this as a tqdm update on the JS side.
-        # The "\\n" ensures it gets flushed through the stdout buffer.
-        sys.stdout.write(f"\\r{msg}\\n")
+        sys.stdout.write(f"TQDM_BAR::{msg}\\n")
         sys.stdout.flush()
 
 # Monkey-patch the original tqdm with our custom version
@@ -122,8 +120,8 @@ self.onmessage = async (e) => {
             if (!currentExecutionId) return // Don't post messages if no execution is active
 
             // Use the carriage return "\\r" to identify tqdm progress updates
-            if (text.startsWith('\r')) {
-              const progressText = text.substring(1).trim()
+            if (text.startsWith('TQDM_BAR::')) {
+              const progressText = text.substring(10).trim()
               self.postMessage({
                 type: 'streaming-output',
                 output: `<pre class="notebook-tqdm-output">${progressText}</pre>`,

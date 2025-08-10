@@ -87,7 +87,7 @@
             tab: '  ',
             indentOn: /[(\\[{:]$/,
             spellcheck: false,
-            catchTab: false,
+            catchTab: true,
             preserveIdent: true,
             addClosing: true,
             history: true

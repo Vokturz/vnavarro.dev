@@ -69,11 +69,11 @@ export async function initializePyodide(): Promise<void> {
         }))
         resolve()
       } else if (type === 'error') {
-        pyodideStore.update((state) => ({
-          ...state,
-          loading: false,
-          error
-        }))
+        // pyodideStore.update((state) => ({
+        //   ...state,
+        //   loading: false,
+        //   error
+        // }))
         reject(new Error(error))
       }
     }
