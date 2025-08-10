@@ -105,7 +105,7 @@ print("Hello World")
 
 ## Real-time Output Streaming
 
-Traditional code execution shows results only after completion. For a true notebook-like experience, a real-time output streaming that captures `print()` statements and displays them as they happen has been implemented using a StreamingStdout class. This custom stdout handler captures all output and sends it back to the main thread via `postMessage`, creating a live terminal-like experience.
+Traditional code execution shows results only after completion. For a true notebook-like experience, real-time output streaming captures `print()` statements and displays them as they happen. The Pyodide worker intercepts stdout and stderr, sending output back to the main thread via `postMessage` for immediate display, creating a live terminal-like experience.
 
 ```python
 print("Hello")
@@ -123,9 +123,9 @@ random
 ```
 
 
-## Handling `tqdm` progress bar
+## Handling `tqdm` Progress Bars
 
-One particularly tricky challenge was supporting progress bars from libraries like `tqdm`. These typically use carriage returns (`\r`) to overwrite the same line, which doesn't work well in HTML. The solution involved creating a web-friendly version of `tqdm` that plays nicely with HTML output while preserving the visual progress indication.
+One particularly tricky challenge was supporting progress bars from libraries like `tqdm`. These typically use carriage returns (`\r`) to overwrite the same line, which doesn't work well in HTML. The solution involved creating a custom `WebTqdm` class that outputs each progress update on a new line while maintaining the visual progress indication. The worker detects progress bar output and handles it with special formatting for better web display.
 
 ```python
 from tqdm import tqdm

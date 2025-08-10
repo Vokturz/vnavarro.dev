@@ -176,7 +176,13 @@ export async function executePython(
 
       // Also send abort message as fallback
       worker!.postMessage({ type: 'abort', id })
-      reject(new Error('Python execution cancelled'))
+
+      // Set a timeout to ensure we respond promptly even if the worker doesn't
+      setTimeout(() => {
+        if (isAborted) {
+          reject(new Error('Python execution cancelled'))
+        }
+      }, 100) // 100ms timeout for abort response
     }
 
     // Set up abort handling
@@ -189,6 +195,6 @@ export async function executePython(
     }
 
     worker!.addEventListener('message', handleMessage)
-    worker!.postMessage({ type: 'execute', code, id })
+    worker!.postMessage({ type: 'execute', code, id, interruptBuffer })
   })
 }

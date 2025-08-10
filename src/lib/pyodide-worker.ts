@@ -1,329 +1,245 @@
-let pyodide: any = null
+let pyodide: any = null // eslint-disable-line @typescript-eslint/no-explicit-any
 let currentExecutionId: number | null = null
-let interruptBuffer: Uint8Array | null = null
+let globalInterruptBuffer: Uint8Array | null = null
 
-self.onmessage = async function (e) {
-  const { type, code, id, interruptBuffer: buffer } = e.data
+/**
+ * A single setup script to define all our Python-side helper functions.
+ * This is more efficient than running multiple small scripts.
+ */
+const PYTHON_SETUP_SCRIPT = `
+import sys
+import io
+import base64
+import html
+import warnings
+import matplotlib
+import matplotlib.pyplot as plt
+from tqdm.auto import tqdm
+import signal
+import time
 
-  if (type === 'init') {
-    try {
-      const { loadPyodide } = await import('pyodide')
-      pyodide = await loadPyodide({
-        indexURL: '/api/pyodide/'
-      })
+# Configure Matplotlib to use a non-interactive backend
+matplotlib.use('Agg')
 
-      if (interruptBuffer) {
-        pyodide.setInterruptBuffer(interruptBuffer)
+# Suppress common warnings for a cleaner output
+warnings.filterwarnings('ignore')
+
+# --- Custom tqdm for Web Worker Environment ---
+class WebTqdm(tqdm):
+    """
+    A custom tqdm class that writes progress updates with a carriage return
+    and a newline. This allows our JavaScript stdout handler to easily
+    distinguish progress bars from regular print statements.
+    """
+    def __init__(self, *args, **kwargs):
+        kwargs['file'] = sys.stdout
+        kwargs['dynamic_ncols'] = False
+        kwargs['ncols'] = 80 # Set a fixed width for the progress bar
+        super().__init__(*args, **kwargs)
+
+    def display(self, msg=None, pos=None):
+        if not msg:
+            msg = self.__str__()
+        # The "\\r" lets us identify this as a tqdm update on the JS side.
+        # The "\\n" ensures it gets flushed through the stdout buffer.
+        sys.stdout.write(f"\\r{msg}\\n")
+        sys.stdout.flush()
+
+# Monkey-patch the original tqdm with our custom version
+import builtins
+builtins.tqdm = WebTqdm
+sys.modules['tqdm'].tqdm = WebTqdm
+
+
+# --- Output Formatting ---
+def format_output(obj):
+    """
+    Formats a Python object into an HTML string for display, with special
+    handling for pandas DataFrames.
+    """
+    if obj is None:
+        return ""
+
+    # Custom formatting for pandas DataFrames
+    if hasattr(obj, 'to_html') and 'pandas' in str(type(obj)):
+        try:
+            html_table = obj.to_html(
+                classes='notebook-dataframe-output',
+                table_id=None,
+                escape=False,
+                max_rows=20,
+                max_cols=20
+            )
+            return f'<div class="notebook-table-container">{html_table}</div>'
+        except Exception:
+            # Fallback to standard repr if to_html fails
+            pass
+
+    # Use _repr_html_ if available (for libraries like Matplotlib)
+    if hasattr(obj, '_repr_html_'):
+        return obj._repr_html_()
+
+    # Fallback to a safe, escaped representation
+    raw_repr = repr(obj)
+    if len(raw_repr) > 10000:
+        raw_repr = raw_repr[:10000] + "... (output truncated)"
+
+    escaped_repr = html.escape(raw_repr)
+    return f'<pre class="notebook-output">{escaped_repr}</pre>'
+
+# --- Plot Handling ---
+def get_plots_as_html():
+    """
+    Checks for any active matplotlib plots, saves them as base64 PNGs,
+    and returns them as a single HTML string containing <img> tags.
+    """
+    output_parts = []
+    fig_nums = plt.get_fignums()
+    if fig_nums:
+        for fig_num in fig_nums:
+            fig = plt.figure(fig_num)
+            with io.BytesIO() as img_buffer:
+                fig.savefig(img_buffer, format='png', bbox_inches='tight', dpi=100)
+                img_buffer.seek(0)
+                img_base64 = base64.b64encode(img_buffer.getvalue()).decode('utf-8')
+                img_html = f'<div class="notebook-image-output"><img src="data:image/png;base64,{img_base64}" alt="Plot output" /></div>'
+                output_parts.append(img_html)
+        plt.close('all') # Close all figures to free memory
+    return "".join(output_parts)
+`
+
+self.onmessage = async (e) => {
+  const { type, id, code, interruptBuffer } = e.data
+
+  try {
+    switch (type) {
+      case 'init': {
+        // Dynamically import the Pyodide loader
+        const { loadPyodide } = await import('pyodide')
+        pyodide = await loadPyodide({
+          indexURL: '/api/pyodide/',
+          stdout: (text) => {
+            if (!currentExecutionId) return // Don't post messages if no execution is active
+
+            // Use the carriage return "\\r" to identify tqdm progress updates
+            if (text.startsWith('\r')) {
+              const progressText = text.substring(1).trim()
+              self.postMessage({
+                type: 'streaming-output',
+                output: `<pre class="notebook-tqdm-output">${progressText}</pre>`,
+                id: currentExecutionId,
+                priority: 'high'
+              })
+            } else {
+              self.postMessage({
+                type: 'streaming-output',
+                output: `<pre class="notebook-stream-output">${text}</pre>`,
+                id: currentExecutionId
+              })
+            }
+          },
+          stderr: (text) => {
+            if (!currentExecutionId) return // Don't post messages if no execution is active
+            self.postMessage({
+              type: 'streaming-output',
+              output: `<pre class="notebook-error-output">${text}\\n</pre>`,
+              id: currentExecutionId
+            })
+          }
+        })
+
+        if (globalInterruptBuffer) {
+          pyodide.setInterruptBuffer(globalInterruptBuffer)
+        }
+
+        // Load essential Python packages
+        await pyodide.loadPackage(['numpy', 'matplotlib', 'pandas', 'tqdm', 'micropip'])
+
+        // Run the setup script to define our Python helper functions
+        await pyodide.runPythonAsync(PYTHON_SETUP_SCRIPT)
+
+        self.postMessage({ type: 'init-complete', id })
+        break
       }
 
-      await pyodide.loadPackage(['numpy', 'matplotlib', 'pandas', 'tqdm'])
+      case 'set-interrupt-buffer': {
+        globalInterruptBuffer = interruptBuffer
+        if (pyodide && interruptBuffer) {
+          pyodide.setInterruptBuffer(globalInterruptBuffer)
+        }
+        break
+      }
 
-      pyodide.runPython(`
-        import matplotlib
-        matplotlib.use('Agg')
-        import matplotlib.pyplot as plt
-        import io
-        import base64
-        import sys
-        from contextlib import redirect_stdout, redirect_stderr
-        import time
-        import warnings
-        import ast
-        import html
-        from tqdm import tqdm
+      case 'execute': {
+        currentExecutionId = id
 
-        # Suppress warnings
-        warnings.filterwarnings('ignore')
+        // Clear interrupt buffer before execution
+        if (interruptBuffer) {
+          interruptBuffer[0] = 0
+        }
 
-        class StreamingStdout:
-            def __init__(self, callback):
-                self.callback = callback
-                self.buffer = ""
-                self.tqdm_buffer = ""
+        try {
+          // Get proxies for our Python helper functions
+          const formatOutput = pyodide.globals.get('format_output')
+          const getPlotsAsHtml = pyodide.globals.get('get_plots_as_html')
 
-            def write(self, text):
-                # Check if this is tqdm output (contains progress bar characters)
-                if '\\r' in text or any(char in text for char in ['█', '▏', '▎', '▍', '▌', '▋', '▊', '▉', '%|']):
-                    # This is likely tqdm output - handle specially
-                    self.tqdm_buffer = text.replace('\\r', '').strip()
-                    if self.tqdm_buffer:
-                        # Send tqdm output with special marker to show at beginning
-                        self.callback(f"TQDM_PROGRESS:{self.tqdm_buffer}")
-                else:
-                    # Regular output
-                    self.buffer += text
-                    self.callback(text)
-                return len(text)
+          // The core execution: runPythonAsync handles top-level await
+          // and returns the value of the last evaluated expression.
+          const pyodideResult = await pyodide.runPythonAsync(code)
 
-            def flush(self):
-                pass
+          // Format the result of the last expression
+          let finalResult = formatOutput(pyodideResult)
+          finalResult += getPlotsAsHtml()
 
-            def getvalue(self):
-                return self.buffer
-
-        # Configure tqdm to work better in web environment
-        class WebTqdm(tqdm):
-            def __init__(self, *args, **kwargs):
-                # Force tqdm to use newlines instead of carriage returns
-                kwargs['file'] = sys.stdout
-                kwargs['dynamic_ncols'] = False
-                kwargs['ncols'] = 80
-                super().__init__(*args, **kwargs)
-
-            def display(self, msg=None, pos=None):
-                # Override display to ensure output goes to our streaming stdout
-                if msg is None:
-                    msg = self.__str__()
-                # Add newline to ensure each update is on a new line
-                sys.stdout.write(f"\\r{msg}\\n")
-                sys.stdout.flush()
-
-        # Replace tqdm with our web-friendly version
-        import builtins
-        builtins.tqdm = WebTqdm
-
-        # Also patch tqdm module
-        import tqdm as tqdm_module
-        tqdm_module.tqdm = WebTqdm
-
-        def should_display_result(code_str):
-            """Check if the last line is an expression that should be displayed"""
-            try:
-                tree = ast.parse(code_str.strip())
-                if not tree.body:
-                    return False
-
-                last_node = tree.body[-1]
-                # Check if last statement is an expression (not assignment, import, etc.)
-                return isinstance(last_node, ast.Expr)
-            except:
-                return False
-
-        def get_last_expression(code_str):
-            """Extract the last expression from code"""
-            try:
-                tree = ast.parse(code_str.strip())
-                if not tree.body:
-                    return None
-
-                last_node = tree.body[-1]
-                if isinstance(last_node, ast.Expr):
-                    return ast.unparse(last_node.value)
-                return None
-            except:
-                return None
-
-        def format_output(obj):
-            """Format object for display similar to Jupyter notebook"""
-            if obj is None:
-                return ""
-
-            # Handle pandas DataFrames specifically
-            if hasattr(obj, 'to_html') and hasattr(obj, 'dtypes'):
-                # This is likely a pandas DataFrame
-                try:
-                    # Use pandas' built-in HTML representation with some styling
-                    html_table = obj.to_html(
-                        classes='notebook-dataframe-output',
-                        table_id=None,
-                        escape=False,
-                        max_rows=20,  # Limit rows for performance
-                        max_cols=20    # Limit columns for readability
-                    )
-                    return f'<div class="notebook-table-container">{html_table}</div>'
-                except:
-                    # Fallback if to_html fails
-                    pass
-
-            # Handle different types of objects
-            if hasattr(obj, '_repr_html_'):
-                return obj._repr_html_()
-            elif hasattr(obj, '__repr__'):
-                repr_str = repr(obj)
-                # For large outputs, truncate if needed
-                if len(repr_str) > 10000:
-                    repr_str = repr_str[:10000] + "... (output truncated)"
-                # HTML escape the content to prevent < > from being interpreted as HTML tags
-                escaped_repr = html.escape(repr_str)
-                return f'<pre class="notebook-output">{escaped_repr}</pre>'
-            else:
-                str_repr = str(obj)
-                if len(str_repr) > 10000:
-                    str_repr = str_repr[:10000] + "... (output truncated)"
-                # HTML escape the content to prevent < > from being interpreted as HTML tags
-                escaped_str = html.escape(str_repr)
-                return f'<pre class="notebook-output">{escaped_str}</pre>'
-      `)
-
-      self.postMessage({ type: 'init-complete', id })
-    } catch (error: any) {
-      self.postMessage({ type: 'error', error: error.message, id })
-    }
-  } else if (type === 'set-interrupt-buffer') {
-    interruptBuffer = buffer
-    if (pyodide) {
-      pyodide.setInterruptBuffer(interruptBuffer)
-    }
-  } else if (type === 'execute') {
-    currentExecutionId = id
-
-    // Clear interrupt buffer before execution
-    if (interruptBuffer) {
-      interruptBuffer[0] = 0
-    }
-
-    try {
-      // Set up streaming stdout callback with tqdm handling
-      pyodide.globals.set('streaming_callback', (text: string) => {
-        if (currentExecutionId === id) {
-          // Check if this is tqdm progress output
-          if (text.startsWith('TQDM_PROGRESS:')) {
-            const progressText = text.replace('TQDM_PROGRESS:', '')
+          self.postMessage({ type: 'result', result: finalResult, id })
+        } catch (error: unknown) {
+          if (
+            error instanceof Error &&
+            error.name === 'PythonError' &&
+            error.message.includes('KeyboardInterrupt')
+          ) {
             self.postMessage({
-              type: 'streaming-output',
-              output: `<pre class="notebook-tqdm-output">${progressText}</pre>`,
-              id,
-              priority: 'high' // Mark as high priority to show at beginning
+              type: 'result',
+              result: '<pre class="notebook-error-output">Execution interrupted by user.</pre>',
+              id
             })
           } else {
+            // Standard errors are caught and streamed by the stderr handler,
+            // but fatal errors in the JS bridge can be caught here.
             self.postMessage({
-              type: 'streaming-output',
-              output: `<pre class="notebook-stream-output">${text}</pre>`,
+              type: 'error',
+              error: error instanceof Error ? error.message : String(error),
               id
             })
           }
+        } finally {
+          currentExecutionId = null
         }
-      })
-
-      // Properly escape the code to handle quotes and special characters
-      const escapedCode = code
-        .replace(/\\/g, '\\\\') // Escape backslashes first
-        .replace(/"/g, '\\"') // Escape double quotes
-        .replace(/'/g, "\\'") // Escape single quotes
-        .replace(/\n/g, '\\n') // Escape newlines
-        .replace(/\r/g, '\\r') // Escape carriage returns
-        .replace(/\t/g, '\\t') // Escape tabs
-
-      const result = pyodide.runPython(`
-import sys
-import io
-from contextlib import redirect_stdout, redirect_stderr
-import matplotlib.pyplot as plt
-import base64
-import warnings
-import html
-
-# Suppress warnings
-warnings.filterwarnings('ignore')
-
-# Create streaming stdout
-streaming_stdout = StreamingStdout(streaming_callback)
-stderr_buffer = io.StringIO()
-result = None
-last_expr_result = None
-
-def filter_warnings(stderr_content):
-    """Filter out warning messages from stderr content"""
-    lines = stderr_content.split('\\n')
-    filtered_lines = []
-
-    for line in lines:
-        line_lower = line.lower()
-        # Skip lines that contain common warning indicators
-        if any(warning_indicator in line_lower for warning_indicator in [
-            'warning:', 'userwarning:', 'deprecationwarning:',
-            'futurewarning:', 'runtimewarning:', 'pendingdeprecationwarning:',
-            '/lib/python', 'warnings.warn'
-        ]):
-            continue
-        filtered_lines.append(line)
-
-    return '\\n'.join(filtered_lines).strip()
-
-try:
-    code_to_execute = """${escapedCode}"""
-
-    with redirect_stdout(streaming_stdout), redirect_stderr(stderr_buffer):
-        # Check if we should capture the last expression result
-        if should_display_result(code_to_execute):
-            last_expr = get_last_expression(code_to_execute)
-            if last_expr:
-                # Execute all but the last expression
-                lines = code_to_execute.strip().split('\\n')
-                if len(lines) > 1:
-                    code_without_last = '\\n'.join(lines[:-1])
-                    exec(code_without_last)
-
-                # Evaluate the last expression
-                last_expr_result = eval(last_expr)
-            else:
-                exec(code_to_execute)
-        else:
-            exec(code_to_execute)
-
-        stderr_content = stderr_buffer.getvalue()
-        # Filter out warnings from stderr
-        filtered_stderr = filter_warnings(stderr_content)
-        output_parts = []
-
-        if filtered_stderr:
-            # HTML escape stderr content as well
-            escaped_stderr = html.escape(filtered_stderr)
-            output_parts.append(f'<pre class="notebook-error-output">{escaped_stderr}</pre>')
-
-        # Add the result of the last expression if it exists
-        if last_expr_result is not None:
-            formatted_result = format_output(last_expr_result)
-            if formatted_result:
-                output_parts.append(formatted_result)
-
-        # Handle matplotlib plots
-        fig_nums = plt.get_fignums()
-
-        if fig_nums:
-            for fig_num in fig_nums:
-                fig = plt.figure(fig_num)
-                img_buffer = io.BytesIO()
-                fig.savefig(img_buffer, format='png', bbox_inches='tight', dpi=100)
-                img_buffer.seek(0)
-                img_base64 = base64.b64encode(img_buffer.getvalue()).decode()
-                output_parts.append(f'<div class="notebook-image-output"><img src="data:image/png;base64,{img_base64}" alt="Plot output" style="max-width: 100%; height: auto;" /></div>')
-
-            plt.close('all')
-
-        if output_parts:
-            result = ''.join(output_parts)
-        else:
-            result = ''
-
-except KeyboardInterrupt:
-    result = '<pre class="notebook-error-output">Execution interrupted by user</pre>'
-except Exception as e:
-    stderr_content = stderr_buffer.getvalue()
-    filtered_stderr = filter_warnings(stderr_content)
-    if filtered_stderr:
-        escaped_stderr = html.escape(filtered_stderr)
-        result = f'<pre class="notebook-error-output">{escaped_stderr}</pre>'
-    else:
-        escaped_error = html.escape(str(e))
-        result = f'<pre class="notebook-error-output">{escaped_error}</pre>'
-
-result
-      `)
-
-      self.postMessage({ type: 'result', result, id })
-    } catch (error: any) {
-      if (error.name === 'PythonError' && error.message.includes('KeyboardInterrupt')) {
-        self.postMessage({
-          type: 'result',
-          result: '<pre class="notebook-error-output">Execution interrupted by user</pre>',
-          id
-        })
-      } else {
-        self.postMessage({ type: 'error', error: error.message, id })
+        break
       }
-    } finally {
-      currentExecutionId = null
+
+      case 'abort': {
+        if (currentExecutionId === id) {
+          // Set interrupt buffer to signal interruption
+          if (globalInterruptBuffer) {
+            globalInterruptBuffer[0] = 2 // Signal SIGINT
+          }
+          // Send interrupted result immediately
+          self.postMessage({
+            type: 'result',
+            result: '<pre class="notebook-error-output">Execution interrupted by user.</pre>',
+            id
+          })
+          currentExecutionId = null
+        }
+        break
+      }
     }
+  } catch (error: unknown) {
+    self.postMessage({
+      type: 'error',
+      error: error instanceof Error ? error.message : String(error),
+      id
+    })
   }
 }
