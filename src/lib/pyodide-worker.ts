@@ -1,6 +1,8 @@
 let pyodide: any = null // eslint-disable-line @typescript-eslint/no-explicit-any
 let currentExecutionId: number | null = null
 let globalInterruptBuffer: Uint8Array | null = null
+const executionQueue: Array<{ id: number; code: string; interruptBuffer: Uint8Array }> = []
+let isExecuting = false
 
 interface ParsedError {
   errorLine: number | null
@@ -150,6 +152,78 @@ def get_plots_as_html():
     return "".join(output_parts)
 `
 
+async function processQueue() {
+  if (isExecuting || executionQueue.length === 0) {
+    return // Don't start a new execution if one is already running or queue is empty
+  }
+
+  isExecuting = true
+  const { id, code, interruptBuffer } = executionQueue.shift()! // Get the oldest request
+  currentExecutionId = id
+
+  // Clear interrupt buffer before execution
+  if (interruptBuffer) {
+    interruptBuffer[0] = 0
+  }
+
+  try {
+    // Get proxies for our Python helper functions
+    const formatOutput = pyodide.globals.get('format_output')
+    const getPlotsAsHtml = pyodide.globals.get('get_plots_as_html')
+
+    // The core execution
+    const pyodideResult = await pyodide.runPythonAsync(code)
+
+    // Format the result of the last expression
+    let finalResult = formatOutput(pyodideResult)
+    finalResult += getPlotsAsHtml()
+
+    self.postMessage({ type: 'result', result: finalResult, id })
+  } catch (error: unknown) {
+    if (
+      error instanceof Error &&
+      error.name === 'PythonError' &&
+      error.message.includes('KeyboardInterrupt')
+    ) {
+      self.postMessage({
+        type: 'result',
+        result: '<pre class="notebook-error-output">Execution interrupted by user.</pre>',
+        errorLine: 0,
+        id
+      })
+
+      executionQueue.forEach((queuedJob) => {
+        self.postMessage({
+          type: 'result',
+          result:
+            '<pre class="notebook-error-output">Execution cancelled due to a previous interruption.</pre>',
+          id: queuedJob.id
+        })
+      })
+
+      // 2. Clear the entire queue.
+      executionQueue.length = 0
+    } else {
+      const errorMessage = error instanceof Error ? error.message : String(error)
+      const parsedError = parseTraceback(errorMessage)
+      self.postMessage({
+        type: 'error',
+        error: parsedError.cleanMessage,
+        errorLine: parsedError.errorLine,
+        originalError: parsedError.originalError,
+        id
+      })
+    }
+  } finally {
+    // Clean up after this execution
+    currentExecutionId = null
+    isExecuting = false
+
+    // IMPORTANT: Check if there's another item in the queue and start it
+    setTimeout(processQueue, 0)
+  }
+}
+
 self.onmessage = async (e) => {
   const { type, id, code, interruptBuffer } = e.data
 
@@ -213,66 +287,8 @@ self.onmessage = async (e) => {
       }
 
       case 'execute': {
-        currentExecutionId = id
-
-        // Clear interrupt buffer before execution
-        if (interruptBuffer) {
-          interruptBuffer[0] = 0
-        }
-
-        try {
-          // Get proxies for our Python helper functions
-          const formatOutput = pyodide.globals.get('format_output')
-          const getPlotsAsHtml = pyodide.globals.get('get_plots_as_html')
-
-          // The core execution: runPythonAsync handles top-level await
-          // and returns the value of the last evaluated expression.
-          const pyodideResult = await pyodide.runPythonAsync(code)
-
-          // Format the result of the last expression
-          let finalResult = formatOutput(pyodideResult)
-          finalResult += getPlotsAsHtml()
-
-          self.postMessage({ type: 'result', result: finalResult, id })
-        } catch (error: unknown) {
-          if (
-            error instanceof Error &&
-            error.name === 'PythonError' &&
-            error.message.includes('KeyboardInterrupt')
-          ) {
-            self.postMessage({
-              type: 'result',
-              result: '<pre class="notebook-error-output">Execution interrupted by user.</pre>',
-              id
-            })
-          } else {
-            // Parse the error to extract line numbers and clean up the message
-            const errorMessage = error instanceof Error ? error.message : String(error)
-
-            // Check if this is coming from stderr (which would be a string traceback)
-            let actualError = errorMessage
-
-            // If this is a PythonError, get the actual traceback
-            if (error instanceof Error && error.name === 'PythonError') {
-              // Pyodide errors often have the full traceback in the message
-              actualError = error.message
-            } else if (typeof error === 'object' && error !== null && 'message' in error) {
-              actualError = String((error as any).message)
-            }
-
-            const parsedError = parseTraceback(actualError)
-
-            self.postMessage({
-              type: 'error',
-              error: parsedError.cleanMessage,
-              errorLine: parsedError.errorLine,
-              originalError: parsedError.originalError,
-              id
-            })
-          }
-        } finally {
-          currentExecutionId = null
-        }
+        executionQueue.push({ id, code, interruptBuffer })
+        processQueue()
         break
       }
 

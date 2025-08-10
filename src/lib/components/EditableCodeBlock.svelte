@@ -40,6 +40,7 @@
   let currentExecutionNumber = $state(executionNumber)
   let errorLine = $state<number | null>(null)
   let errorHighlightStyle = $state('')
+  let isInterrupted = $state(false)
   const isPython = $derived(language === 'python' || language === 'py')
   let isReadOnly = $derived(!$pyodideStore.ready || !isPython)
   let CodeJar: any
@@ -187,6 +188,7 @@
     hasUserExecuted = true
     output = ''
     clearErrorHighlight() // Clear any previous error highlighting
+    isInterrupted = false
 
     if ($executionCounter) {
       executionCounter.update((n) => {
@@ -212,13 +214,7 @@
         output = `<pre class="notebook-output">Simulated output for ${language} code</pre>`
       }
     } catch (error) {
-      if (error instanceof Error && error.message.includes('cancelled')) {
-        output += '\n<pre class="notebook-error-output">Execution cancelled by user</pre>'
-        clearErrorHighlight()
-      } else {
-        // Handle errors with potential line highlighting
-        handleExecutionError(error)
-      }
+      handleExecutionError(error)
     } finally {
       isRunning = false
       abortController = null
@@ -227,6 +223,12 @@
 
   function handleExecutionError(error: unknown) {
     clearErrorHighlight() // Clear any previous highlighting
+
+    if (error instanceof Error && error.message.includes('cancelled')) {
+      isInterrupted = true
+      output = '<pre class="notebook-error-output">Execution cancelled by user</pre>'
+      return
+    }
 
     // Check if this is a structured error from the worker
     if (error instanceof Error && (error as any).errorLine !== undefined) {
@@ -342,7 +344,7 @@
   class="group relative my-2 {!isReadOnly ? 'pl-4' : 'pl-0'} transition-all duration-200 lg:pl-0"
   data-block-id={blockId}
 >
-  <div class="relative rounded-md border">
+  <div class="relative rounded-md border {isInterrupted ? 'border-destructive' : ''}">
     {#if !isReadOnly}
       <div
         class="absolute top-0 bottom-0 left-[-3.8rem] flex w-17 items-start justify-center pt-3 select-none"

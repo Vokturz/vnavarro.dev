@@ -156,7 +156,9 @@ export async function executePython(
       } else if (type === 'error') {
         worker!.removeEventListener('message', handleMessage)
         if (error.includes('cancelled') || error.includes('interrupted')) {
-          reject(new Error('Python execution cancelled'))
+          const structuredError = new Error('Python execution cancelled')
+          ;(structuredError as any).isInterrupt = true
+          reject(structuredError)
         } else {
           const structuredError = new Error(error)
           ;(structuredError as any).errorLine = e.data.errorLine
@@ -183,7 +185,9 @@ export async function executePython(
       // Set a timeout to ensure we respond promptly even if the worker doesn't
       setTimeout(() => {
         if (isAborted) {
-          reject(new Error('Python execution cancelled'))
+          const structuredError = new Error('Python execution cancelled')
+          ;(structuredError as any).isInterrupt = true
+          reject(structuredError)
         }
       }, 100) // 100ms timeout for abort response
     }
@@ -191,7 +195,9 @@ export async function executePython(
     // Set up abort handling
     if (abortController) {
       if (abortController.signal.aborted) {
-        reject(new Error('Python execution cancelled'))
+        const structuredError = new Error('Python execution cancelled')
+        ;(structuredError as any).isInterrupt = true
+        reject(structuredError)
         return
       }
       abortController.signal.addEventListener('abort', handleAbort, { once: true })
