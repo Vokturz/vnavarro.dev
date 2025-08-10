@@ -38,6 +38,8 @@
   let showOutput = $state(initialOutput.length > 0)
   let hasUserExecuted = $state(false)
   let currentExecutionNumber = $state(executionNumber)
+  let errorLine = $state<number | null>(null)
+  let errorHighlightStyle = $state('')
   const isPython = $derived(language === 'python' || language === 'py')
   let isReadOnly = $derived(!$pyodideStore.ready || !isPython)
   let CodeJar: any
@@ -101,6 +103,7 @@
           editorRef.removeEventListener('keydown', handleKeyDown, { capture: true })
           editorRef.setAttribute('contenteditable', 'false')
           editorRef.style.cursor = ''
+          updateErrorHighlighting()
         }
       )
     }
@@ -126,6 +129,51 @@
     }
   })
 
+  // Reactive effect to update error highlighting when errorLine changes
+  $effect(() => {
+    if (errorLine !== null && editorRef) {
+      updateErrorHighlighting()
+    } else {
+      errorHighlightStyle = ''
+    }
+  })
+
+  function updateErrorHighlighting() {
+    if (!editorRef) return
+
+    const lines = editorRef.textContent?.split('\n') || []
+    if (errorLine !== null && errorLine > 0 && errorLine <= lines.length) {
+      // Calculate line height and position
+      const computedStyle = window.getComputedStyle(editorRef)
+      const lineHeight =
+        parseFloat(computedStyle.lineHeight) || parseInt(computedStyle.fontSize) * 1.2 || 20
+      const paddingTop = parseFloat(computedStyle.paddingTop) || 0
+      const paddingLeft = parseFloat(computedStyle.paddingLeft) || 0
+      const paddingRight = parseFloat(computedStyle.paddingRight) || 0
+
+      errorHighlightStyle = `
+        position: absolute;
+        left: ${paddingLeft}px;
+        top: ${paddingTop + (errorLine - 1) * lineHeight}px;
+        right: ${paddingRight}px;
+        height: ${lineHeight}px;
+        background-color: rgba(239, 68, 68, 0.1);
+        border-left: 3px solid var(--destructive);
+        pointer-events: none;
+        z-index: 1;
+        margin-left: -${paddingLeft}px;
+        margin-right: -${paddingRight}px;
+      `
+    } else {
+      errorHighlightStyle = ''
+    }
+  }
+
+  function clearErrorHighlight() {
+    errorLine = null
+    errorHighlightStyle = ''
+  }
+
   async function runCode() {
     if (isRunning || isReadOnly) return
 
@@ -138,6 +186,7 @@
     showOutput = true
     hasUserExecuted = true
     output = ''
+    clearErrorHighlight() // Clear any previous error highlighting
 
     if ($executionCounter) {
       executionCounter.update((n) => {
@@ -165,12 +214,86 @@
     } catch (error) {
       if (error instanceof Error && error.message.includes('cancelled')) {
         output += '\n<pre class="notebook-error-output">Execution cancelled by user</pre>'
+        clearErrorHighlight()
       } else {
-        output = `<pre class="notebook-error-output">Error: ${error instanceof Error ? error.message : 'Unknown error occurred'}</pre>`
+        // Handle errors with potential line highlighting
+        handleExecutionError(error)
       }
     } finally {
       isRunning = false
       abortController = null
+    }
+  }
+
+  function handleExecutionError(error: unknown) {
+    clearErrorHighlight() // Clear any previous highlighting
+
+    // Check if this is a structured error from the worker
+    if (error instanceof Error && (error as any).errorLine !== undefined) {
+      const structuredError = error as any
+      if (structuredError.errorLine !== null && structuredError.errorLine > 0) {
+        errorLine = structuredError.errorLine
+      }
+      output = `<pre class="notebook-error-output">${structuredError.message}</pre>`
+    } else {
+      const errorMessage = error instanceof Error ? error.message : String(error)
+
+      // Fallback parsing for direct tracebacks
+      if (errorMessage.includes('Traceback') || errorMessage.includes('File "",')) {
+        const parsedError = parseErrorMessage(errorMessage)
+        if (parsedError.errorLine !== null && parsedError.errorLine > 0) {
+          errorLine = parsedError.errorLine
+        }
+        output = `<pre class="notebook-error-output">${parsedError.cleanMessage}</pre>`
+      } else {
+        output = `<pre class="notebook-error-output">Error: ${errorMessage}</pre>`
+      }
+    }
+  }
+
+  function parseErrorMessage(errorMessage: string): {
+    errorLine: number | null
+    cleanMessage: string
+  } {
+    const lines = errorMessage.split('\n')
+    let errorLine: number | null = null
+    let userCodeLine = ''
+    let finalErrorLine = ''
+
+    // Find the line number in user code (File "", line X)
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i].trim()
+      const userCodeMatch = line.match(/^File\s+"",\s+line\s+(\d+)/)
+      if (userCodeMatch) {
+        errorLine = parseInt(userCodeMatch[1], 10)
+        // Get the actual code line that follows
+        if (i + 1 < lines.length) {
+          userCodeLine = lines[i + 1].trim()
+        }
+      }
+    }
+
+    // Get the final error message (last non-empty line that looks like an error)
+    for (let i = lines.length - 1; i >= 0; i--) {
+      const line = lines[i].trim()
+      if (
+        line &&
+        (line.includes('Error:') || line.includes('Exception:') || line.match(/^\w+Error:/))
+      ) {
+        finalErrorLine = line
+        break
+      }
+    }
+
+    // Create a clean error message
+    let cleanMessage = finalErrorLine
+    if (errorLine !== null && userCodeLine) {
+      cleanMessage = `Line ${errorLine}: ${userCodeLine}\n${finalErrorLine}`
+    }
+
+    return {
+      errorLine,
+      cleanMessage: cleanMessage || errorMessage
     }
   }
 
@@ -236,16 +359,23 @@
       </div>
     {/if}
 
-    <div
-      bind:this={editorRef}
-      class="codejar-editor bg-muted/20 focus:ring-ring min-h-4 overflow-auto p-3 font-mono text-sm whitespace-pre transition-all duration-200 focus:rounded-md focus:ring-2 focus:outline-none {isReadOnly
-        ? 'cursor-default'
-        : ''}"
-      contenteditable={!isReadOnly}
-    >
-      {#if !browser}
-        <!-- Fallback content for SSR -->
-        <pre class="bg-mutedwhitespace-pre-wrap m-0">{code}</pre>
+    <div class="relative">
+      <div
+        bind:this={editorRef}
+        class="codejar-editor bg-muted/20 focus:ring-ring min-h-4 overflow-auto p-3 font-mono text-sm whitespace-pre transition-all duration-200 focus:rounded-md focus:ring-2 focus:outline-none {isReadOnly
+          ? 'cursor-default'
+          : ''}"
+        contenteditable={!isReadOnly}
+        data-block-id={blockId}
+      >
+        {#if !browser}
+          <!-- Fallback content for SSR -->
+          <pre class="bg-mutedwhitespace-pre-wrap m-0">{code}</pre>
+        {/if}
+      </div>
+
+      {#if errorHighlightStyle}
+        <div class="error-line-highlight" style={errorHighlightStyle}></div>
       {/if}
     </div>
 

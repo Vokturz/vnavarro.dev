@@ -2,6 +2,50 @@ let pyodide: any = null // eslint-disable-line @typescript-eslint/no-explicit-an
 let currentExecutionId: number | null = null
 let globalInterruptBuffer: Uint8Array | null = null
 
+interface ParsedError {
+  errorLine: number | null
+  cleanMessage: string
+  originalError: string
+}
+
+function parseTraceback(errorMessage: string): ParsedError {
+  const lines = errorMessage.split('\n')
+  let errorLine: number | null = null
+  let errorType = ''
+  let errorMsg = ''
+
+  for (let i = lines.length - 1; i >= 0; i--) {
+    const line = lines[i].trim()
+    const userCodeMatch = line.match(/^File\s+".*",\s+line\s+(\d+)/)
+    if (userCodeMatch) {
+      errorLine = parseInt(userCodeMatch[1], 10)
+      break
+    }
+  }
+
+  // Extract the final error type and message
+  for (let i = lines.length - 1; i >= 0; i--) {
+    const line = lines[i].trim()
+    if (line && !line.startsWith(' ') && line.includes(':')) {
+      const colonIndex = line.indexOf(':')
+      errorType = line.substring(0, colonIndex)
+      errorMsg = line.substring(colonIndex + 1).trim()
+      break
+    }
+  }
+
+  // Create a clean error message
+  const cleanMessage = errorLine
+    ? `${errorType}: ${errorMsg} (line ${errorLine})`
+    : `${errorType}: ${errorMsg}`
+
+  return {
+    errorLine,
+    cleanMessage,
+    originalError: errorMessage
+  }
+}
+
 /**
  * A single setup script to define all our Python-side helper functions.
  * This is more efficient than running multiple small scripts.
@@ -202,11 +246,27 @@ self.onmessage = async (e) => {
               id
             })
           } else {
-            // Standard errors are caught and streamed by the stderr handler,
-            // but fatal errors in the JS bridge can be caught here.
+            // Parse the error to extract line numbers and clean up the message
+            const errorMessage = error instanceof Error ? error.message : String(error)
+
+            // Check if this is coming from stderr (which would be a string traceback)
+            let actualError = errorMessage
+
+            // If this is a PythonError, get the actual traceback
+            if (error instanceof Error && error.name === 'PythonError') {
+              // Pyodide errors often have the full traceback in the message
+              actualError = error.message
+            } else if (typeof error === 'object' && error !== null && 'message' in error) {
+              actualError = String((error as any).message)
+            }
+
+            const parsedError = parseTraceback(actualError)
+
             self.postMessage({
               type: 'error',
-              error: error instanceof Error ? error.message : String(error),
+              error: parsedError.cleanMessage,
+              errorLine: parsedError.errorLine,
+              originalError: parsedError.originalError,
               id
             })
           }

@@ -135,6 +135,16 @@ for i in tqdm(range(10)):
 print('Done!')
 ```
 
+## Error Handling and Debugging
+
+The Python runtime also provides intelligent error handling with line highlighting. When an error occurs, the problematic line is visually highlighted in the code editor, making debugging much easier:
+
+```python
+# This line will cause an error - division by zero
+result = 10 / 0
+print("This line won't be reached")
+```
+
 
 # Try it Yourself!
 

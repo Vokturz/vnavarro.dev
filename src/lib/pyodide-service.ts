@@ -158,7 +158,10 @@ export async function executePython(
         if (error.includes('cancelled') || error.includes('interrupted')) {
           reject(new Error('Python execution cancelled'))
         } else {
-          resolve(`<pre class="notebook-error-output">Python execution error: ${error}</pre>`)
+          const structuredError = new Error(error)
+          ;(structuredError as any).errorLine = e.data.errorLine
+          ;(structuredError as any).originalError = e.data.originalError
+          reject(structuredError)
         }
       }
     }

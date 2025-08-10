@@ -380,3 +380,66 @@
     padding: 4px 0;
   }
 }
+
+/* Error line highlighting for code blocks */
+.codejar-editor {
+  position: relative;
+}
+
+.error-line-highlight {
+  position: absolute;
+  left: 0;
+  right: 0;
+  background-color: rgba(239, 68, 68, 0.15);
+  border-left: 4px solid #ef4444;
+  pointer-events: none;
+  z-index: 1;
+  animation: errorPulse 2s ease-in-out;
+}
+
+/* Dark mode error highlighting */
+.dark .error-line-highlight {
+  background-color: rgba(248, 113, 113, 0.2);
+  border-left-color: #f87171;
+}
+
+/* Error pulse animation */
+@keyframes errorPulse {
+  0% {
+    background-color: rgba(239, 68, 68, 0.3);
+  }
+  50% {
+    background-color: rgba(239, 68, 68, 0.15);
+  }
+  100% {
+    background-color: rgba(239, 68, 68, 0.15);
+  }
+}
+
+.dark @keyframes errorPulse {
+  0% {
+    background-color: rgba(248, 113, 113, 0.35);
+  }
+  50% {
+    background-color: rgba(248, 113, 113, 0.2);
+  }
+  100% {
+    background-color: rgba(248, 113, 113, 0.2);
+  }
+}
+
+/* Ensure code content is above the highlight */
+.codejar-editor * {
+  position: relative;
+  z-index: 2;
+}
+
+/* Tqdm progress bar styling */
+.notebook-tqdm-output {
+  color: var(--foreground);
+  font-family: inherit;
+  margin: 0;
+  padding: 0;
+  white-space: pre;
+  font-weight: 500;
+}
