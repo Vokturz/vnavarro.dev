@@ -29,6 +29,14 @@ renderer.code = function (token) {
       : 'plaintext'
     : 'plaintext'
 
+  // Check if the code contains colorization syntax
+  const hasColorSyntax = /\[([a-z]+):([^\]]+)\]/.test(token.text)
+
+  if (hasColorSyntax || token.lang === 'colorized') {
+    // Use colorized code block for content with color syntax
+    return `<colorized-code-block data-code="${encodeURIComponent(token.text)}" data-lang="colorized">${token.text}</colorized-code-block>`
+  }
+
   // Convert URLs in code to clickable links
   const codeWithLinks = token.text.replace(
     /(https?:\/\/[^\s<]+)/g,
