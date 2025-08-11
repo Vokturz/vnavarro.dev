@@ -74,6 +74,53 @@ renderer.blockquote = function (token) {
   return `<blockquote class="border-l-4 border-primary/20 pl-4 py-2 my-4 italic text-primary/80">${body}</blockquote>\n`
 }
 
+renderer.paragraph = function (token) {
+  const body = this.parser.parseInline(token.tokens)
+  return `<p class="my-4">${body}</p>\n`
+}
+
+renderer.codespan = function (token) {
+  return `<code class="bg-secondary/20 text-primary px-1 tracking-[-0.07em] rounded font-mono">${token.text}</code>`
+}
+
+const highlightExtension = {
+  extensions: [
+    {
+      name: 'highlight',
+      level: 'inline',
+      start(src: string) {
+        return src.match(/\[([a-z]+):/)?.index
+      },
+      tokenizer(src: string) {
+        const match = src.match(/^\[([a-z]+):([^\]]+)\]/)
+        if (match) {
+          return {
+            type: 'highlight',
+            raw: match[0],
+            color: match[1],
+            text: match[2].trim()
+          }
+        }
+      },
+      /* eslint-disable @typescript-eslint/no-explicit-any */
+      renderer(token: any) {
+        const colorMap: Record<string, string> = {
+          yellow: 'bg-yellow-200/80 text-yellow-900',
+          red: 'bg-red-200/80 text-red-900',
+          green: 'bg-green-200/80 text-green-900',
+          blue: 'bg-blue-200/80 text-blue-900',
+          purple: 'bg-purple-200/80 text-purple-900',
+          pink: 'bg-pink-200/80 text-pink-900',
+          gray: 'bg-gray-200/80 text-gray-900'
+        }
+
+        const colorClass = colorMap[token.color] || colorMap.yellow
+        return `<span class="${colorClass} px-1 py-0.5 rounded">${token.text}</span>`
+      }
+    }
+  ]
+}
+
 const marked = new Marked()
 
 marked.use(
@@ -83,6 +130,7 @@ marked.use(
     displayMode: true,
     output: 'html'
   }),
+  highlightExtension,
   {
     renderer,
     gfm: true
