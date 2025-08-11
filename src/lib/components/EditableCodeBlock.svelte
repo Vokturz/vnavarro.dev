@@ -83,7 +83,15 @@
 
           const highlight = (editor: HTMLElement) => {
             const code = editor.textContent || ''
-            editor.innerHTML = hljs.highlight(code, { language }).value
+            let highlighted = hljs.highlight(code, { language }).value
+
+            // Convert URLs to clickable links after highlighting
+            highlighted = highlighted.replace(
+              /(https?:\/\/[^\s<]+)/g,
+              '<a href="$1" target="_blank" rel="noopener noreferrer" class="underline hover:text-purple-500">$1</a>'
+            )
+
+            editor.innerHTML = highlighted
           }
 
           jar = CodeJar(editorRef, highlight, {

@@ -7,7 +7,7 @@ const ensureMathBlockNewlines = {
   hooks: {
     preprocess(markdown: string) {
       return markdown
-        .replace(/\$\-/g, '$ -')
+        .replace(/\$-/g, '$ -')
         .replace(/\$\)/g, '$ )')
         .replace(/\(\$/g, '( $')
         .replace(/([^\n])\n\s*(\$\$)/g, '$1\n\n$2')
@@ -28,7 +28,14 @@ renderer.code = function (token) {
       ? token.lang
       : 'plaintext'
     : 'plaintext'
-  return `<code-block data-code="${encodeURIComponent(token.text)}" data-lang="${language}"></code-block>`
+
+  // Convert URLs in code to clickable links
+  const codeWithLinks = token.text.replace(
+    /(https?:\/\/[^\s<]+)/g,
+    '<a href="$1" target="_blank" rel="noopener noreferrer" class="underline hover:text-purple-500">$1</a>'
+  )
+
+  return `<code-block data-code="${encodeURIComponent(token.text)}" data-lang="${language}">${codeWithLinks}</code-block>`
 }
 
 renderer.link = function (token) {
