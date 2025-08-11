@@ -3,7 +3,7 @@ title: 'Fill-in-the-Middle: The Magic Behind Smart Code Completion'
 date: '2025-08-11'
 summary: 'How your favorite code editor suggests exactly what you were thinking of'
 runnable: true
-icon: ''
+icon: 'transformers'
 tags: ['transformers', 'python']
 ---
 

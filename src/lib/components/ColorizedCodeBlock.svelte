@@ -1,16 +1,11 @@
 <script lang="ts">
+  /* eslint svelte/no-at-html-tags: "off" */
   import { onMount } from 'svelte'
   import { browser } from '$app/environment'
   import { Check, Copy } from 'lucide-svelte'
   import { Button } from '$lib/components/ui/button'
 
-  const {
-    code: initialCode,
-    language = 'plaintext'
-  }: {
-    code: string
-    language?: string
-  } = $props()
+  const { code: initialCode }: { code: string } = $props()
 
   let copied = $state(false)
   let processedContent = $state('')
@@ -25,14 +20,6 @@
     pink: 'bg-pink-200/80 text-pink-900 dark:bg-pink-500/30 dark:text-pink-100',
     gray: 'bg-gray-200/80 text-gray-900 dark:bg-gray-500/30 dark:text-gray-100',
     orange: 'bg-orange-200/80 text-orange-900 dark:bg-orange-500/30 dark:text-orange-100'
-  }
-
-  function processColorizedCode(code: string): string {
-    // Replace %%color:text%% patterns with colored spans
-    return code.replace(/%%([a-z]+):(.*?)%%/g, (match, color, text) => {
-      const colorClass = colorMap[color] || colorMap.yellow
-      return `<span class="${colorClass} px-1 py-0.5 rounded">${text.trim()}</span>`
-    })
   }
 
   function escapeHtml(text: string): string {

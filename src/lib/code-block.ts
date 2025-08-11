@@ -38,15 +38,13 @@ export function transformCodeBlocks() {
   document.querySelectorAll('colorized-code-block').forEach((el) => {
     const htmlEl = el as HTMLElement
     const code = decodeURIComponent(htmlEl.dataset.code || '')
-    const lang = htmlEl.dataset.lang || 'plaintext'
 
     if (el.parentNode instanceof Element) {
       mount(ColorizedCodeBlock, {
         target: el.parentNode,
         anchor: el,
         props: {
-          code,
-          language: lang
+          code
         }
       })
 
