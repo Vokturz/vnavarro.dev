@@ -21,6 +21,7 @@
       { name: 'Python', iconName: 'python', color: 'text-yellow-400' },
       { name: 'Typescript', iconName: 'typescript', color: 'text-blue-600' },
       { name: 'Javascript', iconName: 'javascript', color: 'text-yellow-500' },
+      { name: 'Rust', iconName: 'rust' },
       { name: 'C', iconName: 'c', color: 'text-blue-700' },
       // { name: 'Go', iconName: 'go', color: 'text-cyan-400' },
       { name: 'bash', iconName: 'gnubash' },

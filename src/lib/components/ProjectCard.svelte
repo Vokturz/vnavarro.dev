@@ -44,7 +44,7 @@
         <img
           src="/projects/{slugify(project.title)}.png"
           alt={project.title + ' screenshot'}
-          class="xs:h-32 h-48 w-full rounded-lg border object-cover object-top"
+          class="xs:h-32 h-48 w-full rounded-lg border object-cover"
           loading="lazy"
         />
       </a>
