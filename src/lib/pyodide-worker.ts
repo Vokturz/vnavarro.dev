@@ -233,7 +233,7 @@ self.onmessage = async (e) => {
         // Dynamically import the Pyodide loader
         const { loadPyodide } = await import('pyodide')
         pyodide = await loadPyodide({
-          indexURL: '/api/pyodide/',
+          indexURL: 'https://cdn.jsdelivr.net/pyodide/v0.27.7/full/',
           stdout: (text) => {
             if (!currentExecutionId) return // Don't post messages if no execution is active
 

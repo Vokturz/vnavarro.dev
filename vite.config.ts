@@ -12,6 +12,7 @@ export default defineConfig({
     //mkcert()
   ],
   server: {
+    allowedHosts: true,
     port: process.env.PORT as unknown as number,
     headers: {
       'Cross-Origin-Embedder-Policy': 'require-corp',

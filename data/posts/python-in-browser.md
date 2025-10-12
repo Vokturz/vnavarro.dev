@@ -86,7 +86,7 @@ This approach is elegant because it allows for *graceful interruption* - Python 
 It's important to mention that SharedArrayBuffer requires `Cross-Origin-Embedder-Policy` and `Cross-Origin-Opener-Policy` policies:
 - For Sveltekit you can create a [hook.server.ts](https://github.com/Vokturz/vnavarro.dev/blob/main/src/hooks.server.ts) file
 - For Vite, you can set the server.headers directly in the [vite.config.ts](https://github.com/Vokturz/vnavarro.dev/blob/main/vite.config.ts) file
-- If you are deploying in Vercel, then the headers must be set in the [vercel.json](https://github.com/Vokturz/vnavarro.dev/blob/main/vercel.json) file
+- If you are deploying in Netlify, then the headers must be set in the [netlify.toml](https://github.com/Vokturz/vnavarro.dev/blob/main/netlify.toml) file
 
 ```python
 # Try running this two blocks in a row (you can press Ctrl+Shift to execute each one)

@@ -17,7 +17,7 @@ My personal website built with SvelteKit, featuring a blog and projects showcase
 - **Language**: TypeScript
 - **Styling**: TailwindCSS
 - **Python Runtime**: Pyodide for in-browser Python execution
-- **Deployment**: Vercel
+- **Deployment**: Netlify
 
 ## Getting Started
 
