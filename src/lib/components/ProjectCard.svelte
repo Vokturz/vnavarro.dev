@@ -27,6 +27,12 @@
   }
 
   let { project }: Props = $props()
+
+  let projectUrl = $state(project.liveUrl ?? project.hfUrl ?? project.githubUrl)
+  let slugifiedTitle = slugify(project.title)
+  if (slugifiedTitle === 'personal-website') {
+    projectUrl = '/blog/python-in-browser'
+  }
 </script>
 
 <Card class="card-hover flex h-full flex-col">
@@ -34,15 +40,13 @@
     <CardTitle>{project.title}</CardTitle>
     {#if project.showImage}
       <a
-        href={slugify(project.title) === 'personal-website'
-          ? '/blog/python-in-browser'
-          : (project.liveUrl ?? project.hfUrl)}
+        href={projectUrl}
         target="_blank"
         rel="noopener noreferrer"
         class="flex items-center gap-2"
       >
         <img
-          src="/projects/{slugify(project.title)}.png"
+          src="/projects/{slugifiedTitle}.png"
           alt={project.title + ' screenshot'}
           class="xs:h-32 h-48 w-full rounded-lg border object-cover"
           loading="lazy"

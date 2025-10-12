@@ -18,7 +18,7 @@
   {
     "title": "Loyca.ai",
     "description": "An open-source, local-first AI assistant with contextual awareness. It is a desktop application built with Tauri.",
-    "technologies": ["Tauri", "Rust", "Svelte", "TailwindCSS"],
+    "technologies": ["Tauri", "Rust", "SvelteKit", "SQLite", "TailwindCSS"],
     "githubUrl": "https://github.com/vokturz/loyca-ai",
     "featured": true,
     "showImage": true
