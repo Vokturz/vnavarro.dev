@@ -55,6 +55,7 @@
     ]
   },
   "dependencies": {
+    "@netlify/vite-plugin": "^2.7.0",
     "codejar": "file:codejar-4.2.0.tgz",
     "gray-matter": "^4.0.3",
     "highlight.js": "^11.11.1",
