@@ -65,7 +65,9 @@
       <div class="bg-primary mx-auto mt-4 h-1 w-40 rounded-full"></div>
 
       <!-- <p class="text-muted-foreground mt-4 text-xl">Software Engineer</p> -->
-      <div class="text-muted-foreground mt-6 flex items-center justify-center space-x-6">
+      <div
+        class="text-muted-foreground mt-6 flex flex-col items-center justify-center space-y-2 space-x-6 lg:flex-row"
+      >
         <a href="mailto:vnavarroaranguiz@gmail.com" class="hover:text-primary flex items-center">
           <Mail class="mr-2 h-5 w-5" />
           <span>vnavarroaranguiz@gmail.com</span>
@@ -90,13 +92,42 @@
       <div class="space-y-8">
         <div>
           <h3 class="text-2xl font-semibold">AI Engineer</h3>
-          <p class="text-muted-foreground">Judini Inc. (CodeGPT) | Dic 2023 - Jul 2025</p>
+          <p class="text-muted-foreground">CodeGPT | Dic 2023 - Jul 2025</p>
           <ul class="mt-2 list-inside list-disc space-y-1 text-lg">
-            <li>Designed and implemented knowledge-graph algorithm for codebase understanding</li>
-            <li>Deployed and managed production AI models on cloud providers</li>
-            <li>Designed on-premise Docker solution for platform deployment</li>
-            <li>Managed core AWS infrastructure via serverless compute</li>
-            <li>Maintained backend systems</li>
+            <li>
+              Engineered a <strong>knowledge-graph algorithm</strong> to analyze codebase
+              structures. You can try it out at
+              <a class="italic hover:underline" href="https://www.deepgraph.co/">deepgraph.co</a>.
+            </li>
+            <li>
+              Designed a scalable, asynchronous system to build knowledge graphs by orchestrating <strong
+                >dynamic AWS ECS tasks</strong
+              >, enabling on-demand processing of any size codebase.
+            </li>
+            <li>
+              Architected the <strong>Deno API backend</strong> to integrate multiple LLMs (OpenAI, Google)
+              with internal tools, serving a production-scale code assistant.
+            </li>
+            <li>
+              Developed the core logic for <strong>CodeGPT autocomplete</strong>
+              and
+              <strong>code indexation</strong>
+              features within the VS Code extension, including building the <code>mcp</code> client.
+            </li>
+            <li>
+              Architected a <strong>containerized on-premise Docker solution</strong>, unlocking a
+              new enterprise customer segment by guaranteeing 100% data privacy.
+            </li>
+            <li>
+              Led the <strong>full infrastructure migration from Vercel to AWS</strong>, rebuilding
+              the platform on <strong>AWS Fargate</strong> to improve scalability and reduce operational
+              costs.
+            </li>
+            <li>
+              Deployed an open-source <strong>Qwen-3B model on Google Cloud</strong>
+              with GPU autoscaling, providing inline code completions to free users while optimizing
+              inference costs.
+            </li>
           </ul>
         </div>
         <div>
@@ -105,9 +136,22 @@
             Data Science Institute, Universidad del Desarrollo | Apr 2020 - Nov 2023
           </p>
           <ul class="mt-2 list-inside list-disc space-y-1 text-lg">
-            <li>Implemented algorithms to analyze human behavior from mobile XDR data</li>
-            <li>Developed a recommendation system for Derco-Chile</li>
-            <li>Implemented Customer Lifetime Value models using Bayesian inference</li>
+            <li>
+              Developed a national <strong>"mobility index"</strong> by analyzing massive mobile XDR
+              datasets, which
+              <strong>directly informed Chilean government lockdown policies</strong>
+              and <strong>led to 2 peer-reviewed publications</strong>.
+            </li>
+            <li>
+              Developed a <strong>recommendation system</strong> for Derco-Chile to
+              <strong>drive cross-sales</strong> by matching users with similar vehicles from the registration
+              database
+            </li>
+            <li>
+              Implemented <strong
+                >Customer Lifetime Value and Customer Journey models using Bayesian inference</strong
+              > for Derco-Chile, helping in the development of new products and services.
+            </li>
           </ul>
         </div>
         <div>
@@ -117,12 +161,14 @@
           </p>
           <ul class="mt-2 list-inside list-disc space-y-1 text-lg">
             <li>
-              Assisted in acquiring and processing astronomical data for the Cherenkov Telescope
-              Array
+              Developed a novel <strong>Approximate Bayesian Computation (ABC) algorithm</strong>
+              to characterize Blazar variability,
+              <strong>reducing model fitting time from hours to minutes</strong>.
             </li>
             <li>
-              Developed algorithm for characterizing Blazar variability using Approximate Bayesian
-              Computation
+              Contributed to the Cherenkov Telescope Array (CTA) project by acquiring data from
+              Paranal Observatory and performing <strong>redshift classification</strong> using
+              <strong>astropy</strong>.
             </li>
           </ul>
         </div>
@@ -131,12 +177,18 @@
           <p class="text-muted-foreground">FONDECYT 11180913 | Jul 2019 - Jul 2020</p>
           <ul class="mt-2 list-inside list-disc space-y-1 text-lg">
             <li>
-              Developed Topic-Supervised Non-Negative Matrix Factorization algorithm using sparse
-              matrices
+              Developed and published <code>tsnmf</code>, a
+              <strong>Scikit-Learn compatible Python package</strong> for Topic-Supervised NMF,
+              <strong>optimizing it for sparse matrices</strong>.
+            </li>
+            <li>
+              This package became the <strong>core model for a published paper</strong>,
+              successfully <strong>inferring city-wide transportation modes</strong>
+              from mobile phone network data in Santiago.
             </li>
           </ul>
         </div>
-        <div>
+        <!-- <div>
           <h3 class="text-2xl font-semibold">Research Assistant</h3>
           <p class="text-muted-foreground">
             National Astronomical Observatory, University of Chile | Jan 2017 - Jul 2017
@@ -154,6 +206,7 @@
             <li>Created UML diagrams for core platform components</li>
           </ul>
         </div>
+      </div> -->
       </div>
     </section>
 
@@ -325,3 +378,10 @@
     </section>
   </main>
 </div>
+
+<style>
+  strong {
+    font-weight: 600;
+    /*color: var(--secondary);*/
+  }
+</style>
