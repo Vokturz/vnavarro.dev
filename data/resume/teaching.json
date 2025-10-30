@@ -1,0 +1,26 @@
+[
+  {
+    "title": "Python for Data Science course for Master students",
+    "institution": "Universidad del Desarrollo",
+    "period": "Jun 2024 - Jul 2024",
+    "description": [
+      "Designed and taught introductory programming course for Master in Data Science students"
+    ]
+  },
+  {
+    "title": "Introduction to Programming for undergraduate students",
+    "institution": "Universidad del Desarrollo",
+    "period": "Mar 2024 - Jul 2024",
+    "description": [
+      "Designed and taught Introduction to Programming for first-year students"
+    ]
+  },
+  {
+    "title": "Programming in Python course",
+    "institution": "Central Bank of Chile",
+    "period": "Oct 2023",
+    "description": [
+      "Designed and taught Python programming focused on data analytics"
+    ]
+  }
+]

@@ -1,0 +1,41 @@
+{
+  "Programming Languages": [
+    { "name": "Python", "iconName": "python", "color": "text-yellow-400" },
+    { "name": "Typescript", "iconName": "typescript", "color": "text-blue-600" },
+    { "name": "Javascript", "iconName": "javascript", "color": "text-yellow-500" },
+    { "name": "Rust", "iconName": "rust" },
+    { "name": "SQL", "iconName": "postgresql", "color": "text-blue-500" },
+    { "name": "Bash", "iconName": "gnubash" },
+    { "name": "R", "iconName": "r", "color": "text-blue-400" }
+  ],
+  "AI & MLOps": [
+    { "name": "PyTorch", "iconName": "pytorch", "color": "text-red-500" },
+    { "name": "Transformers", "iconName": "huggingface" },
+    { "name": "Langchain", "iconName": "langchain", "color": "text-green-900" },
+    { "name": "MCP", "iconName": "modelcontextprotocol" },
+    { "name": "Scikit-learn", "iconName": "scikitlearn" },
+    { "name": "Pandas / NumPy", "iconName": "pandas", "color": "text-blue-500" }
+  ],
+  "Web Development": [
+    { "name": "Deno", "iconName": "deno" },
+    { "name": "Node.js", "iconName": "nodedotjs", "color": "text-green-500" },
+    { "name": "FastAPI", "iconName": "fastapi", "color": "text-green-800" },
+    { "name": "Vite", "iconName": "vite", "color": "text-purple-600" },
+    { "name": "SvelteKit", "iconName": "svelte", "color": "text-orange-500" },
+    { "name": "Next.js", "iconName": "nextdotjs" }
+  ],
+  "Cloud & DevOps": [
+    { "name": "Docker", "iconName": "docker", "color": "text-blue-500" },
+    { "name": "AWS", "iconName": "aws" },
+    { "name": "Google Cloud", "iconName": "googlecloud", "color": "text-blue-500" },
+    { "name": "GitHub Actions", "iconName": "githubactions" },
+    { "name": "Git", "iconName": "git", "color": "text-orange-500" }
+  ],
+  "Databases": [
+    { "name": "PostgreSQL", "iconName": "postgresql", "color": "text-gray-500" },
+    { "name": "Supabase", "iconName": "supabase", "color": "text-green-500" },
+    { "name": "SQLite", "iconName": "sqlite", "color": "text-gray-500" },
+    { "name": "Google BigQuery", "iconName": "googlebigquery", "color": "text-blue-500" },
+    { "name": "Apache Spark", "iconName": "apachespark", "color": "text-orange-600" }
+  ]
+}
