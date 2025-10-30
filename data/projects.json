@@ -1,9 +1,9 @@
 [
   {
-    "title": "Personal Website",
-    "description": "My personal website built with SvelteKit, featuring a blog and projects showcase. Blog entries can be written in Markdown or Jupyter Notebooks, with support to run Python code using Pyodide.",
-    "technologies": ["SvelteKit", "TypeScript", "Python", "TailwindCSS"],
-    "githubUrl": "https://github.com/vokturz/vnavarro.dev",
+    "title": "Loyca.ai",
+    "description": "An open-source, local-first desktop AI assistant that quietly watches your screen, understands your context, and helps you when you need it.",
+    "technologies": ["Tauri", "Rust", "SvelteKit", "SQLite"],
+    "githubUrl": "https://github.com/vokturz/loyca-ai",
     "featured": true,
     "showImage": true
   },
@@ -15,11 +15,20 @@
     "featured": true,
     "showImage": true
   },
+
   {
-    "title": "Loyca.ai",
-    "description": "An open-source, local-first AI assistant with contextual awareness. It is a desktop application built with Tauri.",
-    "technologies": ["Tauri", "Rust", "SvelteKit", "SQLite", "TailwindCSS"],
-    "githubUrl": "https://github.com/vokturz/loyca-ai",
+    "title": "Personal Website",
+    "description": "My personal website built with SvelteKit, featuring a blog and projects showcase. Blog entries can be written in Markdown or Jupyter Notebooks, with support to run Python code using Pyodide.",
+    "technologies": ["SvelteKit", "TypeScript", "Python", "TailwindCSS"],
+    "githubUrl": "https://github.com/vokturz/vnavarro.dev",
+    "featured": true,
+    "showImage": true
+  },
+  {
+    "title": "LLM-Powered Slack Agent",
+    "description": "An LLM-powered Slack bot built in mid-2023 that enables channel-specific personalities, commands, and configurations, supporting intelligent, context-aware interactions through ReACT (Reasoning and Acting) and RAG (Retrieval-Augmented Generation) for enhanced tool use and knowledge integration.",
+    "technologies": ["Python", "Slack", "Langchain"],
+    "githubUrl": "https://github.com/Vokturz/LLM-slackbot-channels",
     "featured": true,
     "showImage": true
   }
