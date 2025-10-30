@@ -46,7 +46,7 @@
       <div class="bg-primary mx-auto mt-4 h-1 w-40 rounded-full"></div>
 
       <div
-        class="text-muted-foreground mt-6 flex flex-col items-center justify-center space-y-2 space-x-6 lg:flex-row"
+        class="text-muted-foreground mt-6 flex flex-col items-center justify-center gap-y-2 lg:flex-row lg:gap-x-6"
       >
         <a href="mailto:vnavarroaranguiz@gmail.com" class="hover:text-primary flex items-center">
           <Mail class="mr-2 h-5 w-5" />
