@@ -1,7 +1,7 @@
 [
   {
     "title": "Loyca.ai",
-    "description": "An open-source, local-first desktop AI assistant that quietly watches your screen, understands your context, and helps you when you need it.",
+    "description": "An open-source, local-first desktop AI assistant built with Rust and Tauri. It uses an on-device Vision Language Model (VLM) to understand screen context and proactively offer assistance",
     "technologies": ["Tauri", "Rust", "SvelteKit", "SQLite"],
     "githubUrl": "https://github.com/vokturz/loyca-ai",
     "featured": true,
@@ -9,7 +9,7 @@
   },
   {
     "title": "Transformers.js Playground",
-    "description": "A playground for experimenting with the Transformers.js library, showcasing the capabilities of the library and how it can be used in web applications.",
+    "description": "An interactive web playground demonstrating the power of in-browser, on-device machine learning with the Transformers.js library. Deployed on Hugging Face Spaces.",
     "technologies": ["React", "TypeScript", "TailwindCSS", "Transformers"],
     "hfUrl": "https://huggingface.co/spaces/Vokturz/transformers-js-playground",
     "featured": true,

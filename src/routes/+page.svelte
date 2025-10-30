@@ -69,9 +69,9 @@
       </div>
     </section>
 
-    <section id="blog" class="bg-card/50 mt-16 rounded-lg border py-20">
-      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div class="mb-16 text-center">
+    <section id="blog" class="bg-card/50 mt-16 rounded-lg border py-10">
+      <div class="mx-auto max-w-7xl px-4 sm:px-2 lg:px-4">
+        <div class="mb-12 text-center">
           <h2 class="gradient-text text-3xl font-extrabold sm:text-4xl">Latest Blog Posts</h2>
           <div class="bg-primary mx-auto mt-4 h-1 w-20 rounded-full"></div>
           <p class="text-muted-foreground mx-auto mt-4 max-w-2xl text-xl">
@@ -85,7 +85,7 @@
               <PostCard {post} />
             {/each}
           </div>
-          <div class="mt-12 text-center">
+          <div class="mt-6 text-center">
             <Button variant="outline" class="group">
               <a href="/blog" class="flex items-center">
                 View All Blog Posts
@@ -99,24 +99,24 @@
       </div>
     </section>
 
-    <section id="projects" class="bg-card/50 mt-16 rounded-lg border py-20">
+    <section id="projects" class="bg-card/50 mt-16 rounded-lg border py-10">
       <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div class="mb-16 text-center">
           <h2 class="gradient-text text-3xl font-extrabold sm:text-4xl">Featured Projects</h2>
           <div class="bg-primary mx-auto mt-4 h-1 w-20 rounded-full"></div>
           <p class="text-muted-foreground mx-auto mt-4 max-w-2xl text-xl">
-            Some of the projects I've been working on recently.
+            Some of personal projects I've worked on.
           </p>
         </div>
 
         {#if data.projects && data.projects.length > 0}
-          <div class="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
+          <div class="grid grid-cols-1 gap-8 md:grid-cols-2">
             {#each data.projects as project (project.title)}
               <ProjectCard {project} />
             {/each}
           </div>
 
-          <div class="mt-12 text-center">
+          <div class="mt-6 text-center">
             <Button variant="outline" class="group">
               <a href="/projects" class="flex items-center">
                 View All Projects

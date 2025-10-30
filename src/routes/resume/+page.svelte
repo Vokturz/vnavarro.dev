@@ -22,31 +22,42 @@
       { name: 'Typescript', iconName: 'typescript', color: 'text-blue-600' },
       { name: 'Javascript', iconName: 'javascript', color: 'text-yellow-500' },
       { name: 'Rust', iconName: 'rust' },
-      { name: 'C', iconName: 'c', color: 'text-blue-700' },
+      // { name: 'C', iconName: 'c', color: 'text-blue-700' },
       // { name: 'Go', iconName: 'go', color: 'text-cyan-400' },
-      { name: 'bash', iconName: 'gnubash' },
       { name: 'SQL', iconName: 'postgresql', color: 'text-blue-500' },
-      { name: 'R', iconName: 'r', color: 'text-blue-400' },
-      { name: 'C#', iconName: 'sharp', color: 'text-purple-600' }
+      { name: 'Bash', iconName: 'gnubash' },
+      { name: 'R', iconName: 'r', color: 'text-blue-400' }
+      // { name: 'C#', iconName: 'sharp', color: 'text-purple-600' }
     ],
-    'Web Technologies': [
-      { name: 'Next.js', iconName: 'nextdotjs' },
-      { name: 'Svelte', iconName: 'svelte', color: 'text-orange-500' }
-    ],
-    'Data Science & Machine Learning': [
+    'AI & MLOps': [
       { name: 'PyTorch', iconName: 'pytorch', color: 'text-red-500' },
-      { name: 'Google BigQuery', iconName: 'Googlebigquery', color: 'text-blue-500' },
-      { name: 'Spark', iconName: 'apachespark', color: 'text-orange-600' }
+      { name: 'Transformers', iconName: 'huggingface' },
+      { name: 'Langchain', iconName: 'langchain', color: 'text-green-900' },
+      { name: 'MCP', iconName: 'modelcontextprotocol' },
+      { name: 'Scikit-learn', iconName: 'scikitlearn' },
+      { name: 'Pandas / NumPy', iconName: 'pandas', color: 'text-blue-500' }
     ],
-    'Cloud Technologies': [
-      { name: 'AWS', iconName: 'aws', color: 'text-orange-400' },
-      { name: 'Supabase', iconName: 'supabase', color: 'text-green-500' },
+    'Web Development': [
+      { name: 'Deno', iconName: 'deno' },
+      { name: 'Node.js', iconName: 'nodedotjs', color: 'text-green-500' },
+      { name: 'FastAPI', iconName: 'fastapi', color: 'text-green-800' },
+      { name: 'Vite', iconName: 'vite', color: 'text-purple-600' },
+      { name: 'SvelteKit', iconName: 'svelte', color: 'text-orange-500' },
+      { name: 'Next.js', iconName: 'nextdotjs' }
+    ],
+    'Cloud & DevOps': [
+      { name: 'Docker', iconName: 'docker', color: 'text-blue-500' },
+      { name: 'AWS', iconName: 'aws' },
       { name: 'Google Cloud', iconName: 'googlecloud', color: 'text-blue-500' },
-      { name: 'Azure', iconName: 'azure', color: 'text-blue-600' }
+      { name: 'GitHub Actions', iconName: 'githubactions' },
+      { name: 'Git', iconName: 'git', color: 'text-orange-500' }
     ],
-    'DevOps & Version Control': [
-      { name: 'GitHub', iconName: 'github' },
-      { name: 'Docker', iconName: 'docker', color: 'text-blue-500' }
+    Databases: [
+      { name: 'PostgreSQL', iconName: 'postgresql', color: 'text-gray-500' },
+      { name: 'Supabase', iconName: 'supabase', color: 'text-green-500' },
+      { name: 'SQLite', iconName: 'sqlite', color: 'text-gray-500' },
+      { name: 'Google BigQuery', iconName: 'googlebigquery', color: 'text-blue-500' },
+      { name: 'Apache Spark', iconName: 'apachespark', color: 'text-orange-600' }
     ]
   }
 </script>
@@ -105,11 +116,11 @@
               >, enabling on-demand processing of any size codebase.
             </li>
             <li>
-              Architected the <strong>Deno API backend</strong> to integrate multiple LLMs (OpenAI, Google)
-              with internal tools, serving a production-scale code assistant.
+              Architected the <strong>Deno API backend</strong> to integrate multiple LLMs with internal
+              tools, serving a production-scale code assistant.
             </li>
             <li>
-              Developed the core logic for <strong>CodeGPT autocomplete</strong>
+              Developed the core logic for <strong>autocomplete</strong>
               and
               <strong>code indexation</strong>
               features within the VS Code extension, including building the <code>mcp</code> client.
@@ -124,7 +135,7 @@
               costs.
             </li>
             <li>
-              Deployed an open-source <strong>Qwen-3B model on Google Cloud</strong>
+              Deployed a <strong>Qwen coder model on Google Cloud</strong>
               with GPU autoscaling, providing inline code completions to free users while optimizing
               inference costs.
             </li>
@@ -140,7 +151,7 @@
               Developed a national <strong>"mobility index"</strong> by analyzing massive mobile XDR
               datasets, which
               <strong>directly informed Chilean government lockdown policies</strong>
-              and <strong>led to 2 peer-reviewed publications</strong>.
+              and led to 2 peer-reviewed publications.
             </li>
             <li>
               Developed a <strong>recommendation system</strong> for Derco-Chile to
@@ -166,8 +177,8 @@
               <strong>reducing model fitting time from hours to minutes</strong>.
             </li>
             <li>
-              Contributed to the Cherenkov Telescope Array (CTA) project by acquiring data from
-              Paranal Observatory and performing <strong>redshift classification</strong> using
+              Contributed to the Cherenkov Telescope Array (CTA) project by acquiring data and
+              performing <strong>redshift classification</strong> using
               <strong>astropy</strong>.
             </li>
           </ul>
@@ -177,14 +188,17 @@
           <p class="text-muted-foreground">FONDECYT 11180913 | Jul 2019 - Jul 2020</p>
           <ul class="mt-2 list-inside list-disc space-y-1 text-lg">
             <li>
-              Developed and published <code>tsnmf</code>, a
-              <strong>Scikit-Learn compatible Python package</strong> for Topic-Supervised NMF,
-              <strong>optimizing it for sparse matrices</strong>.
-            </li>
-            <li>
-              This package became the <strong>core model for a published paper</strong>,
-              successfully <strong>inferring city-wide transportation modes</strong>
-              from mobile phone network data in Santiago.
+              Developed and published <a href="https://github.com/Vokturz/tsnmf-sparse"
+                ><code class="text-secondary hover:underline">tsnmf</code></a
+              >, a
+              <strong>Scikit-Learn compatible Python package</strong>
+              for Topic-Supervised NMF, <strong>optimized for sparse matrices</strong>. It served as
+              the core model for a published paper on
+              <a
+                class="italic hover:underline"
+                href="https://epjdatascience.springeropen.com/articles/10.1140/epjds/s13688-018-0177-1"
+                >inferring city-wide transportation modes</a
+              > from mobile phone network data in Santiago.
             </li>
           </ul>
         </div>
@@ -240,11 +254,11 @@
 
     <section class="mb-16" use:scrollIntoView>
       <h2 class="border-primary gradient-text mb-6 border-b-2 pb-2 text-3xl font-bold">Skills</h2>
-      <div class="space-y-6">
+      <div class="grid grid-cols-1 gap-4 space-y-2 lg:grid-cols-2">
         {#each Object.entries(skillsData) as [category, skills] (category)}
           <div>
             <h3 class="text-2xl font-semibold">{category}</h3>
-            <div class="mt-2 flex flex-wrap gap-4">
+            <div class="mt-1 flex flex-wrap gap-2">
               {#each skills as skill (skill.name)}
                 <SkillCard {skill} />
               {/each}
