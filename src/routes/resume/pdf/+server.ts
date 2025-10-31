@@ -89,7 +89,7 @@ export const POST: RequestHandler = async ({ request }) => {
     doc.setFontSize(fonts.heading1)
     doc.setFont(font, 'bold')
     doc.text('Victor Navarro-Aranguiz', margin, yPosition)
-    yPosition += 5
+    yPosition += 4
 
     doc.setTextColor(...colors.lightText)
     doc.setFontSize(fonts.small)
@@ -146,7 +146,7 @@ export const POST: RequestHandler = async ({ request }) => {
         }
         const cleanDesc = markdownToPlainText(item.description)
         const lines = doc.splitTextToSize(`• ${cleanDesc}`, contentWidth - 3)
-        doc.text(lines, margin + 3, yPosition)
+        doc.text(lines, margin + 2, yPosition)
         yPosition += lines.length * 4
       }
 
@@ -249,6 +249,37 @@ export const POST: RequestHandler = async ({ request }) => {
     }
 
     yPosition += 2
+
+    if (category == 'ai-engineer') {
+      // Additional Information Section
+      checkPageBreak(1)
+      doc.setTextColor(...colors.secondary)
+      doc.setFontSize(fonts.heading2)
+      doc.setFont(font, 'bold')
+      doc.text('Additional Information', margin, yPosition)
+      yPosition += titleBottomMargin
+
+      const entries = {
+        Language: 'Spanish (Native), English (C1 IELTS).',
+        Teaching: 'Instructed “Python for Data Science” for Master’s students and professionals.',
+        Publications: `Co-author on ${data.publications.length} peer-reviewed publications in journals.`
+      }
+      for (const [item, entry] of Object.entries(entries)) {
+        checkPageBreak(1)
+
+        doc.setTextColor(...colors.text)
+        doc.setFontSize(fonts.normal)
+        doc.setFont(font, 'bold')
+        doc.text(`${item}:`, margin, yPosition)
+        // yPosition += 5
+
+        doc.setFontSize(fonts.normal)
+        doc.setFont(font, 'normal')
+        const lines = doc.splitTextToSize(entry, contentWidth - 4)
+        doc.text(entry, 24 + margin, yPosition)
+        yPosition += lines.length * 4 + 1
+      }
+    }
 
     // Generate PDF as buffer
     const pdfBuffer = Buffer.from(doc.output('arraybuffer'))

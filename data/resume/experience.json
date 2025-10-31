@@ -18,7 +18,7 @@
       },
       {
         "categories": ["software-engineer", "ai-engineer"],
-        "description": "Developed the core logic for **autocomplete** and **code indexation** features within the VS Code extension, including building the **mcp** client."
+        "description": "Developed the core logic for **autocomplete** and **code indexation** features within the VS Code extension, including building the **MCP** client."
       },
       {
         "categories": ["devops", "software-engineer"],
@@ -45,7 +45,7 @@
       },
       {
         "categories": ["ai-engineer", "software-engineer"],
-        "description": "Developed a **recommendation system** for Derco-Chile to **drive cross-sales** by matching users with similar vehicles from the registration database"
+        "description": "Developed a **recommendation system** for Derco-Chile to **drive cross-sales** by matching users with similar vehicles."
       },
       {
         "categories": ["ai-engineer", "software-engineer"],
@@ -64,7 +64,7 @@
       },
       {
         "categories": ["ai-engineer"],
-        "description": "Contributed to the Cherenkov Telescope Array (CTA) project by acquiring data and performing **redshift classification** using astropy."
+        "description": "Contributed to the Cherenkov Telescope Array (CTA) project by acquiring data and performing **redshift classification**."
       }
     ]
   },
@@ -75,7 +75,7 @@
     "items": [
       {
         "categories": ["software-engineer", "ai-engineer"],
-        "description": "Developed and published [tsnmf](https://github.com/Vokturz/tsnmf-sparse), a **Scikit-Learn compatible Python package** for Topic-Supervised NMF, **optimized for sparse matrices**. It served as the core model for a published paper on [inferring city-wide transportation modes](https://epjdatascience.springeropen.com/articles/10.1140/epjds/s13688-018-0177-1) from mobile phone network data in Santiago."
+        "description": "Developed and published [tsnmf](https://github.com/Vokturz/tsnmf-sparse), a **Scikit-Learn compatible Python package** for Topic-Supervised NMF **optimized for sparse matrices**, used as the core model in a [published study on city-wide transportation mode inference](https://epjdatascience.springeropen.com/articles/10.1140/epjds/s13688-018-0177-1)."
       }
     ]
   }
