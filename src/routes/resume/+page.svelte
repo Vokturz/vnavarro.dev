@@ -1,7 +1,8 @@
 <script lang="ts">
   /* eslint svelte/no-at-html-tags: "off" */
   import { scrollIntoView } from '$lib/actions'
-  import { Mail, Phone, Download, ChevronRight } from 'lucide-svelte'
+  import { Mail, Phone, Download, ChevronRight, Loader2 } from 'lucide-svelte'
+  import * as ButtonGroup from '$lib/components/ui/button-group/index.js'
   import { Button } from '$lib/components/ui/button'
   import SkillCard from '$lib/components/SkillCard.svelte'
   import type {
@@ -9,12 +10,49 @@
     Skills,
     TeachingExperience,
     Education,
-    Experience
+    Experience,
+    Summaries,
+    Category
   } from '$lib/types/resume'
   import { marked } from '$lib/markdown'
+  import type { Project } from '$lib/types'
+
+  let isGeneratingPDF = false
 
   function downloadCV() {
     window.open('/VNavarro_CV.pdf', '_blank')
+  }
+
+  async function downloadResumePDF(category: Category) {
+    isGeneratingPDF = true
+    try {
+      const response = await fetch('/resume/pdf', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ data, category })
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to generate PDF')
+      }
+
+      const blob = await response.blob()
+      const url = window.URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = 'VNavarro_Resume.pdf'
+      document.body.appendChild(a)
+      a.click()
+      window.URL.revokeObjectURL(url)
+      document.body.removeChild(a)
+    } catch (error) {
+      console.error('Error downloading PDF:', error)
+      alert('Failed to generate PDF. Please try again.')
+    } finally {
+      isGeneratingPDF = false
+    }
   }
 
   export let data: {
@@ -23,6 +61,8 @@
     teaching: TeachingExperience[]
     education: Education[]
     experience: Experience[]
+    projects: Project[]
+    summaries: Summaries
   }
 
   function highlightAuthor(authors: string): string {
@@ -57,11 +97,27 @@
           <span>(+353) 83 863 1200</span>
         </a>
       </div>
-      <div class="mt-8">
-        <Button variant="outline" onclick={downloadCV} class="cursor-pointer">
-          <Download class="mr-2 h-5 w-5" />
-          Download CV
-        </Button>
+      <div class="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
+        <ButtonGroup.Root>
+          <Button
+            variant="outline"
+            onclick={() => downloadResumePDF('ai-engineer')}
+            disabled={isGeneratingPDF}
+            class="cursor-pointer"
+          >
+            <Download class="mr-2 h-5 w-5" />
+            AI Engineer PDF
+          </Button>
+          <Button
+            variant="outline"
+            onclick={() => downloadResumePDF('software-engineer')}
+            disabled={isGeneratingPDF}
+            class="cursor-pointer"
+          >
+            <Download class="mr-2 h-5 w-5" />
+            Software Engineer PDF
+          </Button>
+        </ButtonGroup.Root>
       </div>
     </header>
 
@@ -75,10 +131,10 @@
             <h3 class="text-2xl font-semibold">{experience.title}</h3>
             <p class="text-muted-foreground">{experience.company} | {experience.period}</p>
             <div class="mt-2 text-lg">
-              {#each experience.description as item, index (index)}
+              {#each experience.items as item, index (index)}
                 <span class="mt-2 flex items-start gap-x-1">
                   <ChevronRight class="mt-1.5 size-4 flex-shrink-0" />
-                  <div>{@html marked.parseInline(item)}</div>
+                  <div>{@html marked.parseInline(item.description)}</div>
                 </span>
               {/each}
             </div>

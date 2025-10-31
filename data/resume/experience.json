@@ -3,41 +3,80 @@
     "title": "AI Engineer",
     "company": "CodeGPT",
     "period": "Dic 2023 - Jul 2025",
-    "description": [
-      "Engineered a **knowledge-graph algorithm** to analyze codebase structures. You can try it out at [deepgraph.co](https://www.deepgraph.co/).",
-      "Designed a scalable, asynchronous system to build knowledge graphs by orchestrating **dynamic AWS ECS tasks**, enabling on-demand processing of any size codebase.",
-      "Architected the **Deno API backend** to integrate multiple LLMs with internal tools, serving a production-scale code assistant.",
-      "Developed the core logic for **autocomplete** and **code indexation** features within the VS Code extension, including building the **mcp** client.",
-      "Architected a **containerized on-premise Docker solution**, unlocking a new enterprise customer segment by guaranteeing 100% data privacy.",
-      "Led the **full infrastructure migration from Vercel to AWS**, rebuilding the platform on **AWS Fargate** to improve scalability and reduce operational costs.",
-      "Deployed a **Qwen coder model on Google Cloud** with GPU autoscaling, providing inline code completions to free users while optimizing inference costs."
+    "items": [
+      {
+        "categories": ["ai-engineer", "software-engineer", "devops"],
+        "description": "Engineered a **knowledge-graph algorithm** to analyze codebase structures. You can try it out at [deepgraph.co](https://www.deepgraph.co/)."
+      },
+      {
+        "categories": ["devops", "software-engineer"],
+        "description": "Designed a scalable, asynchronous system to build knowledge graphs by orchestrating **dynamic AWS ECS tasks**, enabling on-demand processing of any size codebase."
+      },
+      {
+        "categories": ["software-engineer", "devops"],
+        "description": "Architected the **Deno API backend** to integrate multiple LLMs with internal tools, serving a production-scale code assistant."
+      },
+      {
+        "categories": ["software-engineer", "ai-engineer"],
+        "description": "Developed the core logic for **autocomplete** and **code indexation** features within the VS Code extension, including building the **mcp** client."
+      },
+      {
+        "categories": ["devops", "software-engineer"],
+        "description": "Architected a **containerized on-premise Docker solution**, unlocking a new enterprise customer segment by guaranteeing 100% data privacy."
+      },
+      {
+        "categories": ["devops"],
+        "description": "Led the **full infrastructure migration from Vercel to AWS**, rebuilding the platform on **AWS Fargate** to improve scalability and reduce operational costs."
+      },
+      {
+        "categories": ["devops", "ai-engineer"],
+        "description": "Deployed a **Qwen coder model on Google Cloud** with GPU autoscaling, providing inline code completions to free users while optimizing inference costs."
+      }
     ]
   },
   {
     "title": "Data Scientist",
     "company": "Data Science Institute, Universidad del Desarrollo",
     "period": "Apr 2020 - Nov 2023",
-    "description": [
-      "Developed a national **\"mobility index\"** by analyzing massive mobile XDR datasets, which **directly informed Chilean government lockdown policies** and led to 2 peer-reviewed publications.",
-      "Developed a **recommendation system** for Derco-Chile to **drive cross-sales** by matching users with similar vehicles from the registration database",
-      "Implemented **Customer Lifetime Value and Customer Journey models using Bayesian inference** for Derco-Chile, helping in the development of new products and services."
+    "items": [
+      {
+        "categories": ["ai-engineer", "software-engineer"],
+        "description": "Developed a national **\"mobility index\"** by analyzing massive mobile XDR datasets in BigQuery, which **directly informed Chilean government lockdown policies** and led to 2 peer-reviewed publications."
+      },
+      {
+        "categories": ["ai-engineer", "software-engineer"],
+        "description": "Developed a **recommendation system** for Derco-Chile to **drive cross-sales** by matching users with similar vehicles from the registration database"
+      },
+      {
+        "categories": ["ai-engineer", "software-engineer"],
+        "description": "Implemented **Customer Lifetime Value and Customer Journey models using Bayesian inference** for Derco-Chile, helping in the development of new products and services."
+      }
     ]
   },
   {
     "title": "Research Assistant",
     "company": "National Astronomical Observatory, University of Chile",
     "period": "Feb 2020 - Dic 2022",
-    "description": [
-      "Developed a novel **Approximate Bayesian Computation (ABC) algorithm** to characterize Blazar variability, **reducing model fitting time from hours to minutes**.",
-      "Contributed to the Cherenkov Telescope Array (CTA) project by acquiring data and performing **redshift classification** using astropy."
+    "items": [
+      {
+        "categories": ["ai-engineer", "software-engineer"],
+        "description": "Developed a novel **Approximate Bayesian Computation (ABC) algorithm** to characterize Blazar variability, **reducing model fitting time from hours to minutes**."
+      },
+      {
+        "categories": ["ai-engineer"],
+        "description": "Contributed to the Cherenkov Telescope Array (CTA) project by acquiring data and performing **redshift classification** using astropy."
+      }
     ]
   },
   {
     "title": "Developer",
     "company": "FONDECYT 11180913",
     "period": "Jul 2019 - Jul 2020",
-    "description": [
-      "Developed and published [tsnmf](https://github.com/Vokturz/tsnmf-sparse), a **Scikit-Learn compatible Python package** for Topic-Supervised NMF, **optimized for sparse matrices**. It served as the core model for a published paper on [inferring city-wide transportation modes](https://epjdatascience.springeropen.com/articles/10.1140/epjds/s13688-018-0177-1) from mobile phone network data in Santiago."
+    "items": [
+      {
+        "categories": ["software-engineer", "ai-engineer"],
+        "description": "Developed and published [tsnmf](https://github.com/Vokturz/tsnmf-sparse), a **Scikit-Learn compatible Python package** for Topic-Supervised NMF, **optimized for sparse matrices**. It served as the core model for a published paper on [inferring city-wide transportation modes](https://epjdatascience.springeropen.com/articles/10.1140/epjds/s13688-018-0177-1) from mobile phone network data in Santiago."
+      }
     ]
   }
 ]

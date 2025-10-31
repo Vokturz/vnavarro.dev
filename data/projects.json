@@ -1,7 +1,7 @@
 [
   {
     "title": "Loyca.ai",
-    "description": "An open-source, local-first desktop AI assistant built with Rust and Tauri. It uses an on-device Vision Language Model (VLM) to understand screen context and proactively offer assistance",
+    "description": "An open-source, local-first desktop AI assistant built with Rust and Tauri. It uses an on-device Vision Language Model (VLM) to understand screen context and proactively offer assistance.",
     "technologies": ["Tauri", "Rust", "SvelteKit", "SQLite"],
     "githubUrl": "https://github.com/vokturz/loyca-ai",
     "featured": true,
