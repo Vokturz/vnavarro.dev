@@ -1,7 +1,7 @@
 <script lang="ts">
   /* eslint svelte/no-at-html-tags: "off" */
   import { scrollIntoView } from '$lib/actions'
-  import { Mail, Phone, Download, Dot, ChevronRight } from 'lucide-svelte'
+  import { Mail, Phone, Download, ChevronRight } from 'lucide-svelte'
   import { Button } from '$lib/components/ui/button'
   import SkillCard from '$lib/components/SkillCard.svelte'
   import type {
@@ -169,10 +169,3 @@
     </section>
   </main>
 </div>
-
-<style>
-  strong {
-    font-weight: 600;
-    /*color: var(--secondary);*/
-  }
-</style>

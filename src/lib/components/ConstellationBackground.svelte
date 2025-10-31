@@ -1,6 +1,7 @@
 <script lang="ts">
   import { constellationData, loadConstellationData } from '$lib/stores/constellation-store'
   import { onMount } from 'svelte'
+  import { SvelteSet } from 'svelte/reactivity'
   import * as THREE from 'three'
 
   interface ConstellationData {
@@ -15,14 +16,14 @@
     }
   }
 
-  let { 
+  let {
     hoverRadius = 0.6,
     fadeHeight = 400,
     useWindowMouse = false
-  }: { 
+  }: {
     hoverRadius?: number
     fadeHeight?: number
-    useWindowMouse?: boolean 
+    useWindowMouse?: boolean
   } = $props()
 
   let canvas: HTMLCanvasElement
@@ -69,21 +70,21 @@
     uniform float uHoverIntensity;
     varying float vOpacity;
     varying float vHoverFactor;
-    
+
     void main() {
       vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
       gl_Position = projectionMatrix * mvPosition;
-      
+
       // Calculate distance to mouse in world space
       float dist = distance(position.xy, uMouse);
       float hoverFactor = 1.0 - smoothstep(0.0, uHoverRadius, dist);
       // Only apply hover effect to constellation stars
       vHoverFactor = hoverFactor * isConstellation;
-      
+
       // Twinkling effect for opacity
       float opacityTwinkle = sin(time * 2.0 + twinklePhase) * 0.3 + 0.7;
       vOpacity = opacity * opacityTwinkle;
-      
+
       // Spark effect (pulsating size) + hover effect
       float sizeSpark = sin(time * 1.2 + twinklePhase * 1.5) * 0.25 + 1.0;
       float finalSize = size * sizeSpark * (1.0 + vHoverFactor * uHoverIntensity);
@@ -96,22 +97,22 @@
     uniform vec3 starColor;
     varying float vOpacity;
     varying float vHoverFactor;
-    
+
     void main() {
       vec2 center = gl_PointCoord - 0.5;
       float dist = length(center);
-      
+
       if (dist > 0.5) discard;
-      
+
       // Base alpha with twinkle
       float baseAlpha = smoothstep(0.5, 0.2, dist) * vOpacity;
-      
+
       // Hover adds a bright glow
       float hoverGlow = smoothstep(0.4, 0.0, dist) * vHoverFactor;
-      
+
       // Combine and clamp
       float finalAlpha = min(1.0, baseAlpha + hoverGlow);
-      
+
       gl_FragColor = vec4(starColor, finalAlpha);
     }
   `
@@ -124,15 +125,15 @@
     varying float vHoverFactor;
     varying float vLineWidth;
 
-    
+
     void main() {
       vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
       gl_Position = projectionMatrix * mvPosition;
-      
+
       // Calculate distance to mouse
       float dist = distance(position.xy, uMouse);
       vHoverFactor = 1.0 - smoothstep(0.0, uHoverRadius, dist);
-      
+
       vOpacity = opacity;
     }
   `
@@ -143,7 +144,7 @@
     uniform float uHoverIntensity;
     varying float vOpacity;
     varying float vHoverFactor;
-    
+
     void main() {
       float finalOpacity = vOpacity * 0.3 + vHoverFactor * uHoverIntensity;
       gl_FragColor = vec4(lineColor, min(1.0, finalOpacity));
@@ -213,7 +214,7 @@
     if (lineMesh) scene.remove(lineMesh)
 
     // Create a set of constellation star IDs
-    const constellationStarIds = new Set<number>()
+    const constellationStarIds = new SvelteSet<number>()
     for (const constellationName in constellations) {
       const connections = constellations[constellationName]
       for (const connection of connections) {
@@ -321,15 +322,17 @@
   })
 
   let isInitialized = false
-  onMount(async () => {
+  onMount(() => {
+    let destroyed = false
+
     // Mouse move event handler for window
     const onWindowMouseMove = (event: MouseEvent) => {
       if (!containerElement || !containerSize.width || !containerSize.height) return
-      
+
       const rect = containerElement.getBoundingClientRect()
       const x = event.clientX - rect.left
       const y = event.clientY - rect.top
-      
+
       const aspect = containerSize.width / containerSize.height
       mouse.x = ((x / containerSize.width) * 2 - 1) * aspect
       mouse.y = -((y / containerSize.height) * 2 - 1)
@@ -338,11 +341,11 @@
     // Mouse move event handler for container
     const onContainerMouseMove = (event: MouseEvent) => {
       if (!containerElement || !containerSize.width || !containerSize.height) return
-      
+
       const rect = containerElement.getBoundingClientRect()
       const x = event.clientX - rect.left
       const y = event.clientY - rect.top
-      
+
       const aspect = containerSize.width / containerSize.height
       mouse.x = ((x / containerSize.width) * 2 - 1) * aspect
       mouse.y = -((y / containerSize.height) * 2 - 1)
@@ -358,41 +361,40 @@
     }
 
     addMouseListener()
+    ;(async () => {
+      try {
+        await loadConstellationData()
+        rawData = $constellationData
 
-    try {
-      await loadConstellationData()
-      rawData = $constellationData
-      if (rawData && rawData.stars.length > 0) {
-        rawData.stars = rawData.stars.filter(
-          (star) =>
-            star.ra > raLimits.min &&
-            star.ra < raLimits.max &&
-            star.dec > decLimits.min &&
-            star.dec < decLimits.max
-        )
+        if (!destroyed && rawData && rawData.stars.length > 0) {
+          rawData.stars = rawData.stars.filter(
+            (star) =>
+              star.ra > raLimits.min &&
+              star.ra < raLimits.max &&
+              star.dec > decLimits.min &&
+              star.dec < decLimits.max
+          )
 
-        const adjustedRA = (ra: number) =>
-          ((ra - raLimits.min) / (raLimits.max - raLimits.min)) * 100
-        const adjustedDec = (dec: number) =>
-          ((dec + (decLimits.max - decLimits.min) / 2) / (decLimits.max - decLimits.min)) * 100
+          const adjustedRA = (ra: number) =>
+            ((ra - raLimits.min) / (raLimits.max - raLimits.min)) * 100
+          const adjustedDec = (dec: number) =>
+            ((dec + (decLimits.max - decLimits.min) / 2) / (decLimits.max - decLimits.min)) * 100
 
-        rawData.stars.forEach((star) => {
-          star.ra = adjustedRA(star.ra)
-          star.dec = adjustedDec(star.dec)
-        })
+          rawData.stars.forEach((star) => {
+            star.ra = adjustedRA(star.ra)
+            star.dec = adjustedDec(star.dec)
+          })
+        }
+      } catch (error) {
+        console.error('Error loading constellations:', error)
       }
-    } catch (error) {
-      console.error('Error loading constellations:', error)
-    }
+    })()
 
     return () => {
-      if (animationId) {
-        cancelAnimationFrame(animationId)
-      }
-      if (renderer) {
-        renderer.dispose()
-      }
-      // Clean up appropriate event listener
+      destroyed = true
+      if (animationId) cancelAnimationFrame(animationId)
+      if (renderer) renderer.dispose()
+
       if (useWindowMouse) {
         window.removeEventListener('mousemove', onWindowMouseMove)
       } else if (containerElement) {
@@ -423,11 +425,11 @@
     camera.left = -aspect
     camera.right = aspect
     camera.updateProjectionMatrix()
-    
+
     const scaleFactor = containerSize.width < 1024 ? 1.5 : 1
     const renderWidth = containerSize.width * scaleFactor
     const renderHeight = containerSize.height * scaleFactor
-    
+
     renderer.setSize(renderWidth, renderHeight)
     canvas.style.width = containerSize.width + 'px'
     canvas.style.height = containerSize.height + 'px'
@@ -455,10 +457,7 @@
   data-instance-id={crypto.randomUUID()}
 >
   <canvas bind:this={canvas} width={containerSize.width} height={containerSize.height}></canvas>
-  <div
-  class="fade-overlay"
-  style="--fade-height: {fadeHeight}px"
-  ></div>
+  <div class="fade-overlay" style="--fade-height: {fadeHeight}px"></div>
 </div>
 
 <style>

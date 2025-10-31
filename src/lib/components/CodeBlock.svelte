@@ -1,10 +1,11 @@
 <script lang="ts">
+  /* eslint-disable @typescript-eslint/no-explicit-any */
   import { onMount } from 'svelte'
   import { browser } from '$app/environment'
   import { Copy, Check } from 'lucide-svelte'
   import { Button } from '$lib/components/ui/button'
 
-  const { code, language = 'plaintext' }: { code: string, language?: string } = $props()
+  const { code, language = 'plaintext' }: { code: string; language?: string } = $props()
 
   let copied = $state(false)
   let editorRef: HTMLElement
@@ -12,52 +13,49 @@
   let CodeJar: any
   let hljs: any
 
-  onMount(async () => {
-    if (browser && editorRef) {
-      // Dynamically import CodeJar and hljs only on the client
-      const [{ CodeJar: CJ }, hljsModule] = await Promise.all([
-        import('codejar'),
-        import('highlight.js')
-      ])
+  onMount(() => {
+    if (!browser || !editorRef) return
 
-      CodeJar = CJ
-      hljs = hljsModule.default
+    let destroyed = false
 
-      // Highlight function for CodeJar
-      const highlight = (editor: HTMLElement) => {
-        const code = editor.textContent || ''
-        editor.innerHTML = hljs.highlight(code, { language }).value
+    Promise.all([import('codejar'), import('highlight.js')]).then(
+      ([{ CodeJar: CJ }, hljsModule]) => {
+        if (destroyed) return
+
+        CodeJar = CJ
+        hljs = hljsModule.default
+
+        const highlight = (editor: HTMLElement) => {
+          const code = editor.textContent || ''
+          editor.innerHTML = hljs.highlight(code, { language }).value
+        }
+
+        jar = CodeJar(editorRef, highlight, {
+          tab: '  ',
+          indentOn: /[(\[{]$/,
+          spellcheck: false,
+          catchTab: false,
+          preserveIdent: false,
+          addClosing: false,
+          history: false
+        })
+
+        jar.updateCode(code)
+        editorRef.setAttribute('contenteditable', 'false')
+        editorRef.style.cursor = 'default'
       }
-
-      jar = CodeJar(editorRef, highlight, {
-        tab: '  ',
-        indentOn: /[(\[{]$/,
-        spellcheck: false,
-        catchTab: false, // Disable tab catching for non-editable
-        preserveIdent: false,
-        addClosing: false,
-        history: false, // Disable history for non-editable
-      })
-
-      // Set initial code
-      jar.updateCode(code)
-
-      // Make it non-editable by disabling input events
-      editorRef.setAttribute('contenteditable', 'false')
-      editorRef.style.cursor = 'default'
-    }
+    )
 
     return () => {
-      if (jar) {
-        jar.destroy()
-      }
+      destroyed = true
+      if (jar) jar.destroy()
     }
   })
 
   async function copyCode() {
     await navigator.clipboard.writeText(code)
     copied = true
-    setTimeout(() => copied = false, 2000)
+    setTimeout(() => (copied = false), 2000)
   }
 
   // Update CodeJar when code changes
@@ -94,7 +92,9 @@
       {/if}
     </Button>
 
-    <div class="absolute bottom-0 right-0 rounded-tl rounded-br bg-muted px-2 py-1 text-xs text-muted-foreground pointer-events-none">
+    <div
+      class="bg-muted text-muted-foreground pointer-events-none absolute right-0 bottom-0 rounded-tl rounded-br px-2 py-1 text-xs"
+    >
       {language}
     </div>
   </div>
