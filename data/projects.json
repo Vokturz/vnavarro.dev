@@ -5,7 +5,8 @@
     "technologies": ["Tauri", "Rust", "SvelteKit", "SQLite"],
     "githubUrl": "https://github.com/vokturz/loyca-ai",
     "featured": true,
-    "showImage": true
+    "showImage": true,
+    "latexDescription": "Developed an open-source, local-first desktop assistant in Rust and Tauri, demonstrating a privacy-centric approach to AI. The application utilizes an on-device Vision Language Model (VLM) to perform real-time contextual analysis of the user's screen, enabling proactive, local-first assistance."
   },
   {
     "title": "Transformers.js Playground",
@@ -13,7 +14,8 @@
     "technologies": ["React", "TypeScript", "TailwindCSS", "Transformers"],
     "hfUrl": "https://huggingface.co/spaces/Vokturz/transformers-js-playground",
     "featured": true,
-    "showImage": true
+    "showImage": true,
+    "latexDescription": "Created an interactive web application to demonstrate the capabilities of client-side, in-browser machine learning using the Transformers.js library. The project serves as a practical environment for evaluating on-device model inference and its accessibility, deployed on Hugging Face Spaces."
   },
 
   {
@@ -30,6 +32,7 @@
     "technologies": ["Python", "Slack", "Langchain"],
     "githubUrl": "https://github.com/Vokturz/LLM-slackbot-channels",
     "featured": true,
-    "showImage": true
+    "showImage": true,
+    "latexDescription": "Developed an advanced LLM-powered Slack agent (mid-2023) demonstrating agentic architectures. The system implements both ReACT (Reasoning and Acting) and RAG (Retrieval-Augmented Generation) frameworks to enable context-aware interactions, dynamic tool use, and real-time knowledge integration."
   }
 ]

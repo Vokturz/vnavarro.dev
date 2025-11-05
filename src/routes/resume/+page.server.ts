@@ -5,7 +5,8 @@ import type {
   TeachingExperience,
   Education,
   Experience,
-  Summaries
+  Summaries,
+  Awards
 } from '$lib/types/resume'
 
 const publicationsFile = import.meta.glob('/data/resume/publications.json', {
@@ -43,6 +44,11 @@ const summariesFile = import.meta.glob('/data/resume/summaries.json', {
   import: 'default'
 })
 
+const awardsFile = import.meta.glob('/data/resume/awards.json', {
+  query: '?raw',
+  import: 'default'
+})
+
 export async function load() {
   const publicationFiles = Object.values(publicationsFile)
   const skillFiles = Object.values(skillsFile)
@@ -51,6 +57,7 @@ export async function load() {
   const experienceFiles = Object.values(experienceFile)
   const projectsFiles = Object.values(projectsFile)
   const summariesFiles = Object.values(summariesFile)
+  const awardsFiles = Object.values(awardsFile)
 
   if (publicationFiles.length === 0) throw new Error('No publication files found')
   if (skillFiles.length === 0) throw new Error('No skill files found')
@@ -59,6 +66,7 @@ export async function load() {
   if (experienceFiles.length === 0) throw new Error('No experience files found')
   if (projectsFiles.length === 0) throw new Error('No projects files found')
   if (summariesFiles.length === 0) throw new Error('No summaries files found')
+  if (awardsFiles.length === 0) throw new Error('No awards files found')
 
   const publicationsRaw = await publicationFiles[0]()
   const skillsRaw = await skillFiles[0]()
@@ -67,6 +75,7 @@ export async function load() {
   const experienceRaw = await experienceFiles[0]()
   const projectsRaw = await projectsFiles[0]()
   const summariesRaw = await summariesFiles[0]()
+  const awardsRaw = await awardsFiles[0]()
 
   const publications: Publications[] = JSON.parse(publicationsRaw as string)
   const skills: Skills = JSON.parse(skillsRaw as string)
@@ -75,6 +84,7 @@ export async function load() {
   const experience: Experience[] = JSON.parse(experienceRaw as string)
   const projects: Project[] = JSON.parse(projectsRaw as string)
   const summaries: Summaries = JSON.parse(summariesRaw as string)
+  const awards: Awards[] = JSON.parse(awardsRaw as string)
 
   publications.sort((a, b) => b.year - a.year)
   education.sort((a, b) => b.year - a.year)
@@ -86,6 +96,7 @@ export async function load() {
     education,
     experience,
     projects,
-    summaries
+    summaries,
+    awards
   }
 }

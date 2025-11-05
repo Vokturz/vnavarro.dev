@@ -1,7 +1,7 @@
 <script lang="ts">
   /* eslint svelte/no-at-html-tags: "off" */
   import { scrollIntoView } from '$lib/actions'
-  import { Mail, Phone, Download, ChevronRight, Loader2 } from 'lucide-svelte'
+  import { Mail, Phone, Download, ChevronRight, Eye } from 'lucide-svelte'
   import * as ButtonGroup from '$lib/components/ui/button-group/index.js'
   import { Button } from '$lib/components/ui/button'
   import SkillCard from '$lib/components/SkillCard.svelte'
@@ -12,16 +12,13 @@
     Education,
     Experience,
     Summaries,
-    Category
+    Category,
+    Awards
   } from '$lib/types/resume'
   import { marked } from '$lib/markdown'
   import type { Project } from '$lib/types'
 
-  let isGeneratingPDF = false
-
-  function downloadCV() {
-    window.open('/VNavarro_CV.pdf', '_blank')
-  }
+  let isGeneratingPDF = $state(false)
 
   async function downloadResumePDF(category: Category) {
     isGeneratingPDF = true
@@ -55,15 +52,51 @@
     }
   }
 
-  export let data: {
-    publications: Publications[]
-    skills: Skills
-    teaching: TeachingExperience[]
-    education: Education[]
-    experience: Experience[]
-    projects: Project[]
-    summaries: Summaries
+  async function openResumeLatex() {
+    isGeneratingPDF = true
+    try {
+      const response = await fetch('/resume/latex', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ data })
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to generate LaTeX')
+      }
+
+      const blob = await response.blob()
+      const url = window.URL.createObjectURL(blob)
+
+      window.open(url, '_blank')
+
+      setTimeout(() => {
+        window.URL.revokeObjectURL(url)
+      }, 5000)
+    } catch (error) {
+      console.error('Error opening LaTeX:', error)
+      alert('Failed to generate LaTeX. Please try again.')
+    } finally {
+      isGeneratingPDF = false
+    }
   }
+
+  interface Props {
+    data: {
+      publications: Publications[]
+      skills: Skills
+      teaching: TeachingExperience[]
+      education: Education[]
+      experience: Experience[]
+      projects: Project[]
+      summaries: Summaries
+      awards: Awards[]
+    }
+  }
+
+  let { data }: Props = $props()
 
   function highlightAuthor(authors: string): string {
     return authors
@@ -116,6 +149,12 @@
           >
             <Download class="mr-2 h-5 w-5" />
             Software Engineer PDF
+          </Button>
+        </ButtonGroup.Root>
+        <ButtonGroup.Root>
+          <Button variant="outline" onclick={openResumeLatex} class="cursor-pointer">
+            <Eye class="mr-2 h-5 w-5" />
+            View CV (LaTeX)
           </Button>
         </ButtonGroup.Root>
       </div>

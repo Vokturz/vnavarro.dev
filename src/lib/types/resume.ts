@@ -30,6 +30,7 @@ export type Education = {
   degree: string
   institution: string
   year: number
+  description?: string
 }
 
 export type Category = 'ai-engineer' | 'software-engineer' | 'devops'
@@ -38,10 +39,18 @@ export type Experience = {
   title: string
   company: string
   period: string
+  summary?: string
   items: {
     categories: Category[]
     description: string
   }[]
+}
+
+export type Awards = {
+  title: string
+  organization: string
+  period: string
+  description: string
 }
 
 export type Summaries = {

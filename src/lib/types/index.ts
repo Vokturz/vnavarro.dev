@@ -49,4 +49,5 @@ export type Project = {
   liveUrl?: string
   showImage?: boolean
   featured?: boolean
+  latexDescription?: string
 }
