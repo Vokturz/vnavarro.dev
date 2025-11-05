@@ -110,7 +110,7 @@ vnavarroaranguiz@gmail.com | \\url{https://vnavarro.dev}
 ${data.education
   .map(
     (edu) =>
-      `\\cventry{${edu.year}}{${escapeLatex(edu.degree)}}{${escapeLatex(edu.institution)}}{}{}{${edu.description ? escapeLatex(edu.description) : '\\relax'}}`
+      `\\cventry{${edu.year}}{${escapeLatex(edu.degree)}}{${escapeLatex(edu.institution)}}{}{}{${edu.description ? convertMarkdownToLatex(edu.description) : '\\relax'}}`
   )
   .join('\n\n')}
 

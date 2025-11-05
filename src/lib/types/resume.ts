@@ -23,7 +23,7 @@ export type TeachingExperience = {
   title: string
   institution: string
   period: string
-  description: string[]
+  description: string
 }
 
 export type Education = {

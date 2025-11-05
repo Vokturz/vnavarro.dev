@@ -15,7 +15,7 @@
     "hfUrl": "https://huggingface.co/spaces/Vokturz/transformers-js-playground",
     "featured": true,
     "showImage": true,
-    "latexDescription": "Created an interactive web application to demonstrate the capabilities of client-side, in-browser machine learning using the Transformers.js library. The project serves as a practical environment for evaluating on-device model inference and its accessibility, deployed on Hugging Face Spaces."
+    "latexDescription": "Created an interactive web application to demonstrate the capabilities of client-side, in-browser machine learning using the Transformers.js library. The project serves as a practical environment for evaluating on-device model inference and its accessibility."
   },
 
   {
