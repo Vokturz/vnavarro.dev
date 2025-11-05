@@ -2,7 +2,8 @@
   /* eslint svelte/no-at-html-tags: "off" */
   import { scrollIntoView } from '$lib/actions'
   import { Mail, Phone, Download, ChevronRight, Eye } from 'lucide-svelte'
-  import * as ButtonGroup from '$lib/components/ui/button-group/index.js'
+  import * as ButtonGroup from '$lib/components/ui/button-group'
+  import * as DropdownMenu from '$lib/components/ui/dropdown-menu'
   import { Button } from '$lib/components/ui/button'
   import SkillCard from '$lib/components/SkillCard.svelte'
   import type {
@@ -20,15 +21,18 @@
 
   let isGeneratingPDF = $state(false)
 
-  async function downloadResumePDF(category: Category) {
+  async function downloadResumePDF(category: Category, language: 'EN' | 'ES' = 'EN') {
     isGeneratingPDF = true
     try {
-      const response = await fetch('/resume/pdf', {
+      const endpoint = language === 'ES' ? '/resume/pdf_es' : '/resume/pdf'
+      const body = language === 'ES' ? { category } : { data, category }
+
+      const response = await fetch(endpoint, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ data, category })
+        body: JSON.stringify(body)
       })
 
       if (!response.ok) {
@@ -39,7 +43,7 @@
       const url = window.URL.createObjectURL(blob)
       const a = document.createElement('a')
       a.href = url
-      a.download = 'VNavarro_Resume.pdf'
+      a.download = `VNavarro_Resume${language === 'ES' ? '_ES' : ''}.pdf`
       document.body.appendChild(a)
       a.click()
       window.URL.revokeObjectURL(url)
@@ -132,24 +136,57 @@
       </div>
       <div class="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
         <ButtonGroup.Root>
-          <Button
-            variant="outline"
-            onclick={() => downloadResumePDF('ai-engineer')}
-            disabled={isGeneratingPDF}
-            class="cursor-pointer"
-          >
-            <Download class="mr-2 h-5 w-5" />
-            AI Engineer PDF
-          </Button>
-          <Button
-            variant="outline"
-            onclick={() => downloadResumePDF('software-engineer')}
-            disabled={isGeneratingPDF}
-            class="cursor-pointer"
-          >
-            <Download class="mr-2 h-5 w-5" />
-            Software Engineer PDF
-          </Button>
+          <DropdownMenu.Root>
+            <DropdownMenu.Trigger>
+              {#snippet child({ props })}
+                <Button
+                  {...props}
+                  variant="outline"
+                  disabled={isGeneratingPDF}
+                  class="cursor-pointer"
+                >
+                  <Download class="mr-2 h-5 w-5" />
+                  AI Engineer PDF
+                </Button>
+              {/snippet}
+            </DropdownMenu.Trigger>
+            <DropdownMenu.Content>
+              <DropdownMenu.Group>
+                <DropdownMenu.Item onclick={() => downloadResumePDF('ai-engineer', 'EN')}>
+                  English (EN)
+                </DropdownMenu.Item>
+                <DropdownMenu.Item onclick={() => downloadResumePDF('ai-engineer', 'ES')}>
+                  Español (ES)
+                </DropdownMenu.Item>
+              </DropdownMenu.Group>
+            </DropdownMenu.Content>
+          </DropdownMenu.Root>
+
+          <DropdownMenu.Root>
+            <DropdownMenu.Trigger>
+              {#snippet child({ props })}
+                <Button
+                  {...props}
+                  variant="outline"
+                  disabled={isGeneratingPDF}
+                  class="cursor-pointer"
+                >
+                  <Download class="mr-2 h-5 w-5" />
+                  Software Engineer PDF
+                </Button>
+              {/snippet}
+            </DropdownMenu.Trigger>
+            <DropdownMenu.Content>
+              <DropdownMenu.Group>
+                <DropdownMenu.Item onclick={() => downloadResumePDF('software-engineer', 'EN')}>
+                  English (EN)
+                </DropdownMenu.Item>
+                <DropdownMenu.Item onclick={() => downloadResumePDF('software-engineer', 'ES')}>
+                  Español (ES)
+                </DropdownMenu.Item>
+              </DropdownMenu.Group>
+            </DropdownMenu.Content>
+          </DropdownMenu.Root>
         </ButtonGroup.Root>
         <ButtonGroup.Root>
           <Button variant="outline" onclick={openResumeLatex} class="cursor-pointer">

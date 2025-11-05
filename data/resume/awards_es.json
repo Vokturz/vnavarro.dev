@@ -1,0 +1,20 @@
+[
+  {
+    "title": "Profesor Destacado",
+    "organization": "Universidad del Desarrollo",
+    "period": "2024",
+    "description": "Reconocido por el compromiso con la formación estudiantil y la excelencia académica en la enseñanza de postgrado"
+  },
+  {
+    "title": "Mejor Póster en Cosmología",
+    "organization": "XVI Reunión Regional Latinoamericana de la IAU",
+    "period": "Nov 2019",
+    "description": "Premiado por un póster sobre análisis de lentes débiles de halos de materia oscura usando datos de Hyper Suprime-Cam"
+  },
+  {
+    "title": "Estudiante Destacado, FCFM Universidad de Chile",
+    "organization": "Universidad de Chile, Facultad de Ciencias Físicas y Matemáticas",
+    "period": "2017 - 2019",
+    "description": "La Universidad otorga anualmente este reconocimiento a estudiantes con rendimiento académico sobresaliente"
+  }
+]

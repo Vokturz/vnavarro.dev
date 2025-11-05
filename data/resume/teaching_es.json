@@ -1,0 +1,20 @@
+[
+  {
+    "title": "Curso de Python para Ciencia de Datos para estudiantes de Magíster",
+    "institution": "Universidad del Desarrollo",
+    "period": "Jun 2024 - Jul 2024",
+    "description": "Diseñé y enseñé un curso de programación introductoria para estudiantes del Magíster en Ciencia de Datos"
+  },
+  {
+    "title": "Introducción a la Programación para estudiantes de pregrado",
+    "institution": "Universidad del Desarrollo",
+    "period": "Mar 2024 - Jul 2024",
+    "description": "Diseñé y enseñé Introducción a la Programación para estudiantes de primer año"
+  },
+  {
+    "title": "Curso de Programación en Python",
+    "institution": "Banco Central de Chile",
+    "period": "Oct 2023",
+    "description": "Diseñé y enseñé programación en Python enfocada en análisis de datos"
+  }
+]

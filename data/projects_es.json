@@ -1,0 +1,37 @@
+[
+  {
+    "title": "Loyca.ai",
+    "description": "Un asistente de IA de escritorio de código abierto y local-first construido con Rust y Tauri. Utiliza un Modelo de Lenguaje de Visión (VLM) en el dispositivo para entender el contexto de la pantalla y ofrecer asistencia proactiva.",
+    "technologies": ["Tauri", "Rust", "SvelteKit", "SQLite"],
+    "githubUrl": "https://github.com/vokturz/loyca-ai",
+    "featured": true,
+    "showImage": true,
+    "latexDescription": "Desarrollé un asistente de escritorio de código abierto y local-first en Rust y Tauri, demostrando un enfoque centrado en la privacidad para la IA. La aplicación utiliza un Modelo de Lenguaje de Visión (VLM) en el dispositivo para realizar análisis contextual en tiempo real de la pantalla del usuario, habilitando asistencia proactiva y local-first."
+  },
+  {
+    "title": "Transformers.js Playground",
+    "description": "Un playground web interactivo que demuestra el poder del aprendizaje automático en el navegador y en el dispositivo con la biblioteca Transformers.js. Desplegado en Hugging Face Spaces.",
+    "technologies": ["React", "TypeScript", "TailwindCSS", "Transformers"],
+    "hfUrl": "https://huggingface.co/spaces/Vokturz/transformers-js-playground",
+    "featured": true,
+    "showImage": true,
+    "latexDescription": "Creé una aplicación web interactiva para demostrar las capacidades del aprendizaje automático del lado del cliente, en el navegador usando la biblioteca Transformers.js. El proyecto sirve como un entorno práctico para evaluar la inferencia de modelos en el dispositivo y su accesibilidad."
+  },
+  {
+    "title": "Sitio Web Personal",
+    "description": "Mi sitio web personal construido con SvelteKit, con un blog y showcase de proyectos. Las entradas del blog se pueden escribir en Markdown o Jupyter Notebooks, con soporte para ejecutar código Python usando Pyodide.",
+    "technologies": ["SvelteKit", "TypeScript", "Python", "TailwindCSS"],
+    "githubUrl": "https://github.com/vokturz/vnavarro.dev",
+    "featured": true,
+    "showImage": true
+  },
+  {
+    "title": "Agente de Slack Potenciado por LLM",
+    "description": "Un bot de Slack potenciado por LLM construido a mediados de 2023 que habilita personalidades, comandos y configuraciones específicas por canal, soportando interacciones inteligentes y conscientes del contexto a través de ReACT y RAG para uso mejorado de herramientas e integración de conocimiento.",
+    "technologies": ["Python", "Slack", "Langchain"],
+    "githubUrl": "https://github.com/Vokturz/LLM-slackbot-channels",
+    "featured": true,
+    "showImage": true,
+    "latexDescription": "Desarrollé un agente avanzado de Slack potenciado por LLM (mediados de 2023) demostrando arquitecturas agénticas. El sistema implementa tanto marcos ReACT como RAG para habilitar interacciones conscientes del contexto, uso dinámico de herramientas e integración de conocimiento en tiempo real."
+  }
+]
