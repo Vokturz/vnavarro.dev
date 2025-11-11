@@ -261,12 +261,10 @@
             <h3 class="text-2xl font-semibold">{experience.title}</h3>
             <p class="text-muted-foreground">{experience.institution} | {experience.period}</p>
             <div class="mt-2 text-lg">
-              {#each experience.description as item, index (index)}
-                <span class="flex items-center gap-x-1">
-                  <ChevronRight class="size-4 flex-shrink-0" />
-                  {item}
-                </span>
-              {/each}
+              <span class="flex items-center gap-x-1">
+                <ChevronRight class="size-4 flex-shrink-0" />
+                {experience.description}
+              </span>
             </div>
           </div>
         {/each}
