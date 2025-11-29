@@ -7,6 +7,10 @@
   const { data }: { data: { posts: Post[] } } = $props()
 </script>
 
+<svelte:head>
+  <title>Blog - vnavarro.dev</title>
+</svelte:head>
+
 <div class="container mx-auto px-4 py-8">
   <h1 class="mb-8 text-4xl font-bold">All Blog Posts</h1>
   <div class="grid gap-6">

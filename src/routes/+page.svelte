@@ -10,6 +10,10 @@
   export let data
 </script>
 
+<svelte:head>
+  <title>vnavarro.dev</title>
+</svelte:head>
+
 <div class="star-bg">
   <div class="absolute inset-x-0 top-0 h-screen max-h-150 w-full overflow-hidden">
     <ConstellationBackground useWindowMouse={true} />

@@ -109,6 +109,10 @@
   }
 </script>
 
+<svelte:head>
+  <title>Resume - Víctor Navarro Aránguiz | vnavarro.dev</title>
+</svelte:head>
+
 <div class="star-bg">
   <!-- <div class="absolute inset-x-0 top-0 h-screen w-full overflow-hidden max-h-150">
     <ConstellationBackground useWindowMouse={true} />
