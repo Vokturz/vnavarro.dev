@@ -3,7 +3,7 @@
     "title": "AI Engineer",
     "company": "CodeGPT",
     "period": "Dic 2023 - Jul 2025",
-    "summary": "Built AI-driven code tools, creating a knowledge graph algorithm with a scalable AWS ECS processing system. Developed the Deno API backend to integrate LLMs for a production code assistant. Led the full infrastructure migration from Vercel to AWS Fargate and created an on-premise Docker solution to meet enterprise data privacy needs.",
+    "summary": "Built AI-driven code tools, creating a knowledge graph algorithm with a scalable processing system. Developed the backend to integrate LLMs and Retrieval Augmented Generation (RAG) for a production-ready code assistant. Led the full infrastructure migration and created an on-premise solution to meet enterprise data privacy needs.",
     "items": [
       {
         "categories": ["ai-engineer", "software-engineer", "devops"],
@@ -39,7 +39,7 @@
     "title": "Data Scientist",
     "company": "Data Science Institute, Universidad del Desarrollo",
     "period": "Apr 2020 - Nov 2023",
-    "summary": "Analyzed massive mobile datasets in BigQuery to create a national \"mobility index\", which was directly used by the Chilean government to inform lockdown policies. For enterprise clients, I developed a recommendation system to drive cross-sales and implemented Bayesian models for Customer Lifetime Value and journey analysis.",
+    "summary": "Analyzed massive mobile datasets to create a national \"mobility index\", which was directly used by the Chilean government to inform lockdown policies. For enterprise clients, I developed a recommendation system to drive cross-sales and implemented Bayesian models for Customer Lifetime Value and journey analysis.",
     "items": [
       {
         "categories": ["ai-engineer", "software-engineer"],

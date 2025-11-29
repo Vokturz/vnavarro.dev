@@ -122,7 +122,33 @@ ${data.experience
   })
   .join('\n\n')}
 
-% 3. Teaching Experience
+
+% 3. Publications
+\\section{Publications}
+\\begin{enumerate}[leftmargin=*, noitemsep]
+${data.publications
+  .map((pub) => {
+    const authors = formatAuthors(pub.authors)
+    const title = escapeLatex(pub.title)
+    const journal = escapeLatex(pub.journal)
+    const other = escapeLatex(pub.other)
+
+    return `\\item ${authors} (${pub.year}). \\href{${pub.href}}{${title}}. \\textit{${journal}}, ${other}.`
+  })
+  .join('\n')}
+\\end{enumerate}
+
+% 4. Honors and Awards
+\\section{Honors and Awards}
+${data.awards
+  .map((award) => {
+    return `\\cventry{${award.period}}{${escapeLatex(award.title)}}{${escapeLatex(award.organization)}}{}{}{${escapeLatex(award.description)}}`
+  })
+  .join('\n\n')}
+\\vspace{0.2em}
+
+
+% 5. Teaching Experience
 \\section{Teaching Experience}
 ${data.teaching
   .map((teach) => {
@@ -132,9 +158,7 @@ ${teach.description}
   })
   .join('\n\n')}
 
-\\newpage
-
-% 4. Personal Projects
+% 6. Personal Projects
 \\section{Personal Projects}
 ${data.projects
   .filter((project) => project.featured && project.latexDescription)
@@ -156,30 +180,6 @@ ${data.projects
 `
   })
   .join('\n\n')}
-
-% 5. Honors and Awards
-\\section{Honors and Awards}
-${data.awards
-  .map((award) => {
-    return `\\cventry{${award.period}}{${escapeLatex(award.title)}}{${escapeLatex(award.organization)}}{}{}{${escapeLatex(award.description)}}`
-  })
-  .join('\n\n')}
-\\vspace{0.2em}
-
-% 6. Publications
-\\section{Publications}
-\\begin{enumerate}[leftmargin=*]
-${data.publications
-  .map((pub) => {
-    const authors = formatAuthors(pub.authors)
-    const title = escapeLatex(pub.title)
-    const journal = escapeLatex(pub.journal)
-    const other = escapeLatex(pub.other)
-
-    return `\\item ${authors} (${pub.year}). \\href{${pub.href}}{${title}}. \\textit{${journal}}, ${other}.`
-  })
-  .join('\n')}
-\\end{enumerate}
 
 % 7. Technical Skills
 \\section{Technical Skills}

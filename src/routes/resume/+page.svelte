@@ -134,7 +134,7 @@
           <span>(+353) 83 863 1200</span>
         </a>
       </div>
-      <div class="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
+      <div class="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
         <ButtonGroup.Root>
           <DropdownMenu.Root>
             <DropdownMenu.Trigger>
