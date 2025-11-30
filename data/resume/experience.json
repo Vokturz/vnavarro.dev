@@ -2,7 +2,7 @@
   {
     "title": "AI Engineer",
     "company": "CodeGPT",
-    "period": "Dic 2023 - Jul 2025",
+    "period": "Dec 2023 - Jul 2025",
     "summary": "Built AI-driven code tools, creating a knowledge graph algorithm with a scalable processing system. Developed the backend to integrate LLMs and Retrieval Augmented Generation (RAG) for a production-ready code assistant. Led the full infrastructure migration and created an on-premise solution to meet enterprise data privacy needs.",
     "items": [
       {
@@ -59,7 +59,7 @@
     "title": "Research Assistant",
     "company": "National Astronomical Observatory, University of Chile",
     "period": "Feb 2020 - Dic 2022",
-    "summary": "Developed an Approximate Bayesian Computation algorithm to characterize Blazar variability, cutting model fitting time from hours to minutes. Also contributed to the Cherenkov Telescope Array (CTA) project by acquiring data and performing redshift classification.",
+    "summary": "Developed an Approximate Bayesian Computation algorithm as part of my Master's thesis to characterize Blazar variability, cutting model fitting time from hours to minutes. Also contributed to the Cherenkov Telescope Array (CTA) project by acquiring data and performing redshift classification.",
     "items": [
       {
         "categories": ["ai-engineer", "software-engineer"],

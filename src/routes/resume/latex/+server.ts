@@ -125,7 +125,7 @@ ${data.experience
 
 % 3. Publications
 \\section{Publications}
-\\begin{enumerate}[leftmargin=*, noitemsep]
+\\begin{enumerate}[leftmargin=*, itemsep=0ex]
 ${data.publications
   .map((pub) => {
     const authors = formatAuthors(pub.authors)
@@ -182,11 +182,11 @@ ${data.projects
   .join('\n\n')}
 
 % 7. Technical Skills
-\\section{Technical Skills}
+% \\section{Technical Skills}
 ${Object.entries(data.skills)
   .map(
     ([category, skills]) =>
-      `\\cvitem{${escapeLatex(category)}}{${skills.map((skill) => escapeLatex(skill.name)).join(', ')}}`
+      `% \\cvitem{${escapeLatex(category)}}{${skills.map((skill) => escapeLatex(skill.name)).join(', ')}}`
   )
   .join('\n')}
 
