@@ -24,9 +24,10 @@
 
   interface Props {
     project: Project
+    class?: string
   }
 
-  let { project }: Props = $props()
+  let { project, class: className }: Props = $props()
 
   let projectUrl = $state(project.liveUrl ?? project.hfUrl ?? project.githubUrl)
   let slugifiedTitle = slugify(project.title)
@@ -35,7 +36,7 @@
   }
 </script>
 
-<Card class="card-hover flex h-full flex-col rounded-sm">
+<Card class="card-hover flex h-full flex-col {className}">
   <CardHeader>
     <CardTitle>{project.title}</CardTitle>
     {#if project.showImage}

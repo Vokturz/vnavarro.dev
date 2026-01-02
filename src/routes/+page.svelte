@@ -83,7 +83,7 @@
         {#if data.posts.length > 0}
           <div class="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
             {#each data.posts as post (post.slug)}
-              <PostCard {post} />
+              <PostCard {post} class="rounded-sm" />
             {/each}
           </div>
           <div class="mt-6 text-center">
@@ -110,7 +110,7 @@
         {#if data.projects && data.projects.length > 0}
           <div class="grid grid-cols-1 gap-8 md:grid-cols-2">
             {#each data.projects as project (project.title)}
-              <ProjectCard {project} />
+              <ProjectCard {project} class="rounded-sm" />
             {/each}
           </div>
 

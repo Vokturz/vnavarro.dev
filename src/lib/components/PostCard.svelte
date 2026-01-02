@@ -12,11 +12,16 @@
   import { ArrowRight } from 'lucide-svelte'
   // import TechIcon from './TechIcon.svelte'
 
-  export let post: Post
+  interface Props {
+    post: Post
+    class?: string
+  }
+
+  let { post, class: className }: Props = $props()
 </script>
 
 <a href={`/blog/${post.slug}`}>
-  <Card class="card-hover flex h-full flex-col rounded-sm">
+  <Card class="card-hover flex h-full flex-col rounded-sm {className}">
     <CardHeader>
       <CardTitle>
         <div class="flex items-center">
