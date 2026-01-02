@@ -29,7 +29,7 @@
       class="mx-auto max-w-4xl px-4 py-2 pt-20 sm:px-6 lg:px-8"
       use:scrollIntoView
     >
-      <h2 class="gradient-text text-center text-3xl font-extrabold sm:text-4xl">About Me</h2>
+      <h2 class="text-secondary text-center text-3xl font-extrabold sm:text-4xl">About Me</h2>
       <div class="bg-primary mx-auto mt-4 h-1 w-20 rounded-full"></div>
 
       <div class="mt-12 grid grid-cols-1 gap-8 lg:grid-cols-3">
@@ -76,11 +76,8 @@
     <section id="blog" class="bg-card/50 mt-16 rounded-lg border py-10">
       <div class="mx-auto max-w-7xl px-4 sm:px-2 lg:px-4">
         <div class="mb-12 text-center">
-          <h2 class="gradient-text text-3xl font-extrabold sm:text-4xl">Latest Blog Posts</h2>
+          <h2 class="text-secondary text-3xl font-extrabold sm:text-4xl">Latest Blog Posts</h2>
           <div class="bg-primary mx-auto mt-4 h-1 w-20 rounded-full"></div>
-          <p class="text-muted-foreground mx-auto mt-4 max-w-2xl text-xl">
-            Sharing my thoughts and experiences
-          </p>
         </div>
 
         {#if data.posts.length > 0}
@@ -106,11 +103,8 @@
     <section id="projects" class="bg-card/50 mt-16 rounded-lg border py-10">
       <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div class="mb-16 text-center">
-          <h2 class="gradient-text text-3xl font-extrabold sm:text-4xl">Featured Projects</h2>
+          <h2 class="text-secondary text-3xl font-extrabold sm:text-4xl">Featured Projects</h2>
           <div class="bg-primary mx-auto mt-4 h-1 w-20 rounded-full"></div>
-          <p class="text-muted-foreground mx-auto mt-4 max-w-2xl text-xl">
-            Some of personal projects I've worked on.
-          </p>
         </div>
 
         {#if data.projects && data.projects.length > 0}

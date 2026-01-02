@@ -7,7 +7,7 @@
 <div class="star-bg">
   <main>
     <section class="mx-auto max-w-4xl px-4 py-20 text-center sm:px-6 lg:px-8">
-      <h1 class="gradient-text text-6xl font-extrabold sm:text-8xl">{status}</h1>
+      <h1 class="text-secondary text-6xl font-extrabold sm:text-8xl">{status}</h1>
       <div class="bg-primary mx-auto my-4 h-1 w-20 rounded-full"></div>
       <Badge variant="outline" class="px-4 py-2 text-lg">
         {status === 404 ? 'Page Not Found' : 'Error'}

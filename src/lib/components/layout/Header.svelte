@@ -54,7 +54,7 @@
   <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
     <div class="flex h-16 items-center justify-between">
       <div class="flex items-center space-x-2">
-        <a href="/" class="gradient-text text-2xl font-bold">vnavarro.dev</a>
+        <a href="/" class="text-secondary text-2xl font-bold">vnavarro.dev</a>
         <div class="hidden md:block">
           <div class="ml-10 flex items-baseline space-x-8">
             <a href="/" class="nav-link">Home</a>

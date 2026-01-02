@@ -16,7 +16,7 @@
 </script>
 
 <a href={`/blog/${post.slug}`}>
-  <Card class="card-hover flex h-full flex-col">
+  <Card class="card-hover flex h-full flex-col rounded-sm">
     <CardHeader>
       <CardTitle>
         <div class="flex items-center">

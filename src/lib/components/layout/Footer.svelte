@@ -1,7 +1,7 @@
 <footer class="bg-card">
   <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
     <div class="text-center">
-      <p class="gradient-text text-xl font-bold">vnavarro.dev</p>
+      <p class="text-xl font-bold">vnavarro.dev</p>
 
       <!-- Contact Me Section -->
       <div class="mt-2">

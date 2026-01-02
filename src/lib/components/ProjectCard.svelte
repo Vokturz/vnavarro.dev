@@ -35,7 +35,7 @@
   }
 </script>
 
-<Card class="card-hover flex h-full flex-col">
+<Card class="card-hover flex h-full flex-col rounded-sm">
   <CardHeader>
     <CardTitle>{project.title}</CardTitle>
     {#if project.showImage}

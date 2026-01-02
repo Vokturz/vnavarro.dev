@@ -114,6 +114,7 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }
@@ -123,13 +124,6 @@
   .nav-link {
     @apply text-foreground/80 hover:text-foreground text-base font-medium;
   }
-}
-
-.gradient-text {
-  background: linear-gradient(90deg, #3b82f6, #8b5cf6, #ec4899);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
 }
 
 .card-hover {
@@ -146,10 +140,12 @@
 }
 
 @keyframes blink-caret {
+
   from,
   to {
     border-color: transparent;
   }
+
   50% {
     border-color: var(--primary);
   }
@@ -160,6 +156,7 @@
     opacity: 0;
     transform: translateY(20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -177,16 +174,19 @@
     font-weight: 700;
     margin: 1rem 0;
   }
+
   h2 {
     font-size: var(--text-xl);
     font-weight: 500;
     margin: 1rem 0;
   }
+
   h3 {
     font-size: var(--text-lg);
     font-weight: 400;
     margin: 1rem 0;
   }
+
   h4 {
     font-size: var(--text-base);
     font-weight: 400;
@@ -322,7 +322,8 @@
   border-collapse: collapse;
   margin: 0;
   font-size: 12px;
-  width: auto; /* Changed from 100% to auto */
+  width: auto;
+  /* Changed from 100% to auto */
 }
 
 .notebook-dataframe-output th,
@@ -330,7 +331,8 @@
   border: 1px solid #ddd;
   padding: 8px;
   text-align: left;
-  white-space: nowrap; /* Prevents text wrapping in cells */
+  white-space: nowrap;
+  /* Prevents text wrapping in cells */
 }
 
 .notebook-dataframe-output th {
@@ -408,9 +410,11 @@
   0% {
     background-color: rgba(239, 68, 68, 0.3);
   }
+
   50% {
     background-color: rgba(239, 68, 68, 0.15);
   }
+
   100% {
     background-color: rgba(239, 68, 68, 0.15);
   }
@@ -420,9 +424,11 @@
   0% {
     background-color: rgba(248, 113, 113, 0.35);
   }
+
   50% {
     background-color: rgba(248, 113, 113, 0.2);
   }
+
   100% {
     background-color: rgba(248, 113, 113, 0.2);
   }

@@ -120,7 +120,7 @@
   <main class="text-foreground container mx-auto px-4 py-12">
     <header class="mb-16 text-center">
       <h1
-        class="gradient-text pointer-events-none text-5xl font-extrabold tracking-tight lg:text-6xl"
+        class="text-secondary pointer-events-none text-5xl font-extrabold tracking-tight lg:text-6xl"
       >
         Víctor Navarro Aránguiz
       </h1>
@@ -202,7 +202,7 @@
     </header>
 
     <section class="mb-16" use:scrollIntoView>
-      <h2 class="border-primary gradient-text mb-6 border-b-2 pb-2 text-3xl font-bold">
+      <h2 class="border-primary text-secondary mb-6 border-b-2 pb-2 text-3xl font-bold">
         Experience
       </h2>
       <div class="space-y-8">
@@ -224,7 +224,7 @@
     </section>
 
     <section class="mb-16" use:scrollIntoView>
-      <h2 class="border-primary gradient-text mb-6 border-b-2 pb-2 text-3xl font-bold">
+      <h2 class="border-primary text-secondary mb-6 border-b-2 pb-2 text-3xl font-bold">
         Education
       </h2>
       <div class="space-y-6">
@@ -240,7 +240,7 @@
     </section>
 
     <section class="mb-16" use:scrollIntoView>
-      <h2 class="border-primary gradient-text mb-6 border-b-2 pb-2 text-3xl font-bold">Skills</h2>
+      <h2 class="border-primary text-secondary mb-6 border-b-2 pb-2 text-3xl font-bold">Skills</h2>
       <div class="grid grid-cols-1 gap-4 space-y-2 lg:grid-cols-2">
         {#each Object.entries(data.skills) as [category, skills] (category)}
           <div>
@@ -256,7 +256,7 @@
     </section>
 
     <section class="mb-16" use:scrollIntoView>
-      <h2 class="border-primary gradient-text mb-6 border-b-2 pb-2 text-3xl font-bold">
+      <h2 class="border-primary text-secondary mb-6 border-b-2 pb-2 text-3xl font-bold">
         Teaching Experience
       </h2>
       <div class="space-y-8">
@@ -276,7 +276,7 @@
     </section>
 
     <section use:scrollIntoView>
-      <h2 class="border-primary gradient-text mb-6 border-b-2 pb-2 text-3xl font-bold">
+      <h2 class="border-primary text-secondary mb-6 border-b-2 pb-2 text-3xl font-bold">
         Publications
       </h2>
       <div class="space-y-6">
