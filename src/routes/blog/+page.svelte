@@ -23,8 +23,8 @@
           <img src={post.image} alt={post.title} class="w-32 object-cover" loading="lazy" />
         {:else}
           <div
-            class="h-4 md:h-full md:min-w-32"
-            style="background: {getPostGradient(post.image)}"
+            class="animated-gradient h-4 md:h-full md:min-w-32"
+            style="--gradient: {getPostGradient(post.image)}"
           ></div>
         {/if}
         <div class="p-6">
