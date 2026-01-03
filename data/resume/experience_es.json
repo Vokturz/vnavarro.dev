@@ -1,36 +1,81 @@
 [
   {
+    "title": "Ingeniero de Software",
+    "company": "Overwatch AI",
+    "period": "Nov 2025 - Presente",
+    "summary": "Desarrollando el backend para un agente autónomo de IA, centrándome en el procesamiento escalable de documentos, técnicas avanzadas de RAG y observabilidad del sistema.",
+    "items": [
+      {
+        "categories": [
+          "ai-engineer",
+          "software-engineer",
+          "devops"
+        ],
+        "description": "Diseñé estrategias avanzadas de **RAG** (búsqueda híbrida, expansión de consultas) e implementé **observabilidad del sistema** con OpenInference, maximizando la precisión de recuperación y brindando visibilidad sobre el razonamiento del agente."
+      },
+      {
+        "categories": [
+          "ai-engineer",
+          "software-engineer",
+          "devops"
+        ],
+        "description": "Desarrollé un robusto **pipeline de procesamiento de documentos** para ingerir, fragmentar e indexar documentos, soportando multi-tenencia y recuperación eficiente de datos."
+      }
+    ]
+  },
+  {
     "title": "Ingeniero de IA",
     "company": "CodeGPT",
     "period": "Dic 2023 - Jul 2025",
     "summary": "Construí herramientas de código impulsadas por IA, creando un algoritmo de grafos de conocimiento con un sistema de procesamiento escalable en AWS ECS. Desarrollé el backend API en Deno para integrar LLMs en un asistente de código en producción. Lideré la migración completa de infraestructura de Vercel a AWS Fargate y creé una solución Docker on-premise para satisfacer las necesidades de privacidad de datos empresariales.",
     "items": [
       {
-        "categories": ["ai-engineer", "software-engineer", "devops"],
+        "categories": [
+          "ai-engineer",
+          "software-engineer",
+          "devops"
+        ],
         "description": "Diseñé un **algoritmo de grafos de conocimiento** para analizar estructuras de código. Puedes probarlo en [deepgraph.co](https://www.deepgraph.co/)."
       },
       {
-        "categories": ["devops", "software-engineer"],
+        "categories": [
+          "devops",
+          "software-engineer"
+        ],
         "description": "Diseñé un sistema escalable y asíncrono para construir grafos de conocimiento mediante la orquestación de **tareas dinámicas en AWS ECS**, permitiendo el procesamiento bajo demanda de bases de código de cualquier tamaño."
       },
       {
-        "categories": ["software-engineer", "devops"],
+        "categories": [
+          "software-engineer",
+          "devops"
+        ],
         "description": "Integré LLMs con herramientas internas en el **backend API en Deno**, sirviendo un asistente de código."
       },
       {
-        "categories": ["software-engineer", "ai-engineer"],
+        "categories": [
+          "software-engineer",
+          "ai-engineer"
+        ],
         "description": "Desarrollé la lógica central para las funciones de **autocompletado** e **indexación de código** dentro de la extensión de VS Code, incluyendo la construcción del cliente **MCP**."
       },
       {
-        "categories": ["devops", "software-engineer"],
+        "categories": [
+          "devops",
+          "software-engineer"
+        ],
         "description": "Arquitecturé una **solución Docker on-premise containerizada**, desbloqueando un nuevo segmento de clientes empresariales al garantizar 100% privacidad de datos."
       },
       {
-        "categories": ["devops"],
+        "categories": [
+          "devops"
+        ],
         "description": "Lideré la **migración completa de infraestructura de Vercel a AWS**, reconstruyendo la plataforma en **AWS Fargate** para mejorar la escalabilidad y reducir costos operativos."
       },
       {
-        "categories": ["devops", "ai-engineer"],
+        "categories": [
+          "devops",
+          "ai-engineer"
+        ],
         "description": "Desplegué un **modelo Qwen coder en Google Cloud** con autoescalado de GPU, proporcionando completado de código en línea a usuarios gratuitos mientras optimizaba los costos de inferencia."
       }
     ]
@@ -42,15 +87,24 @@
     "summary": "Analicé conjuntos masivos de datos móviles en BigQuery para crear un \"índice de movilidad\" nacional, que fue utilizado directamente por el gobierno chileno para informar políticas de confinamiento. Para clientes empresariales, desarrollé un sistema de recomendación para impulsar ventas cruzadas e implementé modelos bayesianos para el Valor de Vida del Cliente y análisis de customer journey.",
     "items": [
       {
-        "categories": ["ai-engineer", "software-engineer"],
+        "categories": [
+          "ai-engineer",
+          "software-engineer"
+        ],
         "description": "Desarrollé un **\"índice de movilidad\"** nacional mediante el análisis de conjuntos masivos de datos XDR móviles en BigQuery, que **informó directamente las políticas de confinamiento del gobierno chileno** y llevó a 2 publicaciones revisadas por pares."
       },
       {
-        "categories": ["ai-engineer", "software-engineer"],
+        "categories": [
+          "ai-engineer",
+          "software-engineer"
+        ],
         "description": "Desarrollé un **sistema de recomendación** para Derco-Chile para **impulsar ventas cruzadas** mediante la coincidencia de usuarios con vehículos similares."
       },
       {
-        "categories": ["ai-engineer", "software-engineer"],
+        "categories": [
+          "ai-engineer",
+          "software-engineer"
+        ],
         "description": "Implementé **modelos de Valor de Vida del Cliente y Customer Journey usando inferencia bayesiana** para Derco-Chile, ayudando en el desarrollo de nuevos productos y servicios."
       }
     ]
@@ -62,11 +116,16 @@
     "summary": "Desarrollé un algoritmo de Computación Bayesiana Aproximada para caracterizar la variabilidad de Blazares, reduciendo el tiempo de ajuste de modelos de horas a minutos. También contribuí al proyecto Cherenkov Telescope Array (CTA) mediante la adquisición de datos y clasificación de corrimiento al rojo.",
     "items": [
       {
-        "categories": ["ai-engineer", "software-engineer"],
+        "categories": [
+          "ai-engineer",
+          "software-engineer"
+        ],
         "description": "Desarrollé un **algoritmo de Computación Bayesiana Aproximada (ABC)** para caracterizar la variabilidad de Blazares, **reduciendo el tiempo de ajuste de modelos de horas a minutos**."
       },
       {
-        "categories": ["ai-engineer"],
+        "categories": [
+          "ai-engineer"
+        ],
         "description": "Contribuí al proyecto Cherenkov Telescope Array (CTA) mediante la adquisición de datos y **clasificación de corrimiento al rojo**."
       }
     ]
@@ -78,7 +137,10 @@
     "summary": "Desarrollé y publiqué tsnmf, un paquete de Python compatible con Scikit-Learn para Topic-Supervised NMF optimizado para matrices dispersas. Este paquete sirvió como el modelo central en un estudio publicado sobre inferencia de modos de transporte a escala urbana.",
     "items": [
       {
-        "categories": ["software-engineer", "ai-engineer"],
+        "categories": [
+          "software-engineer",
+          "ai-engineer"
+        ],
         "description": "Desarrollé y publiqué [tsnmf](https://github.com/Vokturz/tsnmf-sparse), un **paquete de Python compatible con Scikit-Learn** para Topic-Supervised NMF **optimizado para matrices dispersas**, el cual fue utilizado en un  [estudio sobre modos de transporte a escala urbana](https://epjdatascience.springeropen.com/articles/10.1140/epjds/s13688-018-0177-1)."
       }
     ]

@@ -153,7 +153,7 @@ export const POST: RequestHandler = async ({ request }) => {
       yPosition += 1
     }
 
-    yPosition += 1
+    yPosition += 4
 
     // Projects Section
     checkPageBreak(15)
@@ -193,7 +193,7 @@ export const POST: RequestHandler = async ({ request }) => {
       yPosition += lines.length * 4 + 1
     }
 
-    yPosition += 1
+    yPosition += 4
 
     // Education Section
     checkPageBreak(12)
@@ -222,7 +222,7 @@ export const POST: RequestHandler = async ({ request }) => {
     yPosition += 2
 
     // Skills Section
-    checkPageBreak(12)
+    checkPageBreak(24)
     doc.setTextColor(...colors.secondary)
     doc.setFontSize(fonts.heading2)
     doc.setFont(font, 'bold')
@@ -248,37 +248,35 @@ export const POST: RequestHandler = async ({ request }) => {
       yPosition += lines.length * 4 + 1
     }
 
-    yPosition += 2
+    yPosition += 4
 
-    if (category == 'ai-engineer') {
-      // Additional Information Section
+    // Additional Information Section
+    checkPageBreak(1)
+    doc.setTextColor(...colors.secondary)
+    doc.setFontSize(fonts.heading2)
+    doc.setFont(font, 'bold')
+    doc.text('Additional Information', margin, yPosition)
+    yPosition += titleBottomMargin
+
+    const additional_entries = {
+      Language: 'Spanish (Native), English (C1 IELTS).',
+      Teaching: 'Instructed “Python for Data Science” for Master\'s students and professionals.',
+      Publications: `Co-author on ${data.publications.length} peer-reviewed publications in journals.`
+    }
+    for (const [item, entry] of Object.entries(additional_entries)) {
       checkPageBreak(1)
-      doc.setTextColor(...colors.secondary)
-      doc.setFontSize(fonts.heading2)
+
+      doc.setTextColor(...colors.text)
+      doc.setFontSize(fonts.normal)
       doc.setFont(font, 'bold')
-      doc.text('Additional Information', margin, yPosition)
-      yPosition += titleBottomMargin
+      doc.text(`${item}:`, margin, yPosition)
+      // yPosition += 5
 
-      const entries = {
-        Language: 'Spanish (Native), English (C1 IELTS).',
-        Teaching: 'Instructed “Python for Data Science” for Master’s students and professionals.',
-        Publications: `Co-author on ${data.publications.length} peer-reviewed publications in journals.`
-      }
-      for (const [item, entry] of Object.entries(entries)) {
-        checkPageBreak(1)
-
-        doc.setTextColor(...colors.text)
-        doc.setFontSize(fonts.normal)
-        doc.setFont(font, 'bold')
-        doc.text(`${item}:`, margin, yPosition)
-        // yPosition += 5
-
-        doc.setFontSize(fonts.normal)
-        doc.setFont(font, 'normal')
-        const lines = doc.splitTextToSize(entry, contentWidth - 4)
-        doc.text(entry, 24 + margin, yPosition)
-        yPosition += lines.length * 4 + 1
-      }
+      doc.setFontSize(fonts.normal)
+      doc.setFont(font, 'normal')
+      const lines = doc.splitTextToSize(entry, contentWidth - 4)
+      doc.text(entry, 24 + margin, yPosition)
+      yPosition += lines.length * 4 + 1
     }
 
     // Generate PDF as buffer

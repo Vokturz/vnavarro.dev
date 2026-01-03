@@ -2,7 +2,12 @@
   {
     "title": "Loyca.ai",
     "description": "Un asistente de IA de escritorio de código abierto y local-first construido con Rust y Tauri. Utiliza un Modelo de Lenguaje de Visión (VLM) en el dispositivo para entender el contexto de la pantalla y ofrecer asistencia proactiva.",
-    "technologies": ["Tauri", "Rust", "SvelteKit", "SQLite"],
+    "technologies": [
+      "Tauri",
+      "Rust",
+      "SvelteKit",
+      "SQLite"
+    ],
     "githubUrl": "https://github.com/vokturz/loyca-ai",
     "featured": true,
     "showImage": true,
@@ -11,7 +16,12 @@
   {
     "title": "Transformers.js Playground",
     "description": "Un playground web interactivo que demuestra el poder del aprendizaje automático en el navegador y en el dispositivo con la biblioteca Transformers.js. Desplegado en Hugging Face Spaces.",
-    "technologies": ["React", "TypeScript", "TailwindCSS", "Transformers"],
+    "technologies": [
+      "React",
+      "TypeScript",
+      "TailwindCSS",
+      "Transformers"
+    ],
     "hfUrl": "https://huggingface.co/spaces/Vokturz/transformers-js-playground",
     "featured": true,
     "showImage": true,
@@ -20,15 +30,24 @@
   {
     "title": "Sitio Web Personal",
     "description": "Mi sitio web personal construido con SvelteKit, con un blog y showcase de proyectos. Las entradas del blog se pueden escribir en Markdown o Jupyter Notebooks, con soporte para ejecutar código Python usando Pyodide.",
-    "technologies": ["SvelteKit", "TypeScript", "Python", "TailwindCSS"],
+    "technologies": [
+      "SvelteKit",
+      "TypeScript",
+      "Python",
+      "TailwindCSS"
+    ],
     "githubUrl": "https://github.com/vokturz/vnavarro.dev",
     "featured": true,
     "showImage": true
   },
   {
     "title": "Agente de Slack Potenciado por LLM",
-    "description": "Un bot de Slack potenciado por LLM construido a mediados de 2023 que habilita personalidades, comandos y configuraciones específicas por canal, soportando interacciones inteligentes y conscientes del contexto a través de ReACT y RAG para uso mejorado de herramientas e integración de conocimiento.",
-    "technologies": ["Python", "Slack", "Langchain"],
+    "description": "Un bot versátil de Slack (mediados de 2023) con personalidades por canal. Utiliza arquitecturas ReACT y RAG para interacciones inteligentes y uso de herramientas.",
+    "technologies": [
+      "Python",
+      "Slack",
+      "Langchain"
+    ],
     "githubUrl": "https://github.com/Vokturz/LLM-slackbot-channels",
     "featured": true,
     "showImage": true,

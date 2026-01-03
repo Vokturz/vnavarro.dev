@@ -1,14 +1,15 @@
 <script lang="ts">
   import { Code } from 'lucide-svelte'
   import * as icons from 'simple-icons'
-  import { AwsIcon, AzureIcon, HFIcon } from '$lib/icons'
+  import { AwsIcon, AzureIcon, HFIcon, QdrantIcon } from '$lib/icons'
 
   let { name, class: className = 'h-4 w-4' }: { name: string; class?: string } = $props()
 
   const customIcons = {
     aws: AwsIcon,
     azure: AzureIcon,
-    huggingface: HFIcon
+    huggingface: HFIcon,
+    qdrant: QdrantIcon
   }
 
   const iconName = `si${name.charAt(0).toUpperCase() + name.slice(1)}`
