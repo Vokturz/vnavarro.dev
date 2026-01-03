@@ -242,12 +242,15 @@ Structure for work experience entries:
 4. The resume page will automatically reflect the changes
 5. Publications and education are automatically sorted by year (descending)
 
-### Resume Loading
+### LaTeX Resume
 
-Resume data is loaded in `/src/routes/resume/+page.server.ts`:
-- Uses `import.meta.glob()` to load all JSON files
-- Parses each file and returns structured data
-- Automatically sorts publications and education by year
+The LaTeX version of the resume is generated dynamically in `/src/routes/resume/latex`. 
+
+**Critical Rule:** When updating professional experience or projects, you MUST ensure the following fields are descriptive and well-formatted:
+- **`summary`** in `experience.json`: This field is used as the main description for each job entry in the LaTeX resume.
+- **`latexDescription`** in `projects.json`: This field provides the project description specifically for the LaTeX version.
+
+Ensure these fields use LaTeX-safe characters or that any special formatting is handled by the `convertMarkdownToLatex` helper in `src/routes/resume/latex/+server.ts`.
 
 ## Code Style
 
