@@ -50,7 +50,7 @@
         <!-- Content Section -->
         <div class="lg:col-span-2">
           <p class="text-muted-foreground text-lg leading-relaxed">
-            Hey there! I'm Víctor—a software engineer and data scientist from Chile who loves
+            Hey there! I'm Víctor, a software engineer and data scientist from Chile who loves
             building cool things and exploring new ideas. Here you can find my thoughts, projects,
             and experiments. Feel free to check out my latest blog posts or dive into my full resume
             to see what I've been up to!
