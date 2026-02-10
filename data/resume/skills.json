@@ -79,6 +79,15 @@
       "color": "text-green-800"
     },
     {
+      "name": "React",
+      "iconName": "react",
+      "color": "text-blue-500"
+    },
+    {
+      "name": "Next.js",
+      "iconName": "nextdotjs"
+    },
+    {
       "name": "Vite",
       "iconName": "vite",
       "color": "text-purple-600"
@@ -87,10 +96,6 @@
       "name": "SvelteKit",
       "iconName": "svelte",
       "color": "text-orange-500"
-    },
-    {
-      "name": "Next.js",
-      "iconName": "nextdotjs"
     }
   ],
   "Cloud & DevOps": [
