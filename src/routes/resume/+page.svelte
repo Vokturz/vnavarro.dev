@@ -56,7 +56,7 @@
     }
   }
 
-  async function openResumeLatex() {
+  async function openResumeLatex(language: 'EN' | 'ES' = 'EN') {
     isGeneratingPDF = true
     try {
       const response = await fetch('/resume/latex', {
@@ -64,7 +64,7 @@
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ data })
+        body: JSON.stringify({ data, language })
       })
 
       if (!response.ok) {
@@ -193,10 +193,31 @@
           </DropdownMenu.Root>
         </ButtonGroup.Root>
         <ButtonGroup.Root>
-          <Button variant="outline" onclick={openResumeLatex} class="cursor-pointer">
-            <Eye class="mr-2 h-5 w-5" />
-            View CV (LaTeX)
-          </Button>
+          <DropdownMenu.Root>
+            <DropdownMenu.Trigger>
+              {#snippet child({ props })}
+                <Button
+                  {...props}
+                  variant="outline"
+                  disabled={isGeneratingPDF}
+                  class="cursor-pointer"
+                >
+                  <Eye class="mr-2 h-5 w-5" />
+                  View CV (LaTeX)
+                </Button>
+              {/snippet}
+            </DropdownMenu.Trigger>
+            <DropdownMenu.Content>
+              <DropdownMenu.Group>
+                <DropdownMenu.Item onclick={() => openResumeLatex('EN')}>
+                  English (EN)
+                </DropdownMenu.Item>
+                <DropdownMenu.Item onclick={() => openResumeLatex('ES')}>
+                  Español (ES)
+                </DropdownMenu.Item>
+              </DropdownMenu.Group>
+            </DropdownMenu.Content>
+          </DropdownMenu.Root>
         </ButtonGroup.Root>
       </div>
     </header>
