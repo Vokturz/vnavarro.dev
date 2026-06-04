@@ -3,7 +3,7 @@
     "title": "Ingeniero de Software",
     "company": "Overwatch AI",
     "period": "Nov 2025 - Presente",
-    "summary": "Arquitectando sistemas backend e infraestructura para agentes de IA autónomos, especializándome en el procesamiento escalable de documentos, estrategias avanzadas de RAG y observabilidad del sistema con OpenInference.",
+    "summary": "Diseñando la arquitectura backend y de infraestructura para agentes de IA autónomos, especializándome en el procesamiento escalable de documentos, estrategias avanzadas de RAG, observabilidad del sistema y herramientas multi-agente para el dominio de la aviación.",
     "items": [
       {
         "categories": [
@@ -20,6 +20,14 @@
           "devops"
         ],
         "description": "Desarrollé un robusto **pipeline de procesamiento de documentos** para ingerir, fragmentar e indexar documentos, soportando multi-tenencia y recuperación eficiente de datos."
+      },
+      {
+        "categories": [
+          "ai-engineer",
+          "software-engineer",
+          "devops"
+        ],
+        "description": "Diseñé la **infraestructura** y realicé pruebas de **escalabilidad** para un entorno multi-agente, implementando herramientas especializadas enfocadas en el dominio de la **aviación**."
       }
     ]
   },
