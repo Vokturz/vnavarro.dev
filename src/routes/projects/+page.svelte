@@ -1,4 +1,5 @@
 <script lang="ts">
+  import AmbientBackground from '$lib/components/AmbientBackground.svelte'
   import ProjectCard from '$lib/components/ProjectCard.svelte'
   import type { Project } from '$lib/types'
   export let data: { projects: Project[] }
@@ -8,7 +9,8 @@
   <title>Projects - vnavarro.dev</title>
 </svelte:head>
 
-<div class="container mx-auto px-4 py-8">
+<div class="relative isolate container mx-auto px-4 py-8">
+  <AmbientBackground />
   <h1 class="mb-8 text-4xl font-bold">Projects</h1>
   {#if !data.projects || data.projects.length === 0}
     <div class="flex flex-row items-center gap-4">

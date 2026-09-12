@@ -1,8 +1,9 @@
 <script lang="ts">
+  import AmbientBackground from '$lib/components/AmbientBackground.svelte'
   import TechIcon from '$lib/components/TechIcon.svelte'
   import Badge from '$lib/components/ui/badge/badge.svelte'
   import type { Post } from '$lib/types'
-  import { getPostGradient } from '$lib/utils/images'
+  import PostAnimation from '$lib/components/PostAnimation.svelte'
 
   const { data }: { data: { posts: Post[] } } = $props()
 </script>
@@ -11,23 +12,28 @@
   <title>Blog - vnavarro.dev</title>
 </svelte:head>
 
-<div class="container mx-auto px-4 py-8">
+<div class="relative isolate container mx-auto px-4 py-8">
+  <AmbientBackground />
   <h1 class="mb-8 text-4xl font-bold">All Blog Posts</h1>
   <div class="grid gap-6">
     {#each data.posts as post (post.slug)}
       <a
         href={`/blog/${post.slug}`}
-        class="flex flex-col overflow-hidden rounded-lg border transition hover:scale-102 md:flex-row"
+        class="bg-card/80 flex flex-col overflow-hidden rounded-lg border transition hover:scale-102 md:flex-row"
       >
         {#if post.image}
-          <img src={post.image} alt={post.title} class="w-32 object-cover" loading="lazy" />
+          <img
+            src={post.image}
+            alt={post.title}
+            class="h-32 w-full shrink-0 object-cover md:h-auto md:w-40"
+            loading="lazy"
+          />
         {:else}
-          <div
-            class="animated-gradient h-4 md:h-full md:min-w-32"
-            style="--gradient: {getPostGradient(post.image)}"
-          ></div>
+          <div class="relative h-32 shrink-0 overflow-hidden md:h-auto md:w-40">
+            <PostAnimation seed={post.slug} />
+          </div>
         {/if}
-        <div class="p-6">
+        <div class="min-w-0 p-6">
           <div class="flex flex-row items-center">
             {#if post.icon}
               <TechIcon name={post.icon} class="mt-2 mr-1 h-8 w-8 lg:h-4 lg:w-4" />
