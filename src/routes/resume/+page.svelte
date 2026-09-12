@@ -1,5 +1,7 @@
 <script lang="ts">
   /* eslint svelte/no-at-html-tags: "off" */
+  import AmbientBackground from '$lib/components/AmbientBackground.svelte'
+  import OrbitalBackground from '$lib/components/OrbitalBackground.svelte'
   import { scrollIntoView } from '$lib/actions'
   import { Mail, Phone, Download, ChevronRight, Eye } from 'lucide-svelte'
   import * as ButtonGroup from '$lib/components/ui/button-group'
@@ -113,12 +115,11 @@
   <title>Resume - Víctor Navarro Aránguiz | vnavarro.dev</title>
 </svelte:head>
 
-<div class="star-bg">
-  <!-- <div class="absolute inset-x-0 top-0 h-screen w-full overflow-hidden max-h-150">
-    <ConstellationBackground useWindowMouse={true} />
-  </div> -->
+<div class="relative isolate">
+  <AmbientBackground />
   <main class="text-foreground container mx-auto px-4 py-12">
-    <header class="mb-16 text-center">
+    <header class="relative isolate mb-16 pt-36 text-center sm:py-12 print:pt-0">
+      <OrbitalBackground />
       <h1
         class="text-secondary pointer-events-none text-5xl font-extrabold tracking-tight lg:text-6xl"
       >

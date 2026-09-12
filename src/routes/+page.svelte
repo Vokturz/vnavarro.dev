@@ -5,7 +5,8 @@
   import { Button } from '$lib/components/ui/button'
   import { scrollIntoView } from '$lib/actions'
   import { ExternalLink } from 'lucide-svelte'
-  import ConstellationBackground from '$lib/components/ConstellationBackground.svelte'
+  import AmbientBackground from '$lib/components/AmbientBackground.svelte'
+  import ActiveGalacticNucleus from '$lib/components/ActiveGalacticNucleus.svelte'
 
   export let data
 </script>
@@ -14,16 +15,17 @@
   <title>vnavarro.dev</title>
 </svelte:head>
 
-<div class="star-bg">
+<div class="isolate">
   <div class="absolute inset-x-0 top-0 h-screen max-h-150 w-full overflow-hidden">
-    <ConstellationBackground useWindowMouse={true} />
+    <ActiveGalacticNucleus />
   </div>
 
   <div class="relative z-20 mt-[-50px] pb-32">
     <Hero />
   </div>
 
-  <main class="relative z-10 mt-[-256px]">
+  <main class="relative isolate z-10 mt-[-256px]">
+    <AmbientBackground />
     <section
       id="about"
       class="mx-auto max-w-4xl px-4 py-2 pt-20 sm:px-6 lg:px-8"
