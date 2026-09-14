@@ -15,14 +15,15 @@
   },
   {
     "title": "Transformers.js Playground",
-    "description": "An interactive web playground demonstrating the power of in-browser, on-device machine learning with the Transformers.js library. Deployed on Hugging Face Spaces.",
+    "description": "An interactive web playground demonstrating the power of in-browser, on-device machine learning with the Transformers.js library.",
     "technologies": [
       "React",
       "TypeScript",
       "TailwindCSS",
       "Transformers"
     ],
-    "hfUrl": "https://huggingface.co/spaces/Vokturz/transformers-js-playground",
+    "githubUrl": "https://github.com/Vokturz/transformers-js-playground",
+    "liveUrl": "https://transformers-js.vnavarro.dev",
     "featured": true,
     "showImage": true,
     "latexDescription": "Created an interactive web application to demonstrate the capabilities of client-side, in-browser machine learning using the Transformers.js library. The project serves as a practical environment for evaluating on-device model inference and its accessibility."
