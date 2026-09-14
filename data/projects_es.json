@@ -15,14 +15,15 @@
   },
   {
     "title": "Transformers.js Playground",
-    "description": "Un playground web interactivo que demuestra el poder del aprendizaje automático en el navegador y en el dispositivo con la biblioteca Transformers.js. Desplegado en Hugging Face Spaces.",
+    "description": "Un playground web interactivo que demuestra el poder del aprendizaje automático en el navegador y en el dispositivo con la biblioteca Transformers.js.",
     "technologies": [
       "React",
       "TypeScript",
       "TailwindCSS",
       "Transformers"
     ],
-    "hfUrl": "https://huggingface.co/spaces/Vokturz/transformers-js-playground",
+    "githubUrl": "https://github.com/Vokturz/transformers-js-playground",
+    "liveUrl": "https://transformers-js.vnavarro.dev",
     "featured": true,
     "showImage": true,
     "latexDescription": "Creé una aplicación web interactiva para demostrar las capacidades del aprendizaje automático del lado del cliente, en el navegador usando la biblioteca Transformers.js. El proyecto sirve como un entorno práctico para evaluar la inferencia de modelos en el dispositivo y su accesibilidad."
